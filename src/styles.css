@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+	--color-primary-50: #eef2ff;
+	--color-primary-100: #e0e7ff;
+	--color-primary-200: #c7d2fe;
+	--color-primary-300: #a5b4fc;
+	--color-primary-400: #818cf8;
+	--color-primary-500: #6366f1;
+	--color-primary-600: #4f46e5;
+	--color-primary-700: #4338ca;
+	--color-primary-800: #3730a3;
+	--color-primary-900: #312e81;
+
+	--color-surface: #ffffff;
+	--color-surface-alt: #f9fafb;
+	--color-surface-hover: #f3f4f6;
+	--color-text-primary: #111827;
+	--color-text-secondary: #6b7280;
+	--color-text-muted: #9ca3af;
+	--color-border: #e5e7eb;
+}
+
+[data-theme="dark"] {
+	--color-surface: #111827;
+	--color-surface-alt: #1f2937;
+	--color-surface-hover: #374151;
+	--color-text-primary: #f9fafb;
+	--color-text-secondary: #d1d5db;
+	--color-text-muted: #6b7280;
+	--color-border: #374151;
+}
+
+body {
+	background-color: var(--color-surface);
+	color: var(--color-text-primary);
+	transition:
+		background-color 0.2s,
+		color 0.2s;
+}
