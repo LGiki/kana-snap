@@ -1,5 +1,6 @@
+import autoAnimate from "@formkit/auto-animate";
 import { Shuffle } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { allGroups, type Kana, type KanaGroup, speakKana } from "#/data/kana";
 import { type DisplayMode, useAppStore } from "#/stores/useAppStore";
@@ -38,6 +39,13 @@ export function KanaChart() {
 	const [selectedKana, setSelectedKana] = useState<Kana | null>(null);
 	const [shuffleKey, setShuffleKey] = useState(0);
 	const [isShuffled, setIsShuffled] = useState(false);
+	const animatedElements = useRef(new WeakSet<HTMLElement>());
+	const animateRef = useCallback((el: HTMLDivElement | null) => {
+		if (el && !animatedElements.current.has(el)) {
+			animatedElements.current.add(el);
+			autoAnimate(el);
+		}
+	}, []);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: shuffleKey triggers re-shuffle intentionally
 	const groups = useMemo(() => {
@@ -99,6 +107,7 @@ export function KanaChart() {
 						{t(group.nameKey)}
 					</h2>
 					<div
+						ref={animateRef}
 						className="grid gap-2"
 						style={{
 							gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))`,
