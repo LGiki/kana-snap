@@ -84,5 +84,8 @@ export default {
 		importSuccess: "Data imported successfully!",
 		importError: "Failed to import data. Invalid file format.",
 		resetSuccess: "All data has been reset.",
+		version: "Version",
+		commitHash: "Commit",
+		commitDate: "Build Date",
 	},
 };

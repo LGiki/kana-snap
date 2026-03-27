@@ -85,5 +85,8 @@ export default {
 		importSuccess: "データのインポートが完了しました！",
 		importError: "データのインポートに失敗しました。ファイル形式が無効です。",
 		resetSuccess: "すべてのデータがリセットされました。",
+		version: "バージョン",
+		commitHash: "コミット",
+		commitDate: "ビルド日",
 	},
 };

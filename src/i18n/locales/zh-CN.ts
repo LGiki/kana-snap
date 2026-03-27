@@ -83,5 +83,8 @@ export default {
 		importSuccess: "数据导入成功！",
 		importError: "数据导入失败，文件格式无效。",
 		resetSuccess: "所有数据已重置。",
+		version: "版本",
+		commitHash: "提交",
+		commitDate: "构建日期",
 	},
 };

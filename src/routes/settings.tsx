@@ -290,6 +290,34 @@ function SettingsPage() {
 					</button>
 				</div>
 			</section>
+			{/* Version */}
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.version")}
+				</h2>
+				<div className="rounded-xl border border-(--color-border) bg-(--color-surface) p-4 space-y-2 text-sm">
+					<div className="flex justify-between">
+						<span className="text-(--color-text-secondary)">
+							{t("settings.version")}
+						</span>
+						<span className="font-mono">{__APP_VERSION__}</span>
+					</div>
+					<div className="flex justify-between">
+						<span className="text-(--color-text-secondary)">
+							{t("settings.commitHash")}
+						</span>
+						<span className="font-mono">{__COMMIT_HASH__}</span>
+					</div>
+					<div className="flex justify-between">
+						<span className="text-(--color-text-secondary)">
+							{t("settings.commitDate")}
+						</span>
+						<span className="font-mono">
+							{new Date(__COMMIT_DATE__).toLocaleDateString()}
+						</span>
+					</div>
+				</div>
+			</section>
 			<ConfirmDialog
 				open={dialog.open}
 				title={dialog.title}
