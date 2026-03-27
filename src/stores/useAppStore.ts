@@ -1,0 +1,121 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+export interface QuizRecord {
+	date: string;
+	score: number;
+	total: number;
+	mistakes: string[];
+}
+
+export type ThemeMode = "light" | "dark" | "auto";
+export type Language = "en" | "ja" | "zh-CN" | "zh-TW";
+export type VisualizationMode = "heatmap" | "line" | "streak";
+export type DisplayMode = "hiragana" | "katakana" | "comparison";
+export type KanaCardClickAction = "showDetail" | "playAudio";
+
+interface AppState {
+	theme: ThemeMode;
+	language: Language;
+	visualizationMode: VisualizationMode;
+	displayMode: DisplayMode;
+	kanaCardClickAction: KanaCardClickAction;
+	quizHistory: QuizRecord[];
+	mistakeWeights: Record<string, number>;
+
+	setTheme: (theme: ThemeMode) => void;
+	setLanguage: (language: Language) => void;
+	setVisualizationMode: (mode: VisualizationMode) => void;
+	setDisplayMode: (mode: DisplayMode) => void;
+	setKanaCardClickAction: (action: KanaCardClickAction) => void;
+	addQuizRecord: (record: QuizRecord) => void;
+	addMistake: (romaji: string) => void;
+	resetData: () => void;
+	exportData: () => string;
+	importData: (json: string) => boolean;
+}
+
+const initialState = {
+	theme: "auto" as ThemeMode,
+	language: "en" as Language,
+	visualizationMode: "heatmap" as VisualizationMode,
+	displayMode: "hiragana" as DisplayMode,
+	kanaCardClickAction: "showDetail" as KanaCardClickAction,
+	quizHistory: [] as QuizRecord[],
+	mistakeWeights: {} as Record<string, number>,
+};
+
+export const useAppStore = create<AppState>()(
+	persist(
+		(set, get) => ({
+			...initialState,
+
+			setTheme: (theme) => set({ theme }),
+			setLanguage: (language) => set({ language }),
+			setVisualizationMode: (mode) => set({ visualizationMode: mode }),
+			setDisplayMode: (mode) => set({ displayMode: mode }),
+			setKanaCardClickAction: (action) => set({ kanaCardClickAction: action }),
+
+			addQuizRecord: (record) =>
+				set((state) => ({
+					quizHistory: [...state.quizHistory, record],
+				})),
+
+			addMistake: (romaji) =>
+				set((state) => ({
+					mistakeWeights: {
+						...state.mistakeWeights,
+						[romaji]: (state.mistakeWeights[romaji] || 0) + 1,
+					},
+				})),
+
+			resetData: () => set({ ...initialState }),
+
+			exportData: () => {
+				const {
+					quizHistory,
+					mistakeWeights,
+					theme,
+					language,
+					visualizationMode,
+					displayMode,
+					kanaCardClickAction,
+				} = get();
+				return JSON.stringify(
+					{
+						quizHistory,
+						mistakeWeights,
+						theme,
+						language,
+						visualizationMode,
+						displayMode,
+						kanaCardClickAction,
+					},
+					null,
+					2,
+				);
+			},
+
+			importData: (json) => {
+				try {
+					const data = JSON.parse(json);
+					set({
+						quizHistory: data.quizHistory ?? [],
+						mistakeWeights: data.mistakeWeights ?? {},
+						theme: data.theme ?? "auto",
+						language: data.language ?? "en",
+						visualizationMode: data.visualizationMode ?? "heatmap",
+						displayMode: data.displayMode ?? "hiragana",
+						kanaCardClickAction: data.kanaCardClickAction ?? "showDetail",
+					});
+					return true;
+				} catch {
+					return false;
+				}
+			},
+		}),
+		{
+			name: "kana-snap-storage",
+		},
+	),
+);
