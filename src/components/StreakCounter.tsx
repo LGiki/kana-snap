@@ -1,4 +1,4 @@
-import { Award, Calendar, Flame } from "lucide-react";
+import { Award, Calendar, Flame, Target } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizRecord } from "#/stores/useAppStore";
@@ -47,16 +47,22 @@ function computeStreaks(records: QuizRecord[]) {
 		}
 	}
 
+	const avgScore =
+		records.length > 0
+			? records.reduce((sum, r) => sum + r.score, 0) / records.length
+			: 0;
+
 	return {
 		currentStreak,
 		longestStreak,
 		totalQuizzes: records.length,
+		avgScore,
 	};
 }
 
 export function StreakCounter({ records }: StreakCounterProps) {
 	const { t } = useTranslation();
-	const { currentStreak, longestStreak, totalQuizzes } = useMemo(
+	const { currentStreak, longestStreak, totalQuizzes, avgScore } = useMemo(
 		() => computeStreaks(records),
 		[records],
 	);
@@ -86,10 +92,18 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			color: "text-primary-500",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
+		{
+			icon: Target,
+			label: t("analytics.averageScore"),
+			value: `${avgScore.toFixed(1)}/10`,
+			unit: "",
+			color: "text-green-500",
+			bgColor: "bg-green-100 dark:bg-green-900/30",
+		},
 	];
 
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 			{stats.map((stat) => (
 				<div
 					key={stat.label}
@@ -100,10 +114,15 @@ export function StreakCounter({ records }: StreakCounterProps) {
 					</div>
 					<div>
 						<p className="text-2xl font-bold">
-							{stat.value}{" "}
-							<span className="text-sm font-normal text-(--color-text-muted)">
-								{stat.unit}
-							</span>
+							{stat.value}
+							{stat.unit && (
+								<>
+									{" "}
+									<span className="text-sm font-normal text-(--color-text-muted)">
+										{stat.unit}
+									</span>
+								</>
+							)}
 						</p>
 						<p className="text-sm text-(--color-text-secondary)">
 							{stat.label}

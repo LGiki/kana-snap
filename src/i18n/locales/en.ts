@@ -56,6 +56,7 @@ export default {
 		less: "Less",
 		more: "More",
 		totalScore: "Total Score",
+		averageScore: "Average Score",
 	},
 	common: {
 		confirm: "Confirm",

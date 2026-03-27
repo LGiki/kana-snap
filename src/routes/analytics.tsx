@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BarChart3, Flame, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Heatmap } from "#/components/Heatmap";
 import { LineChart } from "#/components/LineChart";
@@ -23,7 +23,6 @@ function AnalyticsPage() {
 	}[] = [
 		{ mode: "heatmap", label: t("analytics.heatmap"), icon: BarChart3 },
 		{ mode: "line", label: t("analytics.lineChart"), icon: TrendingUp },
-		{ mode: "streak", label: t("analytics.streak"), icon: Flame },
 	];
 
 	if (quizHistory.length === 0) {
@@ -40,6 +39,9 @@ function AnalyticsPage() {
 	return (
 		<div className="space-y-6">
 			<h1 className="text-2xl font-bold">{t("analytics.title")}</h1>
+
+			{/* Streak counters — always visible */}
+			<StreakCounter records={quizHistory} />
 
 			{/* Mode tabs */}
 			<div className="flex rounded-lg border border-(--color-border) overflow-hidden w-fit">
@@ -63,9 +65,6 @@ function AnalyticsPage() {
 			{/* Visualization */}
 			{visualizationMode === "heatmap" && <Heatmap records={quizHistory} />}
 			{visualizationMode === "line" && <LineChart records={quizHistory} />}
-			{visualizationMode === "streak" && (
-				<StreakCounter records={quizHistory} />
-			)}
 		</div>
 	);
 }

@@ -56,6 +56,7 @@ export default {
 		less: "少",
 		more: "多",
 		totalScore: "總分",
+		averageScore: "平均分",
 	},
 	common: {
 		confirm: "確認",

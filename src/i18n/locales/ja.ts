@@ -57,6 +57,7 @@ export default {
 		less: "少ない",
 		more: "多い",
 		totalScore: "合計スコア",
+		averageScore: "平均スコア",
 	},
 	common: {
 		confirm: "確認",
