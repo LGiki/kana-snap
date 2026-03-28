@@ -18,7 +18,7 @@ const EMPTY_COLOR = "var(--color-surface-alt)";
 const INTENSITY_COLORS = ["#c6e48b", "#7bc96f", "#239a3b", "#196127"] as const;
 
 export function Heatmap({ records }: HeatmapProps) {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const [tooltip, setTooltip] = useState<{
 		text: string;
 		x: number;
@@ -66,15 +66,18 @@ export function Heatmap({ records }: HeatmapProps) {
 
 			if (date.getMonth() !== lastMonth) {
 				lastMonth = date.getMonth();
-				months.push({
-					label: date.toLocaleDateString(undefined, { month: "short" }),
-					weekIndex,
-				});
+				const prevWeek = months.length > 0 ? months[months.length - 1].weekIndex : -Infinity;
+				if (weekIndex - prevWeek >= 3) {
+					months.push({
+						label: date.toLocaleDateString(i18n.language, { month: "short" }),
+						weekIndex,
+					});
+				}
 			}
 		}
 
 		return { cells, weeks, maxCount, months };
-	}, [records]);
+	}, [records, i18n.language]);
 
 	const getColor = (count: number): string => {
 		if (count === 0 || maxCount === 0) return EMPTY_COLOR;
