@@ -3,9 +3,10 @@ import { Shuffle } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { allGroups, type Kana, type KanaGroup, speakKana } from "#/data/kana";
-import { type DisplayMode, useAppStore } from "#/stores/useAppStore";
+import { useAppStore } from "#/stores/useAppStore";
 import { KanaCard } from "./KanaCard";
 import { KanaDetailModal } from "./KanaDetailModal";
+import { Tabs } from "./Tabs";
 
 function shuffleArray<T>(arr: T[]): T[] {
 	const shuffled = [...arr];
@@ -60,32 +61,21 @@ export function KanaChart() {
 		});
 	}, []);
 
-	const displayModes: { mode: DisplayMode; label: string }[] = [
-		{ mode: "hiragana", label: t("chart.hiraganaOnly") },
-		{ mode: "katakana", label: t("chart.katakanaOnly") },
-		{ mode: "comparison", label: t("chart.comparison") },
+	const displayModes = [
+		{ value: "hiragana" as const, label: t("chart.hiraganaOnly") },
+		{ value: "katakana" as const, label: t("chart.katakanaOnly") },
+		{ value: "comparison" as const, label: t("chart.comparison") },
 	];
 
 	return (
 		<div className="space-y-6">
 			{/* Controls */}
 			<div className="flex flex-wrap items-center gap-3">
-				<div className="flex rounded-lg border border-(--color-border) overflow-hidden">
-					{displayModes.map(({ mode, label }) => (
-						<button
-							key={mode}
-							type="button"
-							onClick={() => setDisplayMode(mode)}
-							className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-								displayMode === mode
-									? "bg-primary-600 text-white"
-									: "bg-(--color-surface) text-(--color-text-secondary) hover:bg-(--color-surface-hover)"
-							}`}
-						>
-							{label}
-						</button>
-					))}
-				</div>
+				<Tabs
+					tabs={displayModes}
+					value={displayMode}
+					onChange={setDisplayMode}
+				/>
 				<button
 					type="button"
 					onClick={handleShuffle}

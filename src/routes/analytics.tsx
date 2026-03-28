@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Heatmap } from "#/components/Heatmap";
 import { LineChart } from "#/components/LineChart";
 import { StreakCounter } from "#/components/StreakCounter";
-import { useAppStore, type VisualizationMode } from "#/stores/useAppStore";
+import { Tabs } from "#/components/Tabs";
+import { useAppStore } from "#/stores/useAppStore";
 
 export const Route = createFileRoute("/analytics")({
 	component: AnalyticsPage,
@@ -16,13 +17,17 @@ function AnalyticsPage() {
 	const visualizationMode = useAppStore((s) => s.visualizationMode);
 	const setVisualizationMode = useAppStore((s) => s.setVisualizationMode);
 
-	const modes: {
-		mode: VisualizationMode;
-		label: string;
-		icon: typeof BarChart3;
-	}[] = [
-		{ mode: "heatmap", label: t("analytics.heatmap"), icon: BarChart3 },
-		{ mode: "line", label: t("analytics.lineChart"), icon: TrendingUp },
+	const modes = [
+		{
+			value: "heatmap" as const,
+			label: t("analytics.heatmap"),
+			icon: BarChart3,
+		},
+		{
+			value: "line" as const,
+			label: t("analytics.lineChart"),
+			icon: TrendingUp,
+		},
 	];
 
 	if (quizHistory.length === 0) {
@@ -44,23 +49,11 @@ function AnalyticsPage() {
 			<StreakCounter records={quizHistory} />
 
 			{/* Mode tabs */}
-			<div className="flex rounded-lg border border-(--color-border) overflow-hidden w-fit">
-				{modes.map(({ mode, label, icon: Icon }) => (
-					<button
-						key={mode}
-						type="button"
-						onClick={() => setVisualizationMode(mode)}
-						className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium transition-colors ${
-							visualizationMode === mode
-								? "bg-primary-600 text-white"
-								: "bg-(--color-surface) text-(--color-text-secondary) hover:bg-(--color-surface-hover)"
-						}`}
-					>
-						<Icon size={16} />
-						{label}
-					</button>
-				))}
-			</div>
+			<Tabs
+				tabs={modes}
+				value={visualizationMode}
+				onChange={setVisualizationMode}
+			/>
 
 			{/* Visualization */}
 			{visualizationMode === "heatmap" && <Heatmap records={quizHistory} />}
