@@ -1,4 +1,4 @@
-import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
+import { RotateCcw, Trophy } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface AnswerRecord {
@@ -15,10 +15,9 @@ interface AnswerRecord {
 interface QuizResultProps {
 	answers: AnswerRecord[];
 	onRetry: () => void;
-	onBack: () => void;
 }
 
-export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
+export function QuizResult({ answers, onRetry }: QuizResultProps) {
 	const { t } = useTranslation();
 	const score = answers.filter((a) => a.correct).length;
 	const total = answers.length;
@@ -88,14 +87,6 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 
 			{/* Actions */}
 			<div className="flex gap-3 justify-center">
-				<button
-					type="button"
-					onClick={onBack}
-					className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-(--color-border) text-(--color-text-secondary) hover:bg-(--color-surface-hover) transition-colors"
-				>
-					<ArrowLeft size={18} />
-					{t("quiz.backToChart")}
-				</button>
 				<button
 					type="button"
 					onClick={onRetry}

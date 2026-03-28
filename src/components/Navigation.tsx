@@ -1,11 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { BarChart3, BookOpen, BrainCircuit, Settings } from "lucide-react";
+import { BookOpen, BrainCircuit, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const navItems = [
 	{ to: "/", labelKey: "nav.chart", icon: BookOpen },
 	{ to: "/quiz", labelKey: "nav.quiz", icon: BrainCircuit },
-	{ to: "/analytics", labelKey: "nav.analytics", icon: BarChart3 },
 	{ to: "/settings", labelKey: "nav.settings", icon: Settings },
 ] as const;
 
@@ -18,8 +17,15 @@ export function Navigation() {
 				<div className="flex items-center justify-between h-14">
 					<Link
 						to="/"
-						className="text-lg font-bold text-primary-600 dark:text-primary-400"
+						className="flex items-center gap-2 text-lg font-bold text-primary-600 dark:text-primary-400"
 					>
+						<img
+							src="/icon.svg"
+							alt=""
+							width={28}
+							height={28}
+							className="rounded-md"
+						/>
 						KanaSnap
 					</Link>
 					<div className="hidden sm:flex items-center gap-1">

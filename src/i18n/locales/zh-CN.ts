@@ -2,7 +2,6 @@ export default {
 	nav: {
 		chart: "五十音图",
 		quiz: "测验",
-		analytics: "学习分析",
 		settings: "设置",
 	},
 	chart: {
@@ -36,11 +35,9 @@ export default {
 		score: "得分：{{score}} / {{total}}",
 		perfect: "满分！",
 		tryAgain: "再试一次",
-		backToChart: "返回五十音图",
 		incorrectAnswers: "错误的题目",
 		yourAnswer: "你的回答",
 		correctAnswer: "正确答案",
-		useKeys: "使用按键 1-4 作答",
 	},
 	analytics: {
 		title: "学习分析",
@@ -73,6 +70,11 @@ export default {
 		clickAction: "假名卡片点击动作",
 		clickActionDetail: "显示详情",
 		clickActionAudio: "播放发音",
+		quizAdvance: "答题后行为",
+		quizAdvanceManual: "手动",
+		quizAdvanceAuto: "自动",
+		quizAdvanceDelay: "自动切换延迟",
+		quizAdvanceDelaySeconds: "{{seconds}}秒",
 		data: "数据",
 		export: "导出数据",
 		import: "导入数据",

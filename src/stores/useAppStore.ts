@@ -13,6 +13,7 @@ export type Language = "en" | "ja" | "zh-CN" | "zh-TW";
 export type VisualizationMode = "heatmap" | "line";
 export type DisplayMode = "hiragana" | "katakana" | "comparison";
 export type KanaCardClickAction = "showDetail" | "playAudio";
+export type QuizAdvanceMode = "manual" | "auto";
 
 interface AppState {
 	theme: ThemeMode;
@@ -20,6 +21,8 @@ interface AppState {
 	visualizationMode: VisualizationMode;
 	displayMode: DisplayMode;
 	kanaCardClickAction: KanaCardClickAction;
+	quizAdvanceMode: QuizAdvanceMode;
+	quizAutoAdvanceDelay: number;
 	quizHistory: QuizRecord[];
 	mistakeWeights: Record<string, number>;
 
@@ -28,6 +31,8 @@ interface AppState {
 	setVisualizationMode: (mode: VisualizationMode) => void;
 	setDisplayMode: (mode: DisplayMode) => void;
 	setKanaCardClickAction: (action: KanaCardClickAction) => void;
+	setQuizAdvanceMode: (mode: QuizAdvanceMode) => void;
+	setQuizAutoAdvanceDelay: (delay: number) => void;
 	addQuizRecord: (record: QuizRecord) => void;
 	addMistake: (romaji: string) => void;
 	resetData: () => void;
@@ -41,6 +46,8 @@ const initialState = {
 	visualizationMode: "heatmap" as VisualizationMode,
 	displayMode: "hiragana" as DisplayMode,
 	kanaCardClickAction: "showDetail" as KanaCardClickAction,
+	quizAdvanceMode: "manual" as QuizAdvanceMode,
+	quizAutoAdvanceDelay: 2,
 	quizHistory: [] as QuizRecord[],
 	mistakeWeights: {} as Record<string, number>,
 };
@@ -55,6 +62,8 @@ export const useAppStore = create<AppState>()(
 			setVisualizationMode: (mode) => set({ visualizationMode: mode }),
 			setDisplayMode: (mode) => set({ displayMode: mode }),
 			setKanaCardClickAction: (action) => set({ kanaCardClickAction: action }),
+			setQuizAdvanceMode: (mode) => set({ quizAdvanceMode: mode }),
+			setQuizAutoAdvanceDelay: (delay) => set({ quizAutoAdvanceDelay: delay }),
 
 			addQuizRecord: (record) =>
 				set((state) => ({
@@ -80,6 +89,8 @@ export const useAppStore = create<AppState>()(
 					visualizationMode,
 					displayMode,
 					kanaCardClickAction,
+					quizAdvanceMode,
+					quizAutoAdvanceDelay,
 				} = get();
 				return JSON.stringify(
 					{
@@ -90,6 +101,8 @@ export const useAppStore = create<AppState>()(
 						visualizationMode,
 						displayMode,
 						kanaCardClickAction,
+						quizAdvanceMode,
+						quizAutoAdvanceDelay,
 					},
 					null,
 					2,
@@ -111,6 +124,8 @@ export const useAppStore = create<AppState>()(
 								: "heatmap",
 						displayMode: data.displayMode ?? "hiragana",
 						kanaCardClickAction: data.kanaCardClickAction ?? "showDetail",
+						quizAdvanceMode: data.quizAdvanceMode ?? "manual",
+						quizAutoAdvanceDelay: data.quizAutoAdvanceDelay ?? 2,
 					});
 					return true;
 				} catch {

@@ -2,7 +2,6 @@ export default {
 	nav: {
 		chart: "五十音圖",
 		quiz: "測驗",
-		analytics: "學習分析",
 		settings: "設定",
 	},
 	chart: {
@@ -36,11 +35,9 @@ export default {
 		score: "得分：{{score}} / {{total}}",
 		perfect: "滿分！",
 		tryAgain: "再試一次",
-		backToChart: "返回五十音圖",
 		incorrectAnswers: "錯誤的題目",
 		yourAnswer: "你的回答",
 		correctAnswer: "正確答案",
-		useKeys: "使用按鍵 1-4 作答",
 	},
 	analytics: {
 		title: "學習分析",
@@ -73,6 +70,11 @@ export default {
 		clickAction: "假名卡片點擊動作",
 		clickActionDetail: "顯示詳情",
 		clickActionAudio: "播放發音",
+		quizAdvance: "答題後行為",
+		quizAdvanceManual: "手動",
+		quizAdvanceAuto: "自動",
+		quizAdvanceDelay: "自動切換延遲",
+		quizAdvanceDelaySeconds: "{{seconds}}秒",
 		data: "資料",
 		export: "匯出資料",
 		import: "匯入資料",

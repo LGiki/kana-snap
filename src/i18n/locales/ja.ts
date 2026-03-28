@@ -2,7 +2,6 @@ export default {
 	nav: {
 		chart: "五十音図",
 		quiz: "クイズ",
-		analytics: "学習分析",
 		settings: "設定",
 	},
 	chart: {
@@ -36,11 +35,9 @@ export default {
 		score: "スコア: {{score}} / {{total}}",
 		perfect: "満点！",
 		tryAgain: "もう一度",
-		backToChart: "五十音図に戻る",
 		incorrectAnswers: "間違えた問題",
 		yourAnswer: "あなたの回答",
 		correctAnswer: "正解",
-		useKeys: "キー1〜4で回答",
 	},
 	analytics: {
 		title: "学習分析",
@@ -74,6 +71,11 @@ export default {
 		clickAction: "仮名カードのタップ動作",
 		clickActionDetail: "詳細を表示",
 		clickActionAudio: "音声を再生",
+		quizAdvance: "解答後の動作",
+		quizAdvanceManual: "手動",
+		quizAdvanceAuto: "自動",
+		quizAdvanceDelay: "自動切り替え時間",
+		quizAdvanceDelaySeconds: "{{seconds}}秒",
 		data: "データ",
 		export: "データをエクスポート",
 		import: "データをインポート",

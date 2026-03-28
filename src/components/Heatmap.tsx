@@ -66,7 +66,8 @@ export function Heatmap({ records }: HeatmapProps) {
 
 			if (date.getMonth() !== lastMonth) {
 				lastMonth = date.getMonth();
-				const prevWeek = months.length > 0 ? months[months.length - 1].weekIndex : -Infinity;
+				const prevWeek =
+					months.length > 0 ? months[months.length - 1].weekIndex : -Infinity;
 				if (weekIndex - prevWeek >= 3) {
 					months.push({
 						label: date.toLocaleDateString(i18n.language, { month: "short" }),

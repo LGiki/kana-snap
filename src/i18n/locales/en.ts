@@ -2,7 +2,6 @@ export default {
 	nav: {
 		chart: "Kana Chart",
 		quiz: "Quiz",
-		analytics: "Analytics",
 		settings: "Settings",
 	},
 	chart: {
@@ -36,11 +35,9 @@ export default {
 		score: "Score: {{score}} / {{total}}",
 		perfect: "Perfect score!",
 		tryAgain: "Try Again",
-		backToChart: "Back to Chart",
 		incorrectAnswers: "Incorrect Answers",
 		yourAnswer: "Your answer",
 		correctAnswer: "Correct answer",
-		useKeys: "Use keys 1-4 to answer",
 	},
 	analytics: {
 		title: "Learning Analytics",
@@ -73,6 +70,11 @@ export default {
 		clickAction: "Kana Card Tap Action",
 		clickActionDetail: "Show Detail",
 		clickActionAudio: "Play Audio",
+		quizAdvance: "After Answering",
+		quizAdvanceManual: "Manual",
+		quizAdvanceAuto: "Auto",
+		quizAdvanceDelay: "Auto-advance Delay",
+		quizAdvanceDelaySeconds: "{{seconds}}s",
 		data: "Data",
 		export: "Export Data",
 		import: "Import Data",

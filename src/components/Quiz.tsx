@@ -1,10 +1,13 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Keyboard } from "lucide-react";
+import { BarChart3, Keyboard, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
+import { Heatmap } from "./Heatmap";
+import { LineChart } from "./LineChart";
 import { QuizResult } from "./QuizResult";
+import { StreakCounter } from "./StreakCounter";
+import { Tabs } from "./Tabs";
 
 interface Question {
 	kana: Kana;
@@ -81,10 +84,11 @@ function generateQuestions(weights: Record<string, number>): Question[] {
 
 export function Quiz() {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const mistakeWeights = useAppStore((s) => s.mistakeWeights);
 	const addQuizRecord = useAppStore((s) => s.addQuizRecord);
 	const addMistake = useAppStore((s) => s.addMistake);
+	const quizAdvanceMode = useAppStore((s) => s.quizAdvanceMode);
+	const quizAutoAdvanceDelay = useAppStore((s) => s.quizAutoAdvanceDelay);
 
 	const [started, setStarted] = useState(false);
 	const [questions, setQuestions] = useState<Question[]>([]);
@@ -170,32 +174,26 @@ export function Quiz() {
 		return () => window.removeEventListener("keydown", handler);
 	}, [started, finished, selectedIndex, handleSelect, handleNext]);
 
+	// Auto-advance after answering
+	useEffect(() => {
+		if (quizAdvanceMode !== "auto" || selectedIndex === null || finished)
+			return;
+		const timer = setTimeout(() => handleNext(), quizAutoAdvanceDelay * 1000);
+		return () => clearTimeout(timer);
+	}, [
+		quizAdvanceMode,
+		quizAutoAdvanceDelay,
+		selectedIndex,
+		finished,
+		handleNext,
+	]);
+
 	if (finished) {
-		return (
-			<QuizResult
-				answers={answers}
-				onRetry={startQuiz}
-				onBack={() => navigate({ to: "/" })}
-			/>
-		);
+		return <QuizResult answers={answers} onRetry={startQuiz} />;
 	}
 
 	if (!started) {
-		return (
-			<div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-				<h1 className="text-3xl font-bold">{t("quiz.title")}</h1>
-				<p className="text-(--color-text-secondary) text-center max-w-md">
-					{t("quiz.useKeys")}
-				</p>
-				<button
-					type="button"
-					onClick={startQuiz}
-					className="px-6 py-3 rounded-xl bg-primary-600 text-white text-lg font-medium hover:bg-primary-700 transition-colors"
-				>
-					{t("quiz.start")}
-				</button>
-			</div>
-		);
+		return <QuizStart onStart={startQuiz} />;
 	}
 
 	if (!currentQuestion) return null;
@@ -296,6 +294,63 @@ export function Quiz() {
 							? t("quiz.next")
 							: t("quiz.result")}
 					</button>
+				</div>
+			)}
+		</div>
+	);
+}
+
+function QuizStart({ onStart }: { onStart: () => void }) {
+	const { t } = useTranslation();
+	const quizHistory = useAppStore((s) => s.quizHistory);
+	const visualizationMode = useAppStore((s) => s.visualizationMode);
+	const setVisualizationMode = useAppStore((s) => s.setVisualizationMode);
+
+	const modes = [
+		{
+			value: "heatmap" as const,
+			label: t("analytics.heatmap"),
+			icon: BarChart3,
+		},
+		{
+			value: "line" as const,
+			label: t("analytics.lineChart"),
+			icon: TrendingUp,
+		},
+	];
+
+	return (
+		<div className="space-y-6">
+			<div className="flex items-center justify-between">
+				<h1 className="text-2xl font-bold">{t("quiz.title")}</h1>
+				<button
+					type="button"
+					onClick={onStart}
+					className="px-6 py-2.5 rounded-xl bg-primary-600 text-white text-base font-medium hover:bg-primary-700 transition-colors"
+				>
+					{t("quiz.start")}
+				</button>
+			</div>
+
+			{quizHistory.length > 0 ? (
+				<>
+					<StreakCounter records={quizHistory} />
+
+					<Tabs
+						tabs={modes}
+						value={visualizationMode}
+						onChange={setVisualizationMode}
+					/>
+
+					{visualizationMode === "heatmap" && <Heatmap records={quizHistory} />}
+					{visualizationMode === "line" && <LineChart records={quizHistory} />}
+				</>
+			) : (
+				<div className="flex flex-col items-center justify-center py-16 gap-4">
+					<BarChart3 size={48} className="text-(--color-text-muted)" />
+					<p className="text-(--color-text-secondary) text-center max-w-md">
+						{t("analytics.noData")}
+					</p>
 				</div>
 			)}
 		</div>

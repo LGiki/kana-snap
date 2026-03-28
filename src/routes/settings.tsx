@@ -3,6 +3,8 @@ import {
 	Download,
 	Info,
 	Moon,
+	MousePointerClick,
+	Play,
 	Sun,
 	SunMoon,
 	Trash2,
@@ -15,6 +17,7 @@ import { ConfirmDialog } from "#/components/ConfirmDialog";
 import {
 	type KanaCardClickAction,
 	type Language,
+	type QuizAdvanceMode,
 	type ThemeMode,
 	useAppStore,
 } from "#/stores/useAppStore";
@@ -36,6 +39,10 @@ function SettingsPage() {
 	const setLanguage = useAppStore((s) => s.setLanguage);
 	const kanaCardClickAction = useAppStore((s) => s.kanaCardClickAction);
 	const setKanaCardClickAction = useAppStore((s) => s.setKanaCardClickAction);
+	const quizAdvanceMode = useAppStore((s) => s.quizAdvanceMode);
+	const setQuizAdvanceMode = useAppStore((s) => s.setQuizAdvanceMode);
+	const quizAutoAdvanceDelay = useAppStore((s) => s.quizAutoAdvanceDelay);
+	const setQuizAutoAdvanceDelay = useAppStore((s) => s.setQuizAutoAdvanceDelay);
 	const exportData = useAppStore((s) => s.exportData);
 	const importData = useAppStore((s) => s.importData);
 	const resetData = useAppStore((s) => s.resetData);
@@ -79,6 +86,25 @@ function SettingsPage() {
 			icon: Volume2,
 		},
 	];
+
+	const quizAdvanceOptions: {
+		mode: QuizAdvanceMode;
+		label: string;
+		icon: typeof Info;
+	}[] = [
+		{
+			mode: "manual",
+			label: t("settings.quizAdvanceManual"),
+			icon: MousePointerClick,
+		},
+		{
+			mode: "auto",
+			label: t("settings.quizAdvanceAuto"),
+			icon: Play,
+		},
+	];
+
+	const delayOptions = [1, 1.5, 2, 3];
 
 	const themeOptions: { mode: ThemeMode; label: string; icon: typeof Sun }[] = [
 		{ mode: "light", label: t("settings.themeLight"), icon: Sun },
@@ -247,6 +273,60 @@ function SettingsPage() {
 						</button>
 					))}
 				</div>
+			</section>
+
+			{/* Quiz Advance Mode */}
+			<section className="space-y-3">
+				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.quizAdvance")}
+				</h2>
+				<div className="grid grid-cols-2 gap-2">
+					{quizAdvanceOptions.map(({ mode, label, icon: Icon }) => (
+						<button
+							key={mode}
+							type="button"
+							onClick={() => setQuizAdvanceMode(mode)}
+							className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+								quizAdvanceMode === mode
+									? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+									: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)"
+							}`}
+						>
+							<Icon
+								size={24}
+								className={
+									quizAdvanceMode === mode
+										? "text-primary-600 dark:text-primary-400"
+										: "text-(--color-text-secondary)"
+								}
+							/>
+							<span className="text-sm font-medium">{label}</span>
+						</button>
+					))}
+				</div>
+				{quizAdvanceMode === "auto" && (
+					<div className="space-y-2">
+						<h3 className="text-sm text-(--color-text-secondary)">
+							{t("settings.quizAdvanceDelay")}
+						</h3>
+						<div className="grid grid-cols-4 gap-2">
+							{delayOptions.map((seconds) => (
+								<button
+									key={seconds}
+									type="button"
+									onClick={() => setQuizAutoAdvanceDelay(seconds)}
+									className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
+										quizAutoAdvanceDelay === seconds
+											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
+											: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
+									}`}
+								>
+									{t("settings.quizAdvanceDelaySeconds", { seconds })}
+								</button>
+							))}
+						</div>
+					</div>
+				)}
 			</section>
 
 			{/* Data */}
