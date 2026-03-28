@@ -104,7 +104,11 @@ export const useAppStore = create<AppState>()(
 						mistakeWeights: data.mistakeWeights ?? {},
 						theme: data.theme ?? "auto",
 						language: data.language ?? "en",
-						visualizationMode: data.visualizationMode === "heatmap" || data.visualizationMode === "line" ? data.visualizationMode : "heatmap",
+						visualizationMode:
+							data.visualizationMode === "heatmap" ||
+							data.visualizationMode === "line"
+								? data.visualizationMode
+								: "heatmap",
 						displayMode: data.displayMode ?? "hiragana",
 						kanaCardClickAction: data.kanaCardClickAction ?? "showDetail",
 					});
@@ -118,7 +122,10 @@ export const useAppStore = create<AppState>()(
 			name: "kana-snap-storage",
 			merge: (persisted, current) => {
 				const state = { ...current, ...(persisted as Partial<AppState>) };
-				if (state.visualizationMode !== "heatmap" && state.visualizationMode !== "line") {
+				if (
+					state.visualizationMode !== "heatmap" &&
+					state.visualizationMode !== "line"
+				) {
 					state.visualizationMode = "heatmap";
 				}
 				return state;

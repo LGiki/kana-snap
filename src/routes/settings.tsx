@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
 	Download,
 	Info,
-	Monitor,
 	Moon,
 	Sun,
+	SunMoon,
 	Trash2,
 	Upload,
 	Volume2,
@@ -83,7 +83,7 @@ function SettingsPage() {
 	const themeOptions: { mode: ThemeMode; label: string; icon: typeof Sun }[] = [
 		{ mode: "light", label: t("settings.themeLight"), icon: Sun },
 		{ mode: "dark", label: t("settings.themeDark"), icon: Moon },
-		{ mode: "auto", label: t("settings.themeAuto"), icon: Monitor },
+		{ mode: "auto", label: t("settings.themeAuto"), icon: SunMoon },
 	];
 
 	const handleExport = () => {

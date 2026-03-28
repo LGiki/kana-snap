@@ -16,15 +16,15 @@ export function KanaCard({ kana, displayMode, onClick }: KanaCardProps) {
 		>
 			{displayMode === "comparison" ? (
 				<>
-					<span className="text-xl sm:text-2xl font-light leading-tight">
+					<span className="text-xl sm:text-2xl leading-tight">
 						{kana.hiragana}
 					</span>
-					<span className="text-xl sm:text-2xl font-light leading-tight text-(--color-text-secondary)">
+					<span className="text-xl sm:text-2xl leading-tight text-(--color-text-secondary)">
 						{kana.katakana}
 					</span>
 				</>
 			) : (
-				<span className="text-2xl sm:text-3xl font-light leading-tight">
+				<span className="text-2xl sm:text-3xl leading-tight">
 					{displayMode === "hiragana" ? kana.hiragana : kana.katakana}
 				</span>
 			)}
