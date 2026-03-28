@@ -14,6 +14,9 @@ function getDaysBetween(start: Date, end: Date): number {
 	return Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 }
 
+const EMPTY_COLOR = "var(--color-surface-alt)";
+const INTENSITY_COLORS = ["#c6e48b", "#7bc96f", "#239a3b", "#196127"] as const;
+
 export function Heatmap({ records }: HeatmapProps) {
 	const { t } = useTranslation();
 	const [tooltip, setTooltip] = useState<{
@@ -74,13 +77,10 @@ export function Heatmap({ records }: HeatmapProps) {
 	}, [records]);
 
 	const getColor = (count: number): string => {
-		if (count === 0) return "var(--color-surface-alt)";
-		if (maxCount === 0) return "var(--color-surface-alt)";
+		if (count === 0 || maxCount === 0) return EMPTY_COLOR;
 		const intensity = count / maxCount;
-		if (intensity <= 0.25) return "#c6e48b";
-		if (intensity <= 0.5) return "#7bc96f";
-		if (intensity <= 0.75) return "#239a3b";
-		return "#196127";
+		const index = Math.min(Math.floor(intensity * 4), 3);
+		return INTENSITY_COLORS[index];
 	};
 
 	const cellSize = 13;
@@ -141,16 +141,11 @@ export function Heatmap({ records }: HeatmapProps) {
 			{/* Legend */}
 			<div className="flex items-center gap-2 text-xs text-(--color-text-muted)">
 				<span>{t("analytics.less")}</span>
-				{[0, 0.25, 0.5, 0.75, 1].map((intensity) => (
+				{[EMPTY_COLOR, ...INTENSITY_COLORS].map((color) => (
 					<div
-						key={intensity}
+						key={color}
 						className="w-3 h-3 rounded-sm"
-						style={{
-							backgroundColor:
-								intensity === 0
-									? "var(--color-surface-alt)"
-									: getColor(Math.ceil(maxCount * intensity) || 1),
-						}}
+						style={{ backgroundColor: color }}
 					/>
 				))}
 				<span>{t("analytics.more")}</span>
