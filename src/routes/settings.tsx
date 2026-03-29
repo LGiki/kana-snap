@@ -104,7 +104,7 @@ function SettingsPage() {
 		},
 	];
 
-	const delayOptions = [1, 1.5, 2, 3];
+	const delayOptions = [1, 2, 3, 4, 5];
 
 	const themeOptions: { mode: ThemeMode; label: string; icon: typeof Sun }[] = [
 		{ mode: "light", label: t("settings.themeLight"), icon: Sun },
@@ -187,167 +187,177 @@ function SettingsPage() {
 	};
 
 	return (
-		<div className="max-w-lg mx-auto space-y-8">
+		<div className="max-w-lg mx-auto space-y-6">
 			<h1 className="text-2xl font-bold">{t("settings.title")}</h1>
 
-			{/* Theme */}
-			<section className="space-y-3">
-				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.theme")}
+			{/* General */}
+			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.sectionGeneral")}
 				</h2>
-				<div className="grid grid-cols-3 gap-2">
-					{themeOptions.map(({ mode, label, icon: Icon }) => (
-						<button
-							key={mode}
-							type="button"
-							onClick={() => setTheme(mode)}
-							className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-								theme === mode
-									? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-									: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)"
-							}`}
-						>
-							<Icon
-								size={24}
-								className={
-									theme === mode
-										? "text-primary-600 dark:text-primary-400"
-										: "text-(--color-text-secondary)"
-								}
-							/>
-							<span className="text-sm font-medium">{label}</span>
-						</button>
-					))}
-				</div>
-			</section>
-
-			{/* Language */}
-			<section className="space-y-3">
-				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.language")}
-				</h2>
-				<div className="grid grid-cols-2 gap-2">
-					{languages.map(({ code, label }) => (
-						<button
-							key={code}
-							type="button"
-							onClick={() => setLanguage(code)}
-							className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
-								language === code
-									? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
-									: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
-							}`}
-						>
-							{label}
-						</button>
-					))}
-				</div>
-			</section>
-
-			{/* Kana Card Click Action */}
-			<section className="space-y-3">
-				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.clickAction")}
-				</h2>
-				<div className="grid grid-cols-2 gap-2">
-					{clickActionOptions.map(({ action, label, icon: Icon }) => (
-						<button
-							key={action}
-							type="button"
-							onClick={() => setKanaCardClickAction(action)}
-							className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-								kanaCardClickAction === action
-									? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-									: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)"
-							}`}
-						>
-							<Icon
-								size={24}
-								className={
-									kanaCardClickAction === action
-										? "text-primary-600 dark:text-primary-400"
-										: "text-(--color-text-secondary)"
-								}
-							/>
-							<span className="text-sm font-medium">{label}</span>
-						</button>
-					))}
-				</div>
-			</section>
-
-			{/* Quiz Advance Mode */}
-			<section className="space-y-3">
-				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.quizAdvance")}
-				</h2>
-				<div className="grid grid-cols-2 gap-2">
-					{quizAdvanceOptions.map(({ mode, label, icon: Icon }) => (
-						<button
-							key={mode}
-							type="button"
-							onClick={() => setQuizAdvanceMode(mode)}
-							className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-								quizAdvanceMode === mode
-									? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-									: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)"
-							}`}
-						>
-							<Icon
-								size={24}
-								className={
-									quizAdvanceMode === mode
-										? "text-primary-600 dark:text-primary-400"
-										: "text-(--color-text-secondary)"
-								}
-							/>
-							<span className="text-sm font-medium">{label}</span>
-						</button>
-					))}
-				</div>
-				{quizAdvanceMode === "auto" && (
+				<div className="px-4 pb-4 space-y-4">
+					{/* Theme */}
 					<div className="space-y-2">
-						<h3 className="text-sm text-(--color-text-secondary)">
-							{t("settings.quizAdvanceDelay")}
-						</h3>
-						<div className="grid grid-cols-4 gap-2">
-							{delayOptions.map((seconds) => (
+						<h3 className="text-sm font-medium">{t("settings.theme")}</h3>
+						<div className="grid grid-cols-3 gap-2">
+							{themeOptions.map(({ mode, label, icon: Icon }) => (
 								<button
-									key={seconds}
+									key={mode}
 									type="button"
-									onClick={() => setQuizAutoAdvanceDelay(seconds)}
-									className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
-										quizAutoAdvanceDelay === seconds
-											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
-											: "border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
+									onClick={() => setTheme(mode)}
+									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+										theme === mode
+											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+											: "border-(--color-border) hover:bg-(--color-surface-hover)"
 									}`}
 								>
-									{t("settings.quizAdvanceDelaySeconds", { seconds })}
+									<Icon
+										size={24}
+										className={
+											theme === mode
+												? "text-primary-600 dark:text-primary-400"
+												: "text-(--color-text-secondary)"
+										}
+									/>
+									<span className="text-sm font-medium">{label}</span>
 								</button>
 							))}
 						</div>
 					</div>
-				)}
+					{/* Language */}
+					<div className="space-y-2">
+						<h3 className="text-sm font-medium">{t("settings.language")}</h3>
+						<div className="grid grid-cols-2 gap-2">
+							{languages.map(({ code, label }) => (
+								<button
+									key={code}
+									type="button"
+									onClick={() => setLanguage(code)}
+									className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
+										language === code
+											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
+											: "border-(--color-border) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
+									}`}
+								>
+									{label}
+								</button>
+							))}
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Kana Chart */}
+			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.sectionChart")}
+				</h2>
+				<div className="px-4 pb-4 space-y-2">
+					<h3 className="text-sm font-medium">{t("settings.clickAction")}</h3>
+					<div className="grid grid-cols-2 gap-2">
+						{clickActionOptions.map(({ action, label, icon: Icon }) => (
+							<button
+								key={action}
+								type="button"
+								onClick={() => setKanaCardClickAction(action)}
+								className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+									kanaCardClickAction === action
+										? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+										: "border-(--color-border) hover:bg-(--color-surface-hover)"
+								}`}
+							>
+								<Icon
+									size={24}
+									className={
+										kanaCardClickAction === action
+											? "text-primary-600 dark:text-primary-400"
+											: "text-(--color-text-secondary)"
+									}
+								/>
+								<span className="text-sm font-medium">{label}</span>
+							</button>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* Quiz */}
+			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.sectionQuiz")}
+				</h2>
+				<div className="px-4 pb-4 space-y-4">
+					<div className="space-y-2">
+						<h3 className="text-sm font-medium">{t("settings.quizAdvance")}</h3>
+						<div className="grid grid-cols-2 gap-2">
+							{quizAdvanceOptions.map(({ mode, label, icon: Icon }) => (
+								<button
+									key={mode}
+									type="button"
+									onClick={() => setQuizAdvanceMode(mode)}
+									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+										quizAdvanceMode === mode
+											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+											: "border-(--color-border) hover:bg-(--color-surface-hover)"
+									}`}
+								>
+									<Icon
+										size={24}
+										className={
+											quizAdvanceMode === mode
+												? "text-primary-600 dark:text-primary-400"
+												: "text-(--color-text-secondary)"
+										}
+									/>
+									<span className="text-sm font-medium">{label}</span>
+								</button>
+							))}
+						</div>
+					</div>
+					{quizAdvanceMode === "auto" && (
+						<div className="space-y-2">
+							<h3 className="text-sm text-(--color-text-secondary)">
+								{t("settings.quizAdvanceDelay")}
+							</h3>
+							<div className="grid grid-cols-5 gap-2">
+								{delayOptions.map((seconds) => (
+									<button
+										key={seconds}
+										type="button"
+										onClick={() => setQuizAutoAdvanceDelay(seconds)}
+										className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
+											quizAutoAdvanceDelay === seconds
+												? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
+												: "border-(--color-border) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
+										}`}
+									>
+										{t("settings.quizAdvanceDelaySeconds", { seconds })}
+									</button>
+								))}
+							</div>
+						</div>
+					)}
+				</div>
 			</section>
 
 			{/* Data */}
-			<section className="space-y-3">
-				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.data")}
+			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.sectionData")}
 				</h2>
-				<div className="space-y-2">
+				<div className="px-4 pb-4 space-y-2">
 					<button
 						type="button"
 						onClick={handleExport}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover) transition-colors text-left"
+						className="w-full flex items-center gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
 					>
 						<Download size={20} className="text-(--color-text-secondary)" />
 						<span className="font-medium">{t("settings.export")}</span>
 					</button>
-
 					<button
 						type="button"
 						onClick={handleImport}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover) transition-colors text-left"
+						className="w-full flex items-center gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
 					>
 						<Upload size={20} className="text-(--color-text-secondary)" />
 						<span className="font-medium">{t("settings.import")}</span>
@@ -359,23 +369,23 @@ function SettingsPage() {
 						className="hidden"
 						onChange={handleFileChange}
 					/>
-
 					<button
 						type="button"
 						onClick={handleReset}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900 bg-(--color-surface) hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left text-red-600 dark:text-red-400"
+						className="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left text-red-600 dark:text-red-400"
 					>
 						<Trash2 size={20} />
 						<span className="font-medium">{t("settings.reset")}</span>
 					</button>
 				</div>
 			</section>
-			{/* Version */}
-			<section className="space-y-3">
-				<h2 className="text-sm font-medium text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.version")}
+
+			{/* About */}
+			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.sectionAbout")}
 				</h2>
-				<div className="rounded-xl border border-(--color-border) bg-(--color-surface) p-4 space-y-2 text-sm">
+				<div className="px-4 pb-4 space-y-2 text-sm">
 					<div className="flex justify-between">
 						<span className="text-(--color-text-secondary)">
 							{t("settings.version")}
@@ -398,6 +408,7 @@ function SettingsPage() {
 					</div>
 				</div>
 			</section>
+
 			<ConfirmDialog
 				open={dialog.open}
 				title={dialog.title}

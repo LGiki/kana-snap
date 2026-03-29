@@ -62,6 +62,11 @@ export default {
 	},
 	settings: {
 		title: "Settings",
+		sectionGeneral: "General",
+		sectionChart: "Kana Chart",
+		sectionQuiz: "Quiz",
+		sectionData: "Data",
+		sectionAbout: "About",
 		theme: "Theme",
 		themeLight: "Light",
 		themeDark: "Dark",

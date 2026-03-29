@@ -10,6 +10,19 @@ export interface QuizRecord {
 
 export type ThemeMode = "light" | "dark" | "auto";
 export type Language = "en" | "ja" | "zh-CN" | "zh-TW";
+
+const supportedLanguages: Language[] = ["en", "ja", "zh-CN", "zh-TW"];
+
+function detectLanguage(): Language {
+	for (const lang of navigator.languages ?? [navigator.language]) {
+		if (supportedLanguages.includes(lang as Language)) return lang as Language;
+		const match = supportedLanguages.find(
+			(s) => s === lang.split("-")[0] || s.startsWith(`${lang.split("-")[0]}-`),
+		);
+		if (match) return match;
+	}
+	return "en";
+}
 export type VisualizationMode = "heatmap" | "line";
 export type DisplayMode = "hiragana" | "katakana" | "comparison";
 export type KanaCardClickAction = "showDetail" | "playAudio";
@@ -42,11 +55,11 @@ interface AppState {
 
 const initialState = {
 	theme: "auto" as ThemeMode,
-	language: "en" as Language,
+	language: detectLanguage(),
 	visualizationMode: "heatmap" as VisualizationMode,
 	displayMode: "hiragana" as DisplayMode,
 	kanaCardClickAction: "showDetail" as KanaCardClickAction,
-	quizAdvanceMode: "manual" as QuizAdvanceMode,
+	quizAdvanceMode: "auto" as QuizAdvanceMode,
 	quizAutoAdvanceDelay: 2,
 	quizHistory: [] as QuizRecord[],
 	mistakeWeights: {} as Record<string, number>,
@@ -116,7 +129,7 @@ export const useAppStore = create<AppState>()(
 						quizHistory: data.quizHistory ?? [],
 						mistakeWeights: data.mistakeWeights ?? {},
 						theme: data.theme ?? "auto",
-						language: data.language ?? "en",
+						language: data.language ?? detectLanguage(),
 						visualizationMode:
 							data.visualizationMode === "heatmap" ||
 							data.visualizationMode === "line"

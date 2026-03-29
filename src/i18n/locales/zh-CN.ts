@@ -62,6 +62,11 @@ export default {
 	},
 	settings: {
 		title: "设置",
+		sectionGeneral: "通用",
+		sectionChart: "五十音图",
+		sectionQuiz: "测验",
+		sectionData: "数据",
+		sectionAbout: "关于",
 		theme: "主题",
 		themeLight: "浅色",
 		themeDark: "深色",

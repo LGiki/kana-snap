@@ -63,6 +63,11 @@ export default {
 	},
 	settings: {
 		title: "設定",
+		sectionGeneral: "一般",
+		sectionChart: "五十音図",
+		sectionQuiz: "クイズ",
+		sectionData: "データ",
+		sectionAbout: "このアプリについて",
 		theme: "テーマ",
 		themeLight: "ライト",
 		themeDark: "ダーク",

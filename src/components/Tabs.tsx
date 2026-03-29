@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
 interface Tab<T extends string> {
 	value: T;
 	label: string;
-	icon?: LucideIcon;
+	icon?: LucideIcon | ReactNode;
 }
 
 interface TabsProps<T extends string> {
@@ -30,7 +31,22 @@ export function Tabs<T extends string>({
 							: "bg-(--color-surface) text-(--color-text-secondary) hover:bg-(--color-surface-hover)"
 					}`}
 				>
-					{tab.icon && <tab.icon size={16} />}
+					{tab.icon &&
+						(typeof tab.icon === "function" ||
+						(typeof tab.icon === "object" &&
+							tab.icon !== null &&
+							"render" in tab.icon) ? (
+							(() => {
+								const Icon = tab.icon as React.ComponentType<{
+									size: number;
+								}>;
+								return <Icon size={16} />;
+							})()
+						) : (
+							<span className="inline-flex items-center justify-center size-4 text-xs leading-none">
+								{tab.icon}
+							</span>
+						))}
 					{tab.label}
 				</button>
 			))}

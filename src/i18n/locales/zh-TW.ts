@@ -62,6 +62,11 @@ export default {
 	},
 	settings: {
 		title: "設定",
+		sectionGeneral: "一般",
+		sectionChart: "五十音圖",
+		sectionQuiz: "測驗",
+		sectionData: "資料",
+		sectionAbout: "關於",
 		theme: "主題",
 		themeLight: "淺色",
 		themeDark: "深色",
