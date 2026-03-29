@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { AppIcon } from "#/components/AppIcon";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { type ColorSchemeId, colorSchemes } from "#/data/colorSchemes";
 import {
@@ -413,9 +414,10 @@ function SettingsPage() {
 
 			{/* About */}
 			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.sectionAbout")}
-				</h2>
+				<div className="px-4 pt-4 pb-3 flex flex-col items-center gap-1">
+					<AppIcon size={56} />
+					<span className="text-lg font-bold">KanaSnap</span>
+				</div>
 				<div className="px-4 pb-4 space-y-2 text-sm">
 					<div className="flex justify-between">
 						<span className="text-(--color-text-secondary)">
