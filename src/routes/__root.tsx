@@ -2,6 +2,7 @@ import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigation } from "#/components/Navigation";
+import { getColorScheme } from "#/data/colorSchemes";
 import { useAppStore } from "#/stores/useAppStore";
 
 export const Route = createRootRoute({
@@ -10,6 +11,7 @@ export const Route = createRootRoute({
 
 function RootLayout() {
 	const theme = useAppStore((s) => s.theme);
+	const colorScheme = useAppStore((s) => s.colorScheme);
 	const language = useAppStore((s) => s.language);
 	const { i18n } = useTranslation();
 
@@ -29,6 +31,15 @@ function RootLayout() {
 		}
 		apply(theme);
 	}, [theme]);
+
+	// Apply color scheme
+	useEffect(() => {
+		const scheme = getColorScheme(colorScheme);
+		const root = document.documentElement;
+		for (const [prop, value] of Object.entries(scheme.colors)) {
+			root.style.setProperty(prop, value);
+		}
+	}, [colorScheme]);
 
 	// Apply language
 	useEffect(() => {

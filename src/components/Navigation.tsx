@@ -19,13 +19,22 @@ export function Navigation() {
 						to="/"
 						className="flex items-center gap-2 text-lg font-bold text-primary-600 dark:text-primary-400"
 					>
-						<img
-							src="/icon.svg"
-							alt=""
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 512 512"
 							width={28}
 							height={28}
 							className="rounded-md"
-						/>
+						>
+							<defs>
+								<linearGradient id="nav-icon-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+									<stop offset="0%" style={{ stopColor: "var(--color-primary-500)" }} />
+									<stop offset="100%" style={{ stopColor: "var(--color-primary-600)" }} />
+								</linearGradient>
+							</defs>
+							<rect width="512" height="512" rx="96" fill="url(#nav-icon-bg)" />
+							<text x="256" y="300" fontFamily="serif" fontSize="280" fill="white" textAnchor="middle" dominantBaseline="central">あ</text>
+						</svg>
 						KanaSnap
 					</Link>
 					<div className="hidden sm:flex items-center gap-1">

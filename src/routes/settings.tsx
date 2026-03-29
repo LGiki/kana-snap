@@ -14,6 +14,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
+import { type ColorSchemeId, colorSchemes } from "#/data/colorSchemes";
 import {
 	type KanaCardClickAction,
 	type Language,
@@ -34,8 +35,10 @@ const languages: { code: Language; label: string }[] = [
 function SettingsPage() {
 	const { t } = useTranslation();
 	const theme = useAppStore((s) => s.theme);
+	const colorScheme = useAppStore((s) => s.colorScheme);
 	const language = useAppStore((s) => s.language);
 	const setTheme = useAppStore((s) => s.setTheme);
+	const setColorScheme = useAppStore((s) => s.setColorScheme);
 	const setLanguage = useAppStore((s) => s.setLanguage);
 	const kanaCardClickAction = useAppStore((s) => s.kanaCardClickAction);
 	const setKanaCardClickAction = useAppStore((s) => s.setKanaCardClickAction);
@@ -220,6 +223,34 @@ function SettingsPage() {
 										}
 									/>
 									<span className="text-sm font-medium">{label}</span>
+								</button>
+							))}
+						</div>
+					</div>
+					{/* Color Scheme */}
+					<div className="space-y-2">
+						<h3 className="text-sm font-medium">{t("settings.colorScheme")}</h3>
+						<div className="grid grid-cols-4 gap-2">
+							{colorSchemes.map((scheme) => (
+								<button
+									key={scheme.id}
+									type="button"
+									onClick={() => setColorScheme(scheme.id as ColorSchemeId)}
+									className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all ${
+										colorScheme === scheme.id
+											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+											: "border-(--color-border) hover:bg-(--color-surface-hover)"
+									}`}
+								>
+									<span
+										className="w-6 h-6 rounded-full ring-1 ring-black/10"
+										style={{
+											backgroundColor: scheme.colors["--color-primary-500"],
+										}}
+									/>
+									<span className="text-xs font-medium">
+										{t(`settings.colorScheme_${scheme.id}`)}
+									</span>
 								</button>
 							))}
 						</div>

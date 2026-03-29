@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { ColorSchemeId } from "#/data/colorSchemes";
 
 export interface QuizRecord {
 	date: string;
@@ -30,6 +31,7 @@ export type QuizAdvanceMode = "manual" | "auto";
 
 interface AppState {
 	theme: ThemeMode;
+	colorScheme: ColorSchemeId;
 	language: Language;
 	visualizationMode: VisualizationMode;
 	displayMode: DisplayMode;
@@ -40,6 +42,7 @@ interface AppState {
 	mistakeWeights: Record<string, number>;
 
 	setTheme: (theme: ThemeMode) => void;
+	setColorScheme: (scheme: ColorSchemeId) => void;
 	setLanguage: (language: Language) => void;
 	setVisualizationMode: (mode: VisualizationMode) => void;
 	setDisplayMode: (mode: DisplayMode) => void;
@@ -55,6 +58,7 @@ interface AppState {
 
 const initialState = {
 	theme: "auto" as ThemeMode,
+	colorScheme: "indigo" as ColorSchemeId,
 	language: detectLanguage(),
 	visualizationMode: "heatmap" as VisualizationMode,
 	displayMode: "hiragana" as DisplayMode,
@@ -71,6 +75,7 @@ export const useAppStore = create<AppState>()(
 			...initialState,
 
 			setTheme: (theme) => set({ theme }),
+			setColorScheme: (scheme) => set({ colorScheme: scheme }),
 			setLanguage: (language) => set({ language }),
 			setVisualizationMode: (mode) => set({ visualizationMode: mode }),
 			setDisplayMode: (mode) => set({ displayMode: mode }),
@@ -98,6 +103,7 @@ export const useAppStore = create<AppState>()(
 					quizHistory,
 					mistakeWeights,
 					theme,
+					colorScheme,
 					language,
 					visualizationMode,
 					displayMode,
@@ -110,6 +116,7 @@ export const useAppStore = create<AppState>()(
 						quizHistory,
 						mistakeWeights,
 						theme,
+						colorScheme,
 						language,
 						visualizationMode,
 						displayMode,
@@ -129,6 +136,7 @@ export const useAppStore = create<AppState>()(
 						quizHistory: data.quizHistory ?? [],
 						mistakeWeights: data.mistakeWeights ?? {},
 						theme: data.theme ?? "auto",
+						colorScheme: data.colorScheme ?? "indigo",
 						language: data.language ?? detectLanguage(),
 						visualizationMode:
 							data.visualizationMode === "heatmap" ||
