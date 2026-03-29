@@ -52,6 +52,10 @@ function weightedRandomSelect(
 	return selected;
 }
 
+function isYoon(kana: Kana): boolean {
+	return kana.hiragana.length > 1;
+}
+
 function generateQuestions(weights: Record<string, number>): Question[] {
 	const allKana = getAllKana();
 	const selected = weightedRandomSelect(allKana, QUIZ_LENGTH, weights);
@@ -60,8 +64,18 @@ function generateQuestions(weights: Record<string, number>): Question[] {
 		const type: Question["type"] =
 			Math.random() > 0.5 ? "kana-to-romaji" : "romaji-to-kana";
 
-		const others = allKana.filter((k) => k.romaji !== kana.romaji);
-		const shuffledOthers = others
+		// Pick distractors from the same category (yoon vs non-yoon)
+		// so users can't eliminate answers by structural differences
+		const questionIsYoon = isYoon(kana);
+		const sameCategory = allKana.filter(
+			(k) => k.romaji !== kana.romaji && isYoon(k) === questionIsYoon,
+		);
+		const pool =
+			sameCategory.length >= OPTIONS_COUNT - 1
+				? sameCategory
+				: allKana.filter((k) => k.romaji !== kana.romaji);
+
+		const shuffledOthers = pool
 			.sort(() => Math.random() - 0.5)
 			.slice(0, OPTIONS_COUNT - 1);
 
