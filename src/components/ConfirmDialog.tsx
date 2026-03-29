@@ -35,12 +35,12 @@ export function ConfirmDialog({
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-fade-in"
 			onClick={onCancel}
 			onKeyDown={(e) => e.key === "Escape" && onCancel()}
 		>
 			<div
-				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6"
+				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 animate-scale-in"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={() => {}}
 			>

@@ -104,10 +104,11 @@ export function StreakCounter({ records }: StreakCounterProps) {
 
 	return (
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-			{stats.map((stat) => (
+			{stats.map((stat, i) => (
 				<div
 					key={stat.label}
-					className="flex items-center gap-4 p-4 rounded-xl border border-(--color-border) bg-(--color-surface)"
+					className="flex items-center gap-4 p-4 rounded-xl border border-(--color-border) bg-(--color-surface) animate-slide-up-fade"
+					style={{ animationDelay: `${i * 0.06}s` }}
 				>
 					<div className={`p-3 rounded-full ${stat.bgColor}`}>
 						<stat.icon size={24} className={stat.color} />

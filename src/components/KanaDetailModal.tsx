@@ -32,12 +32,12 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-fade-in"
 			onClick={onClose}
 			onKeyDown={(e) => e.key === "Escape" && onClose()}
 		>
 			<div
-				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 relative"
+				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 relative animate-scale-in"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={() => {}}
 			>

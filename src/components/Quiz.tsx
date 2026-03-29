@@ -236,16 +236,19 @@ export function Quiz() {
 				{currentQuestion.options.map((option, i) => {
 					let style =
 						"border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)";
+					let animClass = "";
 					if (selectedIndex !== null) {
 						if (i === currentQuestion.correctIndex) {
 							style =
 								"border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400";
+							animClass = "animate-pulse-correct";
 						} else if (
 							i === selectedIndex &&
 							!answers[answers.length - 1]?.correct
 						) {
 							style =
 								"border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400";
+							animClass = "animate-shake";
 						}
 					}
 
@@ -255,7 +258,7 @@ export function Quiz() {
 							type="button"
 							onClick={() => handleSelect(i)}
 							disabled={selectedIndex !== null}
-							className={`relative p-4 rounded-xl border-2 text-lg font-medium transition-all ${style} ${
+							className={`relative p-4 rounded-xl border-2 text-lg font-medium transition-all ${style} ${animClass} ${
 								selectedIndex === null
 									? "cursor-pointer active:scale-95"
 									: "cursor-default"
@@ -273,7 +276,7 @@ export function Quiz() {
 
 			{/* Feedback & Next */}
 			{selectedIndex !== null && (
-				<div className="text-center space-y-4">
+				<div className="text-center space-y-4 animate-slide-up-fade">
 					<p
 						className={`text-lg font-medium ${
 							answers[answers.length - 1]?.correct
