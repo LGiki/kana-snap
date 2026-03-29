@@ -416,7 +416,7 @@ function SettingsPage() {
 			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
 				<div className="px-4 pt-4 pb-3 flex flex-col items-center gap-1">
 					<AppIcon size={56} />
-					<span className="text-lg font-bold">KanaSnap</span>
+					<span className="text-lg font-bold text-primary-600 dark:text-primary-400">KanaSnap</span>
 				</div>
 				<div className="px-4 pb-4 space-y-2 text-sm">
 					<div className="flex justify-between">

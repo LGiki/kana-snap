@@ -242,7 +242,7 @@ export function Quiz() {
 						? t("quiz.selectRomaji")
 						: t("quiz.selectKana")}
 				</p>
-				<p className="text-7xl font-light">{prompt}</p>
+				<p className="text-7xl">{prompt}</p>
 			</div>
 
 			{/* Options */}
@@ -278,7 +278,7 @@ export function Quiz() {
 									: "cursor-default"
 							}`}
 						>
-							<span className="absolute top-2 left-3 text-xs text-(--color-text-muted) flex items-center gap-1">
+							<span className="absolute top-2 left-3 text-xs text-(--color-text-muted) hidden sm:flex items-center gap-1">
 								<Keyboard size={12} />
 								{i + 1}
 							</span>

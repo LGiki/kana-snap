@@ -55,13 +55,13 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 							<p className="text-xs text-(--color-text-muted) mb-1">
 								{t("modal.hiragana")}
 							</p>
-							<p className="text-6xl font-light">{kana.hiragana}</p>
+							<p className="text-6xl">{kana.hiragana}</p>
 						</div>
 						<div>
 							<p className="text-xs text-(--color-text-muted) mb-1">
 								{t("modal.katakana")}
 							</p>
-							<p className="text-6xl font-light">{kana.katakana}</p>
+							<p className="text-6xl">{kana.katakana}</p>
 						</div>
 					</div>
 
