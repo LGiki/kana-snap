@@ -24,6 +24,42 @@ import {
 	useAppStore,
 } from "#/stores/useAppStore";
 
+function ToggleSwitch({
+	checked,
+	onChange,
+	label,
+	description,
+}: {
+	checked: boolean;
+	onChange: (value: boolean) => void;
+	label: string;
+	description: string;
+}) {
+	return (
+		<button
+			type="button"
+			onClick={() => onChange(!checked)}
+			className="w-full flex items-center justify-between gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
+		>
+			<div className="flex flex-col gap-0.5">
+				<span className="text-sm font-medium">{label}</span>
+				<span className="text-xs text-(--color-text-muted)">{description}</span>
+			</div>
+			<div
+				className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${
+					checked ? "bg-primary-500" : "bg-(--color-border)"
+				}`}
+			>
+				<div
+					className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+						checked ? "translate-x-5.5" : "translate-x-0.5"
+					}`}
+				/>
+			</div>
+		</button>
+	);
+}
+
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
 const languages: { code: Language; label: string }[] = [
@@ -47,6 +83,10 @@ function SettingsPage() {
 	const setQuizAdvanceMode = useAppStore((s) => s.setQuizAdvanceMode);
 	const quizAutoAdvanceDelay = useAppStore((s) => s.quizAutoAdvanceDelay);
 	const setQuizAutoAdvanceDelay = useAppStore((s) => s.setQuizAutoAdvanceDelay);
+	const feedStreakEnabled = useAppStore((s) => s.feedStreakEnabled);
+	const setFeedStreakEnabled = useAppStore((s) => s.setFeedStreakEnabled);
+	const feedPopQuizEnabled = useAppStore((s) => s.feedPopQuizEnabled);
+	const setFeedPopQuizEnabled = useAppStore((s) => s.setFeedPopQuizEnabled);
 	const exportData = useAppStore((s) => s.exportData);
 	const importData = useAppStore((s) => s.importData);
 	const resetData = useAppStore((s) => s.resetData);
@@ -313,6 +353,27 @@ function SettingsPage() {
 				</div>
 			</section>
 
+			{/* Feed */}
+			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+					{t("settings.sectionFeed")}
+				</h2>
+				<div className="px-4 pb-4 space-y-2">
+					<ToggleSwitch
+						checked={feedStreakEnabled}
+						onChange={setFeedStreakEnabled}
+						label={t("settings.feedStreak")}
+						description={t("settings.feedStreakDesc")}
+					/>
+					<ToggleSwitch
+						checked={feedPopQuizEnabled}
+						onChange={setFeedPopQuizEnabled}
+						label={t("settings.feedPopQuiz")}
+						description={t("settings.feedPopQuizDesc")}
+					/>
+				</div>
+			</section>
+
 			{/* Quiz */}
 			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
 				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
@@ -416,7 +477,9 @@ function SettingsPage() {
 			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
 				<div className="px-4 pt-4 pb-3 flex flex-col items-center gap-1">
 					<AppIcon size={56} />
-					<span className="text-lg font-bold text-primary-600 dark:text-primary-400">KanaSnap</span>
+					<span className="text-lg font-bold text-primary-600 dark:text-primary-400">
+						KanaSnap
+					</span>
 				</div>
 				<div className="px-4 pb-4 space-y-2 text-sm">
 					<div className="flex justify-between">
