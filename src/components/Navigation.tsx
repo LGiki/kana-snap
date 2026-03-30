@@ -47,7 +47,7 @@ export function Navigation() {
 						<Link
 							key={item.to}
 							to={item.to}
-							className="flex flex-col items-center gap-0.5 px-3 py-1 text-xs text-(--color-text-secondary) [&.active]:text-primary-600 dark:[&.active]:text-primary-400 transition-colors"
+							className="flex-1 flex flex-col items-center gap-0.5 px-3 py-1 text-xs text-(--color-text-secondary) [&.active]:text-primary-600 dark:[&.active]:text-primary-400 transition-colors"
 						>
 							<item.icon size={20} />
 							{t(item.labelKey)}

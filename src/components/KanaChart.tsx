@@ -76,6 +76,7 @@ export function KanaChart() {
 
 	return (
 		<div className="space-y-6">
+			<h1 className="text-2xl font-bold">{t("chart.title")}</h1>
 			{/* Controls */}
 			<div className="flex flex-wrap items-center gap-3">
 				<Tabs
