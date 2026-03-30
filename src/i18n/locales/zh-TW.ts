@@ -1,6 +1,7 @@
 export default {
 	nav: {
 		chart: "五十音圖",
+		feed: "資訊流",
 		quiz: "測驗",
 		settings: "設定",
 	},
@@ -55,6 +56,15 @@ export default {
 		totalScore: "總分",
 		averageScore: "平均分",
 	},
+	feed: {
+		tapToHear: "點擊收聽發音",
+		streakMilestone: "已學習 {{count}} 個假名！繼續加油！",
+		popQuizTitle: "隨堂測驗！",
+		popQuizSelectRomaji: "這個假名的羅馬字是什麼？",
+		popQuizCorrect: "正確！",
+		popQuizWrong: "正確答案是 {{answer}}",
+		popQuizContinue: "繼續",
+	},
 	common: {
 		confirm: "確認",
 		cancel: "取消",
@@ -89,6 +99,11 @@ export default {
 		quizAdvanceAuto: "自動",
 		quizAdvanceDelay: "自動切換延遲",
 		quizAdvanceDelaySeconds: "{{seconds}}秒",
+		sectionFeed: "資訊流",
+		feedStreak: "連續學習慶祝",
+		feedStreakDesc: "每學習 10 個假名彈出慶祝動畫",
+		feedPopQuiz: "隨堂測驗",
+		feedPopQuizDesc: "每 20 個假名彈出一次小測驗",
 		data: "資料",
 		export: "匯出資料",
 		import: "匯入資料",

@@ -199,6 +199,46 @@ body {
 	animation-delay: 0.2s;
 }
 
+/* Hide scrollbar for feed */
+.feed-scrollbar-none {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+.feed-scrollbar-none::-webkit-scrollbar {
+	display: none;
+}
+
+/* Toast animation */
+@keyframes toast-in {
+	from {
+		opacity: 0;
+		transform: translateX(-50%) translateY(-20px) scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0) scale(1);
+	}
+}
+
+@keyframes toast-out {
+	from {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(-50%) translateY(-20px) scale(0.9);
+	}
+}
+
+.animate-toast-in {
+	animation: toast-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-toast-out {
+	animation: toast-out 0.3s ease-in both;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
 	.animate-shake,
@@ -208,6 +248,8 @@ body {
 	.animate-scale-in,
 	.animate-score-pop,
 	.animate-trophy-bounce,
+	.animate-toast-in,
+	.animate-toast-out,
 	.confetti-piece {
 		animation: none !important;
 		opacity: 1 !important;

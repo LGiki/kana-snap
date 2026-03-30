@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, BrainCircuit, Settings } from "lucide-react";
+import { BookOpen, BrainCircuit, Layers, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
 
 const navItems = [
 	{ to: "/", labelKey: "nav.chart", icon: BookOpen },
+	{ to: "/feed", labelKey: "nav.feed", icon: Layers },
 	{ to: "/quiz", labelKey: "nav.quiz", icon: BrainCircuit },
 	{ to: "/settings", labelKey: "nav.settings", icon: Settings },
 ] as const;

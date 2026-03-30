@@ -1,6 +1,7 @@
 export default {
 	nav: {
 		chart: "Kana Chart",
+		feed: "Feed",
 		quiz: "Quiz",
 		settings: "Settings",
 	},
@@ -55,6 +56,15 @@ export default {
 		totalScore: "Total Score",
 		averageScore: "Average Score",
 	},
+	feed: {
+		tapToHear: "Tap to hear",
+		streakMilestone: "{{count}} kana learned! Keep going!",
+		popQuizTitle: "Pop Quiz!",
+		popQuizSelectRomaji: "What is the romaji for this kana?",
+		popQuizCorrect: "Correct!",
+		popQuizWrong: "The answer is {{answer}}",
+		popQuizContinue: "Continue",
+	},
 	common: {
 		confirm: "Confirm",
 		cancel: "Cancel",
@@ -89,6 +99,11 @@ export default {
 		quizAdvanceAuto: "Auto",
 		quizAdvanceDelay: "Auto-advance Delay",
 		quizAdvanceDelaySeconds: "{{seconds}}s",
+		sectionFeed: "Feed",
+		feedStreak: "Streak Celebration",
+		feedStreakDesc: "Confetti & encouragement every 10 kana",
+		feedPopQuiz: "Pop Quizzes",
+		feedPopQuizDesc: "Quick quiz every 20 kana",
 		data: "Data",
 		export: "Export Data",
 		import: "Import Data",

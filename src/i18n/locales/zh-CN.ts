@@ -1,6 +1,7 @@
 export default {
 	nav: {
 		chart: "五十音图",
+		feed: "信息流",
 		quiz: "测验",
 		settings: "设置",
 	},
@@ -55,6 +56,15 @@ export default {
 		totalScore: "总分",
 		averageScore: "平均分",
 	},
+	feed: {
+		tapToHear: "点击收听发音",
+		streakMilestone: "已学习 {{count}} 个假名！继续加油！",
+		popQuizTitle: "随堂测验！",
+		popQuizSelectRomaji: "这个假名的罗马字是什么？",
+		popQuizCorrect: "正确！",
+		popQuizWrong: "正确答案是 {{answer}}",
+		popQuizContinue: "继续",
+	},
 	common: {
 		confirm: "确认",
 		cancel: "取消",
@@ -89,6 +99,11 @@ export default {
 		quizAdvanceAuto: "自动",
 		quizAdvanceDelay: "自动切换延迟",
 		quizAdvanceDelaySeconds: "{{seconds}}秒",
+		sectionFeed: "信息流",
+		feedStreak: "连续学习庆祝",
+		feedStreakDesc: "每学习 10 个假名弹出庆祝动画",
+		feedPopQuiz: "随堂测验",
+		feedPopQuizDesc: "每 20 个假名弹出一次小测验",
 		data: "数据",
 		export: "导出数据",
 		import: "导入数据",
