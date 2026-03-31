@@ -5,7 +5,7 @@ import { AppIcon } from "#/components/AppIcon";
 
 const navItems = [
 	{ to: "/", labelKey: "nav.chart", icon: BookOpen },
-	{ to: "/feed", labelKey: "nav.feed", icon: Layers },
+	{ to: "/learn", labelKey: "nav.learn", icon: Layers },
 	{ to: "/quiz", labelKey: "nav.quiz", icon: BrainCircuit },
 	{ to: "/settings", labelKey: "nav.settings", icon: Settings },
 ] as const;

@@ -1,7 +1,7 @@
 export default {
 	nav: {
 		chart: "五十音図",
-		feed: "フィード",
+		learn: "学習",
 		quiz: "クイズ",
 		settings: "設定",
 	},
@@ -57,7 +57,7 @@ export default {
 		totalScore: "合計スコア",
 		averageScore: "平均スコア",
 	},
-	feed: {
+	learn: {
 		streakMilestone: "{{count}}文字達成！その調子！",
 		popQuizTitle: "ポップクイズ！",
 		popQuizSelectRomaji: "この仮名のローマ字は？",
@@ -100,11 +100,11 @@ export default {
 		quizAdvanceAuto: "自動",
 		quizAdvanceDelay: "自動切り替え時間",
 		quizAdvanceDelaySeconds: "{{seconds}}秒",
-		sectionFeed: "フィード",
-		feedStreak: "連続達成のお祝い",
-		feedStreakDesc: "10文字ごとに紙吹雪で祝福",
-		feedPopQuiz: "ポップクイズ",
-		feedPopQuizDesc: "20文字ごとにクイズ出題",
+		sectionLearn: "学習",
+		learnStreak: "連続達成のお祝い",
+		learnStreakDesc: "10文字ごとに紙吹雪で祝福",
+		learnPopQuiz: "ポップクイズ",
+		learnPopQuizDesc: "20文字ごとにクイズ出題",
 		data: "データ",
 		export: "データをエクスポート",
 		import: "データをインポート",

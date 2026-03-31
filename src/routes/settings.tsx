@@ -83,10 +83,10 @@ function SettingsPage() {
 	const setQuizAdvanceMode = useAppStore((s) => s.setQuizAdvanceMode);
 	const quizAutoAdvanceDelay = useAppStore((s) => s.quizAutoAdvanceDelay);
 	const setQuizAutoAdvanceDelay = useAppStore((s) => s.setQuizAutoAdvanceDelay);
-	const feedStreakEnabled = useAppStore((s) => s.feedStreakEnabled);
-	const setFeedStreakEnabled = useAppStore((s) => s.setFeedStreakEnabled);
-	const feedPopQuizEnabled = useAppStore((s) => s.feedPopQuizEnabled);
-	const setFeedPopQuizEnabled = useAppStore((s) => s.setFeedPopQuizEnabled);
+	const learnStreakEnabled = useAppStore((s) => s.learnStreakEnabled);
+	const setLearnStreakEnabled = useAppStore((s) => s.setLearnStreakEnabled);
+	const learnPopQuizEnabled = useAppStore((s) => s.learnPopQuizEnabled);
+	const setLearnPopQuizEnabled = useAppStore((s) => s.setLearnPopQuizEnabled);
 	const exportData = useAppStore((s) => s.exportData);
 	const importData = useAppStore((s) => s.importData);
 	const resetData = useAppStore((s) => s.resetData);
@@ -353,23 +353,23 @@ function SettingsPage() {
 				</div>
 			</section>
 
-			{/* Feed */}
+			{/* Learn */}
 			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
 				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
-					{t("settings.sectionFeed")}
+					{t("settings.sectionLearn")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
 					<ToggleSwitch
-						checked={feedStreakEnabled}
-						onChange={setFeedStreakEnabled}
-						label={t("settings.feedStreak")}
-						description={t("settings.feedStreakDesc")}
+						checked={learnStreakEnabled}
+						onChange={setLearnStreakEnabled}
+						label={t("settings.learnStreak")}
+						description={t("settings.learnStreakDesc")}
 					/>
 					<ToggleSwitch
-						checked={feedPopQuizEnabled}
-						onChange={setFeedPopQuizEnabled}
-						label={t("settings.feedPopQuiz")}
-						description={t("settings.feedPopQuizDesc")}
+						checked={learnPopQuizEnabled}
+						onChange={setLearnPopQuizEnabled}
+						label={t("settings.learnPopQuiz")}
+						description={t("settings.learnPopQuizDesc")}
 					/>
 				</div>
 			</section>

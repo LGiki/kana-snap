@@ -199,12 +199,12 @@ body {
 	animation-delay: 0.2s;
 }
 
-/* Hide scrollbar for feed */
-.feed-scrollbar-none {
+/* Hide scrollbar for learn */
+.learn-scrollbar-none {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 }
-.feed-scrollbar-none::-webkit-scrollbar {
+.learn-scrollbar-none::-webkit-scrollbar {
 	display: none;
 }
 

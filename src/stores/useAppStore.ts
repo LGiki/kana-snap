@@ -38,9 +38,9 @@ interface AppState {
 	kanaCardClickAction: KanaCardClickAction;
 	quizAdvanceMode: QuizAdvanceMode;
 	quizAutoAdvanceDelay: number;
-	feedStreakEnabled: boolean;
-	feedPopQuizEnabled: boolean;
-	feedAutoPlayAudio: boolean;
+	learnStreakEnabled: boolean;
+	learnPopQuizEnabled: boolean;
+	learnAutoPlayAudio: boolean;
 	quizHistory: QuizRecord[];
 	mistakeWeights: Record<string, number>;
 
@@ -52,9 +52,9 @@ interface AppState {
 	setKanaCardClickAction: (action: KanaCardClickAction) => void;
 	setQuizAdvanceMode: (mode: QuizAdvanceMode) => void;
 	setQuizAutoAdvanceDelay: (delay: number) => void;
-	setFeedStreakEnabled: (enabled: boolean) => void;
-	setFeedPopQuizEnabled: (enabled: boolean) => void;
-	setFeedAutoPlayAudio: (enabled: boolean) => void;
+	setLearnStreakEnabled: (enabled: boolean) => void;
+	setLearnPopQuizEnabled: (enabled: boolean) => void;
+	setLearnAutoPlayAudio: (enabled: boolean) => void;
 	addQuizRecord: (record: QuizRecord) => void;
 	addMistake: (romaji: string) => void;
 	resetData: () => void;
@@ -71,9 +71,9 @@ const initialState = {
 	kanaCardClickAction: "showDetail" as KanaCardClickAction,
 	quizAdvanceMode: "auto" as QuizAdvanceMode,
 	quizAutoAdvanceDelay: 2,
-	feedStreakEnabled: true,
-	feedPopQuizEnabled: true,
-	feedAutoPlayAudio: false,
+	learnStreakEnabled: true,
+	learnPopQuizEnabled: true,
+	learnAutoPlayAudio: false,
 	quizHistory: [] as QuizRecord[],
 	mistakeWeights: {} as Record<string, number>,
 };
@@ -91,9 +91,9 @@ export const useAppStore = create<AppState>()(
 			setKanaCardClickAction: (action) => set({ kanaCardClickAction: action }),
 			setQuizAdvanceMode: (mode) => set({ quizAdvanceMode: mode }),
 			setQuizAutoAdvanceDelay: (delay) => set({ quizAutoAdvanceDelay: delay }),
-			setFeedStreakEnabled: (enabled) => set({ feedStreakEnabled: enabled }),
-			setFeedPopQuizEnabled: (enabled) => set({ feedPopQuizEnabled: enabled }),
-			setFeedAutoPlayAudio: (enabled) => set({ feedAutoPlayAudio: enabled }),
+			setLearnStreakEnabled: (enabled) => set({ learnStreakEnabled: enabled }),
+			setLearnPopQuizEnabled: (enabled) => set({ learnPopQuizEnabled: enabled }),
+			setLearnAutoPlayAudio: (enabled) => set({ learnAutoPlayAudio: enabled }),
 
 			addQuizRecord: (record) =>
 				set((state) => ({
@@ -122,9 +122,9 @@ export const useAppStore = create<AppState>()(
 					kanaCardClickAction,
 					quizAdvanceMode,
 					quizAutoAdvanceDelay,
-					feedStreakEnabled,
-					feedPopQuizEnabled,
-					feedAutoPlayAudio,
+					learnStreakEnabled,
+					learnPopQuizEnabled,
+					learnAutoPlayAudio,
 				} = get();
 				return JSON.stringify(
 					{
@@ -138,9 +138,9 @@ export const useAppStore = create<AppState>()(
 						kanaCardClickAction,
 						quizAdvanceMode,
 						quizAutoAdvanceDelay,
-						feedStreakEnabled,
-						feedPopQuizEnabled,
-						feedAutoPlayAudio,
+						learnStreakEnabled,
+						learnPopQuizEnabled,
+						learnAutoPlayAudio,
 					},
 					null,
 					2,
@@ -165,9 +165,9 @@ export const useAppStore = create<AppState>()(
 						kanaCardClickAction: data.kanaCardClickAction ?? "showDetail",
 						quizAdvanceMode: data.quizAdvanceMode ?? "manual",
 						quizAutoAdvanceDelay: data.quizAutoAdvanceDelay ?? 2,
-						feedStreakEnabled: data.feedStreakEnabled ?? true,
-						feedPopQuizEnabled: data.feedPopQuizEnabled ?? true,
-						feedAutoPlayAudio: data.feedAutoPlayAudio ?? false,
+						learnStreakEnabled: data.learnStreakEnabled ?? true,
+						learnPopQuizEnabled: data.learnPopQuizEnabled ?? true,
+						learnAutoPlayAudio: data.learnAutoPlayAudio ?? false,
 					});
 					return true;
 				} catch {

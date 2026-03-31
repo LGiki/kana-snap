@@ -103,7 +103,7 @@ function generatePopQuiz(allKana: Kana[], currentKana: Kana): PopQuizQuestion {
 
 const BUFFER = 4;
 
-const FeedSlide = memo(function FeedSlide({ kana }: { kana: Kana }) {
+const LearnSlide = memo(function LearnSlide({ kana }: { kana: Kana }) {
 	const { t } = useTranslation();
 
 	return (
@@ -153,10 +153,10 @@ function PopQuizOverlay({
 				<div className="text-center space-y-2">
 					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-sm font-semibold">
 						<Zap size={16} />
-						{t("feed.popQuizTitle")}
+						{t("learn.popQuizTitle")}
 					</div>
 					<p className="text-sm text-(--color-text-secondary)">
-						{t("feed.popQuizSelectRomaji")}
+						{t("learn.popQuizSelectRomaji")}
 					</p>
 				</div>
 
@@ -212,8 +212,8 @@ function PopQuizOverlay({
 							}`}
 						>
 							{isCorrect
-								? t("feed.popQuizCorrect")
-								: t("feed.popQuizWrong", {
+								? t("learn.popQuizCorrect")
+								: t("learn.popQuizWrong", {
 										answer: question.kana.romaji,
 									})}
 						</p>
@@ -222,7 +222,7 @@ function PopQuizOverlay({
 							onClick={onDone}
 							className="px-6 py-2.5 rounded-xl bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
 						>
-							{t("feed.popQuizContinue")}
+							{t("learn.popQuizContinue")}
 						</button>
 					</div>
 				)}
@@ -251,7 +251,7 @@ function StreakToast({
 	);
 }
 
-export function KanaFeed() {
+export function KanaLearn() {
 	const { t } = useTranslation();
 
 	// Fixed shuffled pool — items are looked up with modulo, never appended.
@@ -272,10 +272,10 @@ export function KanaFeed() {
 	windowStartRef.current = windowStart;
 
 	// Game mechanics settings
-	const feedStreakEnabled = useAppStore((s) => s.feedStreakEnabled);
-	const feedPopQuizEnabled = useAppStore((s) => s.feedPopQuizEnabled);
-	const feedAutoPlayAudio = useAppStore((s) => s.feedAutoPlayAudio);
-	const setFeedAutoPlayAudio = useAppStore((s) => s.setFeedAutoPlayAudio);
+	const learnStreakEnabled = useAppStore((s) => s.learnStreakEnabled);
+	const learnPopQuizEnabled = useAppStore((s) => s.learnPopQuizEnabled);
+	const learnAutoPlayAudio = useAppStore((s) => s.learnAutoPlayAudio);
+	const setLearnAutoPlayAudio = useAppStore((s) => s.setLearnAutoPlayAudio);
 
 	// Streak state
 	const [lastMilestone, setLastMilestone] = useState(0);
@@ -389,7 +389,7 @@ export function KanaFeed() {
 
 	// Streak celebration — deferred to idle callback to avoid stealing scroll frames.
 	useEffect(() => {
-		if (!feedStreakEnabled) return;
+		if (!learnStreakEnabled) return;
 		const viewedCount = currentIndex + 1;
 		const milestone =
 			Math.floor(viewedCount / STREAK_INTERVAL) * STREAK_INTERVAL;
@@ -401,17 +401,17 @@ export function KanaFeed() {
 					: (cb: () => void) => setTimeout(cb, 0);
 			schedule(() => triggerConfetti());
 			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-			setToastMessage(t("feed.streakMilestone", { count: milestone }));
+			setToastMessage(t("learn.streakMilestone", { count: milestone }));
 			setToastVisible(true);
 			toastTimerRef.current = setTimeout(() => {
 				setToastVisible(false);
 			}, 2500);
 		}
-	}, [currentIndex, feedStreakEnabled, lastMilestone, t]);
+	}, [currentIndex, learnStreakEnabled, lastMilestone, t]);
 
 	// Pop quiz trigger
 	useEffect(() => {
-		if (!feedPopQuizEnabled) return;
+		if (!learnPopQuizEnabled) return;
 		const viewedCount = currentIndex + 1;
 		if (
 			viewedCount > 0 &&
@@ -422,14 +422,14 @@ export function KanaFeed() {
 			const question = generatePopQuiz(BASE_KANA, getKanaAt(currentIndex));
 			setPopQuiz(question);
 		}
-	}, [currentIndex, feedPopQuizEnabled, getKanaAt]);
+	}, [currentIndex, learnPopQuizEnabled, getKanaAt]);
 
 	// Auto-play audio when switching kana
 	useEffect(() => {
-		if (!feedAutoPlayAudio) return;
+		if (!learnAutoPlayAudio) return;
 		if (popQuiz) return;
 		speakKana(getKanaAt(currentIndex).hiragana);
-	}, [currentIndex, feedAutoPlayAudio, popQuiz, getKanaAt]);
+	}, [currentIndex, learnAutoPlayAudio, popQuiz, getKanaAt]);
 
 	const dismissPopQuiz = useCallback(() => {
 		setPopQuiz(null);
@@ -453,10 +453,10 @@ export function KanaFeed() {
 
 			<div
 				ref={containerRef}
-				className="flex-1 overflow-y-auto snap-y snap-mandatory feed-scrollbar-none relative"
+				className="flex-1 overflow-y-auto snap-y snap-mandatory learn-scrollbar-none relative"
 			>
 				{visibleSlides.map(({ kana, index }) => (
-					<FeedSlide key={index} kana={kana} />
+					<LearnSlide key={index} kana={kana} />
 				))}
 			</div>
 
@@ -464,15 +464,15 @@ export function KanaFeed() {
 			<div className="fixed right-4 top-4 sm:top-auto sm:bottom-4 z-[45] flex flex-col items-center gap-3">
 				<button
 					type="button"
-					onClick={() => setFeedAutoPlayAudio(!feedAutoPlayAudio)}
+					onClick={() => setLearnAutoPlayAudio(!learnAutoPlayAudio)}
 					className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
-						feedAutoPlayAudio
+						learnAutoPlayAudio
 							? "bg-primary-600 text-white hover:bg-primary-700"
 							: "bg-black/15 dark:bg-white/15 text-(--color-text-primary) hover:bg-black/25 dark:hover:bg-white/25"
 					}`}
-					aria-label={t("feed.autoPlayAudio")}
+					aria-label={t("learn.autoPlayAudio")}
 				>
-					{feedAutoPlayAudio ? <Volume2 size={22} /> : <VolumeOff size={22} />}
+					{learnAutoPlayAudio ? <Volume2 size={22} /> : <VolumeOff size={22} />}
 				</button>
 			</div>
 
