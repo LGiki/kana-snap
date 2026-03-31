@@ -57,7 +57,6 @@ export default {
 		averageScore: "Average Score",
 	},
 	feed: {
-		tapToHear: "Tap to hear",
 		streakMilestone: "{{count}} kana learned! Keep going!",
 		popQuizTitle: "Pop Quiz!",
 		popQuizSelectRomaji: "What is the romaji for this kana?",

@@ -57,7 +57,6 @@ export default {
 		averageScore: "平均分",
 	},
 	feed: {
-		tapToHear: "点击收听发音",
 		streakMilestone: "已学习 {{count}} 个假名！继续加油！",
 		popQuizTitle: "随堂测验！",
 		popQuizSelectRomaji: "这个假名的罗马字是什么？",

@@ -1,5 +1,12 @@
 import { ChevronDown, Volume2, Zap } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	memo,
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana, speakKana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
@@ -27,10 +34,12 @@ const confettiColors = [
 	"#0ea5e9",
 ];
 
+const CONFETTI_COUNT = 20;
+
 function triggerConfetti() {
 	const container = document.createElement("div");
 	container.setAttribute("aria-hidden", "true");
-	for (let i = 0; i < 50; i++) {
+	for (let i = 0; i < CONFETTI_COUNT; i++) {
 		const piece = document.createElement("div");
 		piece.className = "confetti-piece";
 		piece.style.left = `${Math.random() * 100}vw`;
@@ -42,6 +51,18 @@ function triggerConfetti() {
 	}
 	document.body.appendChild(container);
 	setTimeout(() => container.remove(), 4000);
+}
+
+/** Pre-shuffled kana source used for modulo-based indexing (no infinite array growth). */
+const BASE_KANA = getAllKana();
+
+function buildShuffledPool(): Kana[] {
+	const shuffled = [...BASE_KANA];
+	for (let i = shuffled.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+	}
+	return shuffled;
 }
 
 interface PopQuizQuestion {
@@ -80,17 +101,13 @@ function generatePopQuiz(allKana: Kana[], currentKana: Kana): PopQuizQuestion {
 	return { kana: currentKana, options, correctIndex };
 }
 
-function FeedSlide({ kana, index }: { kana: Kana; index: number }) {
+const BUFFER = 4;
+
+const FeedSlide = memo(function FeedSlide({ kana }: { kana: Kana }) {
 	const { t } = useTranslation();
-	const pattern = bgPatterns[index % bgPatterns.length];
 
 	return (
 		<div className="h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-3.5rem)] w-full snap-start snap-always flex items-center justify-center relative select-none">
-			<div
-				className="absolute inset-0 opacity-[0.06] dark:opacity-[0.10]"
-				style={{ background: pattern }}
-			/>
-
 			<div className="relative flex flex-col items-center">
 				<button
 					type="button"
@@ -105,18 +122,14 @@ function FeedSlide({ kana, index }: { kana: Kana; index: number }) {
 					{kana.katakana}
 				</div>
 
-				<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest uppercase mt-6">
+				<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest mt-6">
 					{kana.romaji}
 				</div>
 
-				<div className="mt-8 flex items-center gap-2 text-(--color-text-muted) text-xs sm:text-sm">
-					<Volume2 size={14} />
-					<span>{t("feed.tapToHear")}</span>
-				</div>
 			</div>
 		</div>
 	);
-}
+});
 
 function PopQuizOverlay({
 	question,
@@ -239,24 +252,25 @@ function StreakToast({
 	);
 }
 
-function shuffleArray<T>(arr: T[]): T[] {
-	const shuffled = [...arr];
-	for (let i = shuffled.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-	}
-	return shuffled;
-}
-
-const LOAD_MORE_THRESHOLD = 10;
-
 export function KanaFeed() {
 	const { t } = useTranslation();
-	const [kanaList, setKanaList] = useState<Kana[]>(() =>
-		shuffleArray(getAllKana()),
-	);
+
+	// Fixed shuffled pool — items are looked up with modulo, never appended.
+	const [pool] = useState(buildShuffledPool);
+	const getKanaAt = useCallback((i: number) => pool[i % pool.length], [pool]);
+
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const currentIndexRef = useRef(0);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const slideHeightRef = useRef(0);
+	// Refs for stable closures in scroll handlers
+	const windowStartRef = useRef(0);
+	const isAdjustingRef = useRef(false);
+
+	// Rolling window of slides — no spacers needed
+	const windowStart = Math.max(0, currentIndex - BUFFER);
+	const windowEnd = currentIndex + BUFFER;
+	windowStartRef.current = windowStart;
 
 	// Game mechanics settings
 	const feedStreakEnabled = useAppStore((s) => s.feedStreakEnabled);
@@ -266,55 +280,103 @@ export function KanaFeed() {
 	const [lastMilestone, setLastMilestone] = useState(0);
 	const [toastMessage, setToastMessage] = useState("");
 	const [toastVisible, setToastVisible] = useState(false);
-	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>();
+	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	// Pop quiz state
 	const [popQuiz, setPopQuiz] = useState<PopQuizQuestion | null>(null);
 	const lastQuizIndexRef = useRef(0);
 
-	// Infinite scroll: append more kana when near the end
-	useEffect(() => {
-		if (kanaList.length - currentIndex > LOAD_MORE_THRESHOLD) return;
-		setKanaList((prev) => [...prev, ...shuffleArray(getAllKana())]);
-	}, [currentIndex, kanaList.length]);
-
+	// Measure slide height — cached in a ref so handlers avoid layout reads.
 	useEffect(() => {
 		const container = containerRef.current;
 		if (!container) return;
-
-		const handleScroll = () => {
-			const slideHeight = container.clientHeight;
-			const index = Math.round(container.scrollTop / slideHeight);
-			setCurrentIndex(index);
+		const update = () => {
+			slideHeightRef.current = container.clientHeight;
 		};
-
-		container.addEventListener("scroll", handleScroll, { passive: true });
-		return () => container.removeEventListener("scroll", handleScroll);
+		update();
+		const observer = new ResizeObserver(update);
+		observer.observe(container);
+		return () => observer.disconnect();
 	}, []);
 
+	// Reset scroll position to keep the current slide in view after the
+	// window shifts.  Runs before paint so the user sees no flicker.
+	useLayoutEffect(() => {
+		const el = containerRef.current;
+		if (!el) return;
+		let h = slideHeightRef.current;
+		if (h === 0) h = el.clientHeight;
+		if (h === 0) return;
+		slideHeightRef.current = h;
+
+		const posInWindow = currentIndex - windowStartRef.current;
+		isAdjustingRef.current = true;
+		el.scrollTop = posInWindow * h;
+
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
+				isAdjustingRef.current = false;
+			});
+		});
+	}, [currentIndex]);
+
+	// Detect which slide the user scrolled to once the gesture settles.
+	useEffect(() => {
+		const el = containerRef.current;
+		if (!el) return;
+
+		const handleSettled = () => {
+			if (isAdjustingRef.current) return;
+			const h = slideHeightRef.current;
+			if (h === 0) return;
+			const snapPos = Math.round(el.scrollTop / h);
+			const newIndex = windowStartRef.current + snapPos;
+			if (newIndex !== currentIndexRef.current && newIndex >= 0) {
+				currentIndexRef.current = newIndex;
+				setCurrentIndex(newIndex);
+			}
+		};
+
+		if ("onscrollend" in window) {
+			el.addEventListener("scrollend", handleSettled);
+			return () => el.removeEventListener("scrollend", handleSettled);
+		}
+		// Fallback: debounced scroll for browsers without scrollend.
+		let timer: ReturnType<typeof setTimeout>;
+		const onScroll = () => {
+			clearTimeout(timer);
+			timer = setTimeout(handleSettled, 100);
+		};
+		el.addEventListener("scroll", onScroll, { passive: true });
+		return () => {
+			el.removeEventListener("scroll", onScroll);
+			clearTimeout(timer);
+		};
+	}, []);
+
+	// Keyboard navigation — uses refs so the listener is stable.
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (
-				e.key === "ArrowDown" ||
-				e.key === " " ||
-				e.key === "ArrowUp"
-			) {
+			if (e.key === "ArrowDown" || e.key === " " || e.key === "ArrowUp") {
 				e.preventDefault();
 			}
 			if (popQuiz) return;
 			const container = containerRef.current;
-			if (!container) return;
+			const h = slideHeightRef.current;
+			if (!container || h === 0) return;
 
 			if (e.key === "ArrowDown" || e.key === " ") {
-				const nextIndex = currentIndex + 1;
+				const nextIndex = currentIndexRef.current + 1;
+				const pos = nextIndex - windowStartRef.current;
 				container.scrollTo({
-					top: nextIndex * container.clientHeight,
+					top: pos * h,
 					behavior: "smooth",
 				});
 			} else if (e.key === "ArrowUp") {
-				const prevIndex = Math.max(currentIndex - 1, 0);
+				const prevIndex = Math.max(currentIndexRef.current - 1, 0);
+				const pos = prevIndex - windowStartRef.current;
 				container.scrollTo({
-					top: prevIndex * container.clientHeight,
+					top: pos * h,
 					behavior: "smooth",
 				});
 			}
@@ -322,9 +384,9 @@ export function KanaFeed() {
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [currentIndex, popQuiz]);
+	}, [popQuiz]);
 
-	// Streak celebration
+	// Streak celebration — deferred to idle callback to avoid stealing scroll frames.
 	useEffect(() => {
 		if (!feedStreakEnabled) return;
 		const viewedCount = currentIndex + 1;
@@ -332,7 +394,11 @@ export function KanaFeed() {
 			Math.floor(viewedCount / STREAK_INTERVAL) * STREAK_INTERVAL;
 		if (milestone >= STREAK_INTERVAL && milestone > lastMilestone) {
 			setLastMilestone(milestone);
-			triggerConfetti();
+			const schedule =
+				"requestIdleCallback" in window
+					? requestIdleCallback
+					: (cb: () => void) => setTimeout(cb, 0);
+			schedule(() => triggerConfetti());
 			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
 			setToastMessage(t("feed.streakMilestone", { count: milestone }));
 			setToastVisible(true);
@@ -352,37 +418,46 @@ export function KanaFeed() {
 			viewedCount > lastQuizIndexRef.current
 		) {
 			lastQuizIndexRef.current = viewedCount;
-			const allKana = getAllKana();
-			const question = generatePopQuiz(allKana, kanaList[currentIndex]);
+			const question = generatePopQuiz(BASE_KANA, getKanaAt(currentIndex));
 			setPopQuiz(question);
 		}
-	}, [currentIndex, feedPopQuizEnabled, kanaList]);
+	}, [currentIndex, feedPopQuizEnabled, getKanaAt]);
 
 	const dismissPopQuiz = useCallback(() => {
 		setPopQuiz(null);
 	}, []);
 
+	// Build the visible slide list
+	const visibleSlides: { kana: Kana; index: number }[] = [];
+	for (let i = windowStart; i <= windowEnd; i++) {
+		visibleSlides.push({ kana: getKanaAt(i), index: i });
+	}
+
+	const currentPattern = bgPatterns[currentIndex % bgPatterns.length];
+
 	return (
 		<div className="fixed top-0 sm:top-14 left-0 right-0 bottom-16 sm:bottom-0 z-40 bg-(--color-surface) flex flex-col">
+			{/* Single shared gradient background keyed to current slide */}
+			<div
+				className="absolute inset-0 opacity-[0.06] dark:opacity-[0.10] pointer-events-none transition-[background] duration-300"
+				style={{ background: currentPattern }}
+			/>
+
 			<div
 				ref={containerRef}
-				className="flex-1 overflow-y-auto snap-y snap-mandatory feed-scrollbar-none"
+				className="flex-1 overflow-y-auto snap-y snap-mandatory feed-scrollbar-none relative"
 			>
-				{kanaList.map((kana, index) => (
-					<FeedSlide
-						key={`${kana.romaji}-${index}`}
-						kana={kana}
-						index={index}
-					/>
+				{visibleSlides.map(({ kana, index }) => (
+					<FeedSlide key={index} kana={kana} />
 				))}
 			</div>
 
 			{/* Side action buttons */}
-			<div className="fixed right-4 bottom-1/3 sm:bottom-1/4 z-[45] flex flex-col items-center gap-3">
+			<div className="fixed right-4 top-4 z-[45] flex flex-col items-center gap-3">
 				<button
 					type="button"
-					onClick={() => speakKana(kanaList[currentIndex].hiragana)}
-					className="w-12 h-12 rounded-full bg-black/15 dark:bg-white/10 backdrop-blur-sm text-(--color-text-primary) flex items-center justify-center hover:bg-black/25 dark:hover:bg-white/20 transition-colors active:scale-90"
+					onClick={() => speakKana(getKanaAt(currentIndex).hiragana)}
+					className="w-12 h-12 rounded-full bg-black/15 dark:bg-white/15 text-(--color-text-primary) flex items-center justify-center hover:bg-black/25 dark:hover:bg-white/25 transition-colors active:scale-90"
 					aria-label={t("modal.playAudio")}
 				>
 					<Volume2 size={22} />

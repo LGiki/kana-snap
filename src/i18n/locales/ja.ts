@@ -58,7 +58,6 @@ export default {
 		averageScore: "平均スコア",
 	},
 	feed: {
-		tapToHear: "タップして聴く",
 		streakMilestone: "{{count}}文字達成！その調子！",
 		popQuizTitle: "ポップクイズ！",
 		popQuizSelectRomaji: "この仮名のローマ字は？",
