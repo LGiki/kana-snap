@@ -63,6 +63,7 @@ export default {
 		popQuizCorrect: "正确！",
 		popQuizWrong: "正确答案是 {{answer}}",
 		popQuizContinue: "继续",
+		autoPlayAudio: "自动播放发音",
 	},
 	common: {
 		confirm: "确认",

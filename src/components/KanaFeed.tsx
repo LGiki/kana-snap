@@ -1,4 +1,4 @@
-import { ChevronDown, Volume2, Zap } from "lucide-react";
+import { ChevronDown, Volume2, VolumeOff, Zap } from "lucide-react";
 import {
 	memo,
 	useCallback,
@@ -112,20 +112,19 @@ const FeedSlide = memo(function FeedSlide({ kana }: { kana: Kana }) {
 				<button
 					type="button"
 					onClick={() => speakKana(kana.hiragana)}
-					className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none font-extralight text-(--color-text-primary) transition-transform active:scale-95 cursor-pointer"
+					className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-(--color-text-primary) transition-transform active:scale-95 cursor-pointer"
 					aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
 				>
 					{kana.hiragana}
 				</button>
 
-				<div className="text-4xl sm:text-5xl md:text-6xl text-(--color-text-secondary) font-extralight mt-4">
+				<div className="text-4xl sm:text-5xl md:text-6xl text-(--color-text-secondary) mt-4">
 					{kana.katakana}
 				</div>
 
 				<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest mt-6">
 					{kana.romaji}
 				</div>
-
 			</div>
 		</div>
 	);
@@ -162,8 +161,8 @@ function PopQuizOverlay({
 				</div>
 
 				<div className="text-center py-4">
-					<p className="text-8xl font-extralight">{question.kana.hiragana}</p>
-					<p className="text-3xl text-(--color-text-secondary) font-extralight mt-3">
+					<p className="text-8xl">{question.kana.hiragana}</p>
+					<p className="text-3xl text-(--color-text-secondary) mt-3">
 						{question.kana.katakana}
 					</p>
 				</div>
@@ -275,6 +274,8 @@ export function KanaFeed() {
 	// Game mechanics settings
 	const feedStreakEnabled = useAppStore((s) => s.feedStreakEnabled);
 	const feedPopQuizEnabled = useAppStore((s) => s.feedPopQuizEnabled);
+	const feedAutoPlayAudio = useAppStore((s) => s.feedAutoPlayAudio);
+	const setFeedAutoPlayAudio = useAppStore((s) => s.setFeedAutoPlayAudio);
 
 	// Streak state
 	const [lastMilestone, setLastMilestone] = useState(0);
@@ -423,6 +424,13 @@ export function KanaFeed() {
 		}
 	}, [currentIndex, feedPopQuizEnabled, getKanaAt]);
 
+	// Auto-play audio when switching kana
+	useEffect(() => {
+		if (!feedAutoPlayAudio) return;
+		if (popQuiz) return;
+		speakKana(getKanaAt(currentIndex).hiragana);
+	}, [currentIndex, feedAutoPlayAudio, popQuiz, getKanaAt]);
+
 	const dismissPopQuiz = useCallback(() => {
 		setPopQuiz(null);
 	}, []);
@@ -452,15 +460,19 @@ export function KanaFeed() {
 				))}
 			</div>
 
-			{/* Side action buttons */}
-			<div className="fixed right-4 top-4 z-[45] flex flex-col items-center gap-3">
+			{/* Auto-play audio toggle */}
+			<div className="fixed right-4 top-4 sm:top-auto sm:bottom-4 z-[45] flex flex-col items-center gap-3">
 				<button
 					type="button"
-					onClick={() => speakKana(getKanaAt(currentIndex).hiragana)}
-					className="w-12 h-12 rounded-full bg-black/15 dark:bg-white/15 text-(--color-text-primary) flex items-center justify-center hover:bg-black/25 dark:hover:bg-white/25 transition-colors active:scale-90"
-					aria-label={t("modal.playAudio")}
+					onClick={() => setFeedAutoPlayAudio(!feedAutoPlayAudio)}
+					className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
+						feedAutoPlayAudio
+							? "bg-primary-600 text-white hover:bg-primary-700"
+							: "bg-black/15 dark:bg-white/15 text-(--color-text-primary) hover:bg-black/25 dark:hover:bg-white/25"
+					}`}
+					aria-label={t("feed.autoPlayAudio")}
 				>
-					<Volume2 size={22} />
+					{feedAutoPlayAudio ? <Volume2 size={22} /> : <VolumeOff size={22} />}
 				</button>
 			</div>
 

@@ -63,6 +63,7 @@ export default {
 		popQuizCorrect: "Correct!",
 		popQuizWrong: "The answer is {{answer}}",
 		popQuizContinue: "Continue",
+		autoPlayAudio: "Auto Play Audio",
 	},
 	common: {
 		confirm: "Confirm",

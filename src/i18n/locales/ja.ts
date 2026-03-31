@@ -64,6 +64,7 @@ export default {
 		popQuizCorrect: "正解！",
 		popQuizWrong: "正解は {{answer}} です",
 		popQuizContinue: "続ける",
+		autoPlayAudio: "自動音声再生",
 	},
 	common: {
 		confirm: "確認",

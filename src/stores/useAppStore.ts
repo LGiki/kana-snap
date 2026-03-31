@@ -40,6 +40,7 @@ interface AppState {
 	quizAutoAdvanceDelay: number;
 	feedStreakEnabled: boolean;
 	feedPopQuizEnabled: boolean;
+	feedAutoPlayAudio: boolean;
 	quizHistory: QuizRecord[];
 	mistakeWeights: Record<string, number>;
 
@@ -53,6 +54,7 @@ interface AppState {
 	setQuizAutoAdvanceDelay: (delay: number) => void;
 	setFeedStreakEnabled: (enabled: boolean) => void;
 	setFeedPopQuizEnabled: (enabled: boolean) => void;
+	setFeedAutoPlayAudio: (enabled: boolean) => void;
 	addQuizRecord: (record: QuizRecord) => void;
 	addMistake: (romaji: string) => void;
 	resetData: () => void;
@@ -71,6 +73,7 @@ const initialState = {
 	quizAutoAdvanceDelay: 2,
 	feedStreakEnabled: true,
 	feedPopQuizEnabled: true,
+	feedAutoPlayAudio: false,
 	quizHistory: [] as QuizRecord[],
 	mistakeWeights: {} as Record<string, number>,
 };
@@ -90,6 +93,7 @@ export const useAppStore = create<AppState>()(
 			setQuizAutoAdvanceDelay: (delay) => set({ quizAutoAdvanceDelay: delay }),
 			setFeedStreakEnabled: (enabled) => set({ feedStreakEnabled: enabled }),
 			setFeedPopQuizEnabled: (enabled) => set({ feedPopQuizEnabled: enabled }),
+			setFeedAutoPlayAudio: (enabled) => set({ feedAutoPlayAudio: enabled }),
 
 			addQuizRecord: (record) =>
 				set((state) => ({
@@ -120,6 +124,7 @@ export const useAppStore = create<AppState>()(
 					quizAutoAdvanceDelay,
 					feedStreakEnabled,
 					feedPopQuizEnabled,
+					feedAutoPlayAudio,
 				} = get();
 				return JSON.stringify(
 					{
@@ -135,6 +140,7 @@ export const useAppStore = create<AppState>()(
 						quizAutoAdvanceDelay,
 						feedStreakEnabled,
 						feedPopQuizEnabled,
+						feedAutoPlayAudio,
 					},
 					null,
 					2,
@@ -161,6 +167,7 @@ export const useAppStore = create<AppState>()(
 						quizAutoAdvanceDelay: data.quizAutoAdvanceDelay ?? 2,
 						feedStreakEnabled: data.feedStreakEnabled ?? true,
 						feedPopQuizEnabled: data.feedPopQuizEnabled ?? true,
+						feedAutoPlayAudio: data.feedAutoPlayAudio ?? false,
 					});
 					return true;
 				} catch {
