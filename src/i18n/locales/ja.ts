@@ -36,6 +36,7 @@ export default {
 		score: "スコア: {{score}} / {{total}}",
 		perfect: "満点！",
 		tryAgain: "もう一度",
+		back: "戻る",
 		incorrectAnswers: "間違えた問題",
 		yourAnswer: "あなたの回答",
 		correctAnswer: "正解",

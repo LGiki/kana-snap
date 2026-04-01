@@ -1,4 +1,4 @@
-import { RotateCcw, Trophy } from "lucide-react";
+import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -16,6 +16,7 @@ interface AnswerRecord {
 interface QuizResultProps {
 	answers: AnswerRecord[];
 	onRetry: () => void;
+	onBack: () => void;
 }
 
 const CONFETTI_COLORS = [
@@ -101,7 +102,7 @@ function useCountUp(target: number, duration = 600): number {
 	return value;
 }
 
-export function QuizResult({ answers, onRetry }: QuizResultProps) {
+export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 	const { t } = useTranslation();
 	const score = answers.filter((a) => a.correct).length;
 	const total = answers.length;
@@ -175,6 +176,14 @@ export function QuizResult({ answers, onRetry }: QuizResultProps) {
 
 			{/* Actions */}
 			<div className="flex gap-3 justify-center animate-slide-up-fade stagger-3">
+				<button
+					type="button"
+					onClick={onBack}
+					className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-(--color-border) bg-(--color-surface-alt) hover:bg-(--color-surface) active:scale-95 transition-all"
+				>
+					<ArrowLeft size={18} />
+					{t("quiz.back")}
+				</button>
 				<button
 					type="button"
 					onClick={onRetry}

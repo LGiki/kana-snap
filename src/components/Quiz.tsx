@@ -203,7 +203,17 @@ export function Quiz() {
 	]);
 
 	if (finished) {
-		return <QuizResult answers={answers} onRetry={startQuiz} />;
+		return (
+			<QuizResult
+				answers={answers}
+				onRetry={startQuiz}
+				onBack={() => {
+					setStarted(false);
+					setFinished(false);
+					setSelectedIndex(null);
+				}}
+			/>
+		);
 	}
 
 	if (!started) {

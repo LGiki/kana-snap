@@ -36,6 +36,7 @@ export default {
 		score: "Score: {{score}} / {{total}}",
 		perfect: "Perfect score!",
 		tryAgain: "Try Again",
+		back: "Back",
 		incorrectAnswers: "Incorrect Answers",
 		yourAnswer: "Your answer",
 		correctAnswer: "Correct answer",

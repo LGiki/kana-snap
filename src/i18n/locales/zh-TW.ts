@@ -36,6 +36,7 @@ export default {
 		score: "得分：{{score}} / {{total}}",
 		perfect: "滿分！",
 		tryAgain: "再試一次",
+		back: "返回",
 		incorrectAnswers: "錯誤的題目",
 		yourAnswer: "你的回答",
 		correctAnswer: "正確答案",
