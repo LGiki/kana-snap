@@ -38,6 +38,8 @@ function ToggleSwitch({
 	return (
 		<button
 			type="button"
+			role="switch"
+			aria-checked={checked}
 			onClick={() => onChange(!checked)}
 			className="w-full flex items-center justify-between gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
 		>

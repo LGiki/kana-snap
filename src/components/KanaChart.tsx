@@ -67,10 +67,34 @@ export function KanaChart() {
 		{
 			value: "comparison" as const,
 			label: t("chart.comparison"),
-			icon: <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
-				<text x="8" y="5" textAnchor="middle" fontSize="8" dominantBaseline="middle">あ</text>
-				<text x="8" y="14" textAnchor="middle" fontSize="8" dominantBaseline="middle">ア</text>
-			</svg>,
+			icon: (
+				<svg
+					viewBox="0 0 16 16"
+					width="16"
+					height="16"
+					fill="currentColor"
+					aria-hidden="true"
+				>
+					<text
+						x="8"
+						y="5"
+						textAnchor="middle"
+						fontSize="8"
+						dominantBaseline="middle"
+					>
+						あ
+					</text>
+					<text
+						x="8"
+						y="14"
+						textAnchor="middle"
+						fontSize="8"
+						dominantBaseline="middle"
+					>
+						ア
+					</text>
+				</svg>
+			),
 		},
 	];
 

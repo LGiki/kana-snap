@@ -71,6 +71,7 @@ export default {
 		confirm: "確認",
 		cancel: "キャンセル",
 		ok: "OK",
+		close: "閉じる",
 	},
 	settings: {
 		title: "設定",

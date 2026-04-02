@@ -13,7 +13,10 @@ export function AppIcon({ size = 28 }: { size?: number }) {
 			<defs>
 				<linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
 					<stop offset="0%" style={{ stopColor: "var(--color-primary-500)" }} />
-					<stop offset="100%" style={{ stopColor: "var(--color-primary-600)" }} />
+					<stop
+						offset="100%"
+						style={{ stopColor: "var(--color-primary-600)" }}
+					/>
 				</linearGradient>
 			</defs>
 			<rect width="512" height="512" rx="96" fill={`url(#${gradientId})`} />

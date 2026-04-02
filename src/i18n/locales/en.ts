@@ -70,6 +70,7 @@ export default {
 		confirm: "Confirm",
 		cancel: "Cancel",
 		ok: "OK",
+		close: "Close",
 	},
 	settings: {
 		title: "Settings",

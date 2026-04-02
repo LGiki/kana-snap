@@ -92,7 +92,8 @@ export const useAppStore = create<AppState>()(
 			setQuizAdvanceMode: (mode) => set({ quizAdvanceMode: mode }),
 			setQuizAutoAdvanceDelay: (delay) => set({ quizAutoAdvanceDelay: delay }),
 			setLearnStreakEnabled: (enabled) => set({ learnStreakEnabled: enabled }),
-			setLearnPopQuizEnabled: (enabled) => set({ learnPopQuizEnabled: enabled }),
+			setLearnPopQuizEnabled: (enabled) =>
+				set({ learnPopQuizEnabled: enabled }),
 			setLearnAutoPlayAudio: (enabled) => set({ learnAutoPlayAudio: enabled }),
 
 			addQuizRecord: (record) =>
@@ -150,24 +151,105 @@ export const useAppStore = create<AppState>()(
 			importData: (json) => {
 				try {
 					const data = JSON.parse(json);
+					if (typeof data !== "object" || data === null || Array.isArray(data))
+						return false;
+
+					const oneOf = <T>(
+						val: unknown,
+						allowed: readonly T[],
+						fallback: T,
+					): T =>
+						(allowed as readonly unknown[]).includes(val)
+							? (val as T)
+							: fallback;
+
+					const validThemes = ["light", "dark", "auto"] as const;
+					const validSchemes = [
+						"indigo",
+						"rose",
+						"emerald",
+						"amber",
+						"violet",
+						"sky",
+						"teal",
+						"slate",
+					] as const;
+					const validLangs = ["en", "ja", "zh-CN", "zh-TW"] as const;
+					const validVizModes = ["heatmap", "line"] as const;
+					const validDisplayModes = [
+						"hiragana",
+						"katakana",
+						"comparison",
+					] as const;
+					const validClickActions = ["showDetail", "playAudio"] as const;
+					const validAdvanceModes = ["manual", "auto"] as const;
+
+					const quizHistory = Array.isArray(data.quizHistory)
+						? data.quizHistory.filter(
+								(r: unknown): r is QuizRecord =>
+									typeof r === "object" &&
+									r !== null &&
+									typeof (r as QuizRecord).date === "string" &&
+									typeof (r as QuizRecord).score === "number" &&
+									typeof (r as QuizRecord).total === "number" &&
+									Array.isArray((r as QuizRecord).mistakes),
+							)
+						: [];
+
+					const mistakeWeights: Record<string, number> = {};
+					if (
+						typeof data.mistakeWeights === "object" &&
+						data.mistakeWeights !== null
+					) {
+						for (const [k, v] of Object.entries(data.mistakeWeights)) {
+							if (typeof v === "number" && v > 0) {
+								mistakeWeights[k] = v;
+							}
+						}
+					}
+
+					const delay =
+						typeof data.quizAutoAdvanceDelay === "number" &&
+						data.quizAutoAdvanceDelay >= 1 &&
+						data.quizAutoAdvanceDelay <= 5
+							? data.quizAutoAdvanceDelay
+							: 2;
+
 					set({
-						quizHistory: data.quizHistory ?? [],
-						mistakeWeights: data.mistakeWeights ?? {},
-						theme: data.theme ?? "auto",
-						colorScheme: data.colorScheme ?? "indigo",
-						language: data.language ?? detectLanguage(),
-						visualizationMode:
-							data.visualizationMode === "heatmap" ||
-							data.visualizationMode === "line"
-								? data.visualizationMode
-								: "heatmap",
-						displayMode: data.displayMode ?? "hiragana",
-						kanaCardClickAction: data.kanaCardClickAction ?? "showDetail",
-						quizAdvanceMode: data.quizAdvanceMode ?? "manual",
-						quizAutoAdvanceDelay: data.quizAutoAdvanceDelay ?? 2,
-						learnStreakEnabled: data.learnStreakEnabled ?? true,
-						learnPopQuizEnabled: data.learnPopQuizEnabled ?? true,
-						learnAutoPlayAudio: data.learnAutoPlayAudio ?? false,
+						quizHistory,
+						mistakeWeights,
+						theme: oneOf(data.theme, validThemes, "auto"),
+						colorScheme: oneOf(data.colorScheme, validSchemes, "indigo"),
+						language: oneOf(data.language, validLangs, detectLanguage()),
+						visualizationMode: oneOf(
+							data.visualizationMode,
+							validVizModes,
+							"heatmap",
+						),
+						displayMode: oneOf(data.displayMode, validDisplayModes, "hiragana"),
+						kanaCardClickAction: oneOf(
+							data.kanaCardClickAction,
+							validClickActions,
+							"showDetail",
+						),
+						quizAdvanceMode: oneOf(
+							data.quizAdvanceMode,
+							validAdvanceModes,
+							"manual",
+						),
+						quizAutoAdvanceDelay: delay,
+						learnStreakEnabled:
+							typeof data.learnStreakEnabled === "boolean"
+								? data.learnStreakEnabled
+								: true,
+						learnPopQuizEnabled:
+							typeof data.learnPopQuizEnabled === "boolean"
+								? data.learnPopQuizEnabled
+								: true,
+						learnAutoPlayAudio:
+							typeof data.learnAutoPlayAudio === "boolean"
+								? data.learnAutoPlayAudio
+								: false,
 					});
 					return true;
 				} catch {

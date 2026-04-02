@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
+import { getLocalDateKey } from "#/utils/date";
+import { weightedRandomSelect } from "#/utils/quiz";
 import { Heatmap } from "./Heatmap";
 import { LineChart } from "./LineChart";
 import { QuizResult } from "./QuizResult";
@@ -24,33 +26,6 @@ interface AnswerRecord {
 
 const QUIZ_LENGTH = 10;
 const OPTIONS_COUNT = 4;
-
-function weightedRandomSelect(
-	kanas: Kana[],
-	count: number,
-	weights: Record<string, number>,
-): Kana[] {
-	const weighted = kanas.map((k) => ({
-		kana: k,
-		weight: 1 + (weights[k.romaji] || 0),
-	}));
-	const selected: Kana[] = [];
-	const remaining = [...weighted];
-
-	while (selected.length < count && remaining.length > 0) {
-		const rTotal = remaining.reduce((sum, w) => sum + w.weight, 0);
-		let rand = Math.random() * rTotal;
-		for (let i = 0; i < remaining.length; i++) {
-			rand -= remaining[i].weight;
-			if (rand <= 0) {
-				selected.push(remaining[i].kana);
-				remaining.splice(i, 1);
-				break;
-			}
-		}
-	}
-	return selected;
-}
 
 function isYoon(kana: Kana): boolean {
 	return kana.hiragana.length > 1;
@@ -151,7 +126,7 @@ export function Quiz() {
 			}
 			const score = finalAnswers.filter((a) => a.correct).length;
 			addQuizRecord({
-				date: new Date().toISOString().split("T")[0],
+				date: getLocalDateKey(),
 				score,
 				total: QUIZ_LENGTH,
 				mistakes: finalAnswers

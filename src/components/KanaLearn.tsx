@@ -15,16 +15,6 @@ const STREAK_INTERVAL = 10;
 const POP_QUIZ_INTERVAL = 20;
 const OPTIONS_COUNT = 4;
 
-const bgPatterns = [
-	"radial-gradient(ellipse at 20% 30%, var(--color-primary-500), transparent 70%)",
-	"radial-gradient(ellipse at 80% 70%, var(--color-primary-400), transparent 70%)",
-	"radial-gradient(ellipse at 50% 20%, var(--color-primary-600), transparent 70%)",
-	"radial-gradient(ellipse at 30% 80%, var(--color-primary-300), transparent 70%)",
-	"radial-gradient(ellipse at 70% 30%, var(--color-primary-500), transparent 70%)",
-	"radial-gradient(ellipse at 40% 60%, var(--color-primary-400), transparent 70%)",
-	"radial-gradient(ellipse at 60% 40%, var(--color-primary-600), transparent 70%)",
-];
-
 const confettiColors = [
 	"#6366f1",
 	"#f43f5e",
@@ -441,16 +431,8 @@ export function KanaLearn() {
 		visibleSlides.push({ kana: getKanaAt(i), index: i });
 	}
 
-	const currentPattern = bgPatterns[currentIndex % bgPatterns.length];
-
 	return (
 		<div className="fixed top-0 sm:top-14 left-0 right-0 bottom-16 sm:bottom-0 z-40 bg-(--color-surface) flex flex-col">
-			{/* Single shared gradient background keyed to current slide */}
-			<div
-				className="absolute inset-0 opacity-[0.06] dark:opacity-[0.10] pointer-events-none transition-[background] duration-300"
-				style={{ background: currentPattern }}
-			/>
-
 			<div
 				ref={containerRef}
 				className="flex-1 overflow-y-auto snap-y snap-mandatory learn-scrollbar-none relative"

@@ -70,6 +70,7 @@ export default {
 		confirm: "确认",
 		cancel: "取消",
 		ok: "确定",
+		close: "关闭",
 	},
 	settings: {
 		title: "设置",

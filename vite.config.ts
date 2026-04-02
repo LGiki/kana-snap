@@ -8,8 +8,15 @@ import { VitePWA } from "vite-plugin-pwa";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
-const commitHash = execSync("git rev-parse --short HEAD").toString().trim();
-const commitDate = execSync("git log -1 --format=%cI").toString().trim();
+
+let commitHash = "unknown";
+let commitDate = "";
+try {
+	commitHash = execSync("git rev-parse --short HEAD").toString().trim();
+	commitDate = execSync("git log -1 --format=%cI").toString().trim();
+} catch {
+	// Not a git checkout (e.g. source archive, CI without .git)
+}
 
 export default defineConfig({
 	define: {

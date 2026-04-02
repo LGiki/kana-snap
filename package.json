@@ -18,8 +18,8 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
     "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/react-router": "latest",
-    "@tanstack/react-router-devtools": "latest",
+    "@tanstack/react-router": "^1.168.7",
+    "@tanstack/react-router-devtools": "^1.166.11",
     "@tanstack/router-plugin": "^1.132.0",
     "chart.js": "^4.5.1",
     "i18next": "^25.10.10",

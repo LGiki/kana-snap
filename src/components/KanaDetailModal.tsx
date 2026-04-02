@@ -1,8 +1,9 @@
 import { Volume2, X } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useId } from "react";
 import { useTranslation } from "react-i18next";
 import type { Kana } from "#/data/kana";
 import { speakKana } from "#/data/kana";
+import { useFocusTrap } from "#/hooks/useFocusTrap";
 
 interface KanaDetailModalProps {
 	kana: Kana | null;
@@ -11,6 +12,8 @@ interface KanaDetailModalProps {
 
 export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 	const { t } = useTranslation();
+	const titleId = useId();
+	const dialogRef = useFocusTrap(kana !== null);
 
 	const playAudio = useCallback(() => {
 		if (kana) speakKana(kana.hiragana);
@@ -28,6 +31,12 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 		return () => window.removeEventListener("keydown", handler);
 	}, [onClose]);
 
+	useEffect(() => {
+		if (kana) {
+			dialogRef.current?.focus();
+		}
+	}, [kana, dialogRef]);
+
 	if (!kana) return null;
 
 	return (
@@ -37,20 +46,26 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 			onKeyDown={(e) => e.key === "Escape" && onClose()}
 		>
 			<div
-				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 relative animate-scale-in"
+				ref={dialogRef}
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby={titleId}
+				tabIndex={-1}
+				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 relative animate-scale-in outline-none"
 				onClick={(e) => e.stopPropagation()}
-				onKeyDown={() => {}}
+				onKeyDown={(e) => e.key === "Escape" && onClose()}
 			>
 				<button
 					type="button"
 					onClick={onClose}
+					aria-label={t("common.close")}
 					className="absolute top-4 right-4 p-1 rounded-lg hover:bg-(--color-surface-hover) text-(--color-text-secondary) transition-colors"
 				>
 					<X size={20} />
 				</button>
 
 				<div className="text-center space-y-6">
-					<div className="flex justify-center gap-8">
+					<div id={titleId} className="flex justify-center gap-8">
 						<div>
 							<p className="text-xs text-(--color-text-muted) mb-1">
 								{t("modal.hiragana")}

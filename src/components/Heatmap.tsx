@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizRecord } from "#/stores/useAppStore";
+import { getLocalDateKey } from "#/utils/date";
 
 interface HeatmapProps {
 	records: QuizRecord[];
 }
 
 function getDateKey(date: Date): string {
-	return date.toISOString().split("T")[0];
+	return getLocalDateKey(date);
 }
 
 function getDaysBetween(start: Date, end: Date): number {
@@ -93,6 +94,15 @@ export function Heatmap({ records }: HeatmapProps) {
 	const svgWidth = weeks * step + 30;
 	const svgHeight = 7 * step + 30;
 
+	const showTooltip = (target: SVGRectElement, text: string) => {
+		const rect = target.getBoundingClientRect();
+		setTooltip({
+			text,
+			x: rect.left + rect.width / 2,
+			y: rect.top - 8,
+		});
+	};
+
 	return (
 		<div className="space-y-2">
 			<div className="overflow-x-auto">
@@ -116,29 +126,29 @@ export function Heatmap({ records }: HeatmapProps) {
 					))}
 
 					{/* Day cells */}
-					{cells.map((cell) => (
-						<rect
-							key={cell.date}
-							x={cell.weekIndex * step + 30}
-							y={cell.dayOfWeek * step + 16}
-							width={cellSize}
-							height={cellSize}
-							rx={2}
-							fill={getColor(cell.count)}
-							className="transition-colors"
-							onMouseEnter={(e) => {
-								const rect = (
-									e.target as SVGRectElement
-								).getBoundingClientRect();
-								setTooltip({
-									text: `${cell.date}: ${cell.count} ${t("analytics.quizzes")}`,
-									x: rect.left + rect.width / 2,
-									y: rect.top - 8,
-								});
-							}}
-							onMouseLeave={() => setTooltip(null)}
-						/>
-					))}
+					{cells.map((cell) => {
+						const label = `${cell.date}: ${cell.count} ${t("analytics.quizzes")}`;
+						return (
+							<rect
+								key={cell.date}
+								x={cell.weekIndex * step + 30}
+								y={cell.dayOfWeek * step + 16}
+								width={cellSize}
+								height={cellSize}
+								rx={2}
+								fill={getColor(cell.count)}
+								className="transition-colors"
+								tabIndex={cell.count > 0 ? 0 : undefined}
+								aria-label={label}
+								onMouseEnter={(e) =>
+									showTooltip(e.target as SVGRectElement, label)
+								}
+								onMouseLeave={() => setTooltip(null)}
+								onFocus={(e) => showTooltip(e.target as SVGRectElement, label)}
+								onBlur={() => setTooltip(null)}
+							/>
+						);
+					})}
 				</svg>
 			</div>
 

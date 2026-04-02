@@ -2,6 +2,7 @@ import { Award, Calendar, Flame, Target } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizRecord } from "#/stores/useAppStore";
+import { getLocalDateKey } from "#/utils/date";
 
 interface StreakCounterProps {
 	records: QuizRecord[];
@@ -38,7 +39,7 @@ function computeStreaks(records: QuizRecord[]) {
 	const checkDate = new Date();
 
 	while (true) {
-		const dateStr = checkDate.toISOString().split("T")[0];
+		const dateStr = getLocalDateKey(checkDate);
 		if (dates.has(dateStr)) {
 			currentStreak++;
 			checkDate.setDate(checkDate.getDate() - 1);
