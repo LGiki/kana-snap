@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
+    "@icons-pack/react-simple-icons": "^13.13.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-router": "^1.168.7",
     "@tanstack/react-router-devtools": "^1.166.11",

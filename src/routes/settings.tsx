@@ -11,6 +11,7 @@ import {
 	Upload,
 	Volume2,
 } from "lucide-react";
+import { SiGithub } from '@icons-pack/react-simple-icons';
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
@@ -488,13 +489,28 @@ function SettingsPage() {
 						<span className="text-text-secondary">
 							{t("settings.version")}
 						</span>
-						<span className="font-mono">{__APP_VERSION__}</span>
+						<a
+							href="https://github.com/LGiki/kana-snap"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-1.5 font-mono text-primary-600 dark:text-primary-400 hover:underline"
+						>
+							<SiGithub size={14} />
+							{__APP_VERSION__}
+						</a>
 					</div>
 					<div className="flex justify-between">
 						<span className="text-text-secondary">
 							{t("settings.commitHash")}
 						</span>
-						<span className="font-mono">{__COMMIT_HASH__}</span>
+						<a
+							href={`https://github.com/LGiki/kana-snap/commit/${__COMMIT_HASH__}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="font-mono text-primary-600 dark:text-primary-400 hover:underline"
+						>
+							{__COMMIT_HASH__}
+						</a>
 					</div>
 					<div className="flex justify-between">
 						<span className="text-text-secondary">
