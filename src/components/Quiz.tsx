@@ -1,5 +1,5 @@
 import { useBlocker } from "@tanstack/react-router";
-import { BarChart3, Keyboard, TrendingUp } from "lucide-react";
+import { ArrowLeft, BarChart3, Keyboard, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana } from "#/data/kana";
@@ -87,12 +87,14 @@ export function Quiz() {
 	const [answers, setAnswers] = useState<AnswerRecord[]>([]);
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 	const [finished, setFinished] = useState(false);
+	const [showBackConfirm, setShowBackConfirm] = useState(false);
 
 	const currentQuestion = questions[currentIndex];
 	const isQuizInProgress = started && !finished;
 
 	const { proceed, reset, status } = useBlocker({
-		condition: isQuizInProgress,
+		shouldBlockFn: () => isQuizInProgress,
+		withResolver: true,
 	});
 
 	const startQuiz = useCallback(() => {
@@ -217,18 +219,42 @@ export function Quiz() {
 				message={t("quiz.leaveMessage")}
 				confirmLabel={t("quiz.leaveConfirm")}
 				cancelLabel={t("common.cancel")}
-				onConfirm={proceed}
-				onCancel={reset}
+				onConfirm={() => proceed?.()}
+				onCancel={() => reset?.()}
+			/>
+			<ConfirmDialog
+				open={showBackConfirm}
+				title={t("quiz.leaveTitle")}
+				message={t("quiz.leaveMessage")}
+				confirmLabel={t("quiz.leaveConfirm")}
+				cancelLabel={t("common.cancel")}
+				onConfirm={() => {
+					setShowBackConfirm(false);
+					setStarted(false);
+					setFinished(false);
+					setSelectedIndex(null);
+				}}
+				onCancel={() => setShowBackConfirm(false)}
 			/>
 			<div className="max-w-lg mx-auto space-y-6">
 				{/* Progress */}
 				<div className="space-y-2">
-					<p className="text-sm text-text-secondary">
-						{t("quiz.questionOf", {
-							current: currentIndex + 1,
-							total: QUIZ_LENGTH,
-						})}
-					</p>
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							onClick={() => setShowBackConfirm(true)}
+							className="p-1 -ml-1 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+							aria-label={t("quiz.back")}
+						>
+							<ArrowLeft size={20} />
+						</button>
+						<p className="text-sm text-text-secondary">
+							{t("quiz.questionOf", {
+								current: currentIndex + 1,
+								total: QUIZ_LENGTH,
+							})}
+						</p>
+					</div>
 					<div className="h-2 rounded-full bg-surface-alt overflow-hidden">
 						<div
 							className="h-full bg-primary-500 rounded-full transition-all duration-300"
@@ -252,8 +278,7 @@ export function Quiz() {
 				{/* Options */}
 				<div className="grid grid-cols-2 gap-3">
 					{currentQuestion.options.map((option, i) => {
-						let style =
-							"border-border bg-surface hover:bg-surface-hover";
+						let style = "border-border bg-surface hover:bg-surface-hover";
 						let animClass = "";
 						if (selectedIndex !== null) {
 							if (i === currentQuestion.correctIndex) {
