@@ -41,7 +41,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-fade-in"
+			className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4 animate-fade-in"
 			onClick={onClose}
 			onKeyDown={(e) => e.key === "Escape" && onClose()}
 		>
@@ -51,7 +51,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 				aria-modal="true"
 				aria-labelledby={titleId}
 				tabIndex={-1}
-				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 relative animate-scale-in outline-none"
+				className="bg-surface rounded-2xl shadow-xl max-w-sm w-full p-6 relative animate-scale-in outline-none"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.key === "Escape" && onClose()}
 			>
@@ -59,7 +59,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 					type="button"
 					onClick={onClose}
 					aria-label={t("common.close")}
-					className="absolute top-4 right-4 p-1 rounded-lg hover:bg-(--color-surface-hover) text-(--color-text-secondary) transition-colors"
+					className="absolute top-4 right-4 p-1 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors"
 				>
 					<X size={20} />
 				</button>
@@ -67,13 +67,13 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 				<div className="text-center space-y-6">
 					<div id={titleId} className="flex justify-center gap-8">
 						<div>
-							<p className="text-xs text-(--color-text-muted) mb-1">
+							<p className="text-xs text-text-muted mb-1">
 								{t("modal.hiragana")}
 							</p>
 							<p className="text-6xl">{kana.hiragana}</p>
 						</div>
 						<div>
-							<p className="text-xs text-(--color-text-muted) mb-1">
+							<p className="text-xs text-text-muted mb-1">
 								{t("modal.katakana")}
 							</p>
 							<p className="text-6xl">{kana.katakana}</p>
@@ -81,7 +81,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 					</div>
 
 					<div>
-						<p className="text-xs text-(--color-text-muted) mb-1">
+						<p className="text-xs text-text-muted mb-1">
 							{t("modal.romaji")}
 						</p>
 						<p className="text-2xl font-medium text-primary-600 dark:text-primary-400">

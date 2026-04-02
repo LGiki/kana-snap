@@ -46,7 +46,7 @@ export function ConfirmDialog({
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 animate-fade-in"
+			className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 p-4 animate-fade-in"
 			onClick={onCancel}
 			onKeyDown={(e) => e.key === "Escape" && onCancel()}
 		>
@@ -57,7 +57,7 @@ export function ConfirmDialog({
 				aria-labelledby={titleId}
 				aria-describedby={descId}
 				tabIndex={-1}
-				className="bg-(--color-surface) rounded-2xl shadow-xl max-w-sm w-full p-6 animate-scale-in outline-none"
+				className="bg-surface rounded-2xl shadow-xl max-w-sm w-full p-6 animate-scale-in outline-none"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.key === "Escape" && onCancel()}
 			>
@@ -72,11 +72,11 @@ export function ConfirmDialog({
 					)}
 					<h3
 						id={titleId}
-						className="text-lg font-semibold text-(--color-text-primary)"
+						className="text-lg font-semibold text-text-primary"
 					>
 						{title}
 					</h3>
-					<p id={descId} className="text-sm text-(--color-text-secondary)">
+					<p id={descId} className="text-sm text-text-secondary">
 						{message}
 					</p>
 				</div>
@@ -85,7 +85,7 @@ export function ConfirmDialog({
 						<button
 							type="button"
 							onClick={onCancel}
-							className="flex-1 px-4 py-2.5 rounded-xl border border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover) text-sm font-medium transition-colors"
+							className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-hover text-sm font-medium transition-colors"
 						>
 							{cancelLabel}
 						</button>

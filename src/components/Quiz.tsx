@@ -206,13 +206,13 @@ export function Quiz() {
 		<div className="max-w-lg mx-auto space-y-6">
 			{/* Progress */}
 			<div className="space-y-2">
-				<p className="text-sm text-(--color-text-secondary)">
+				<p className="text-sm text-text-secondary">
 					{t("quiz.questionOf", {
 						current: currentIndex + 1,
 						total: QUIZ_LENGTH,
 					})}
 				</p>
-				<div className="h-2 rounded-full bg-(--color-surface-alt) overflow-hidden">
+				<div className="h-2 rounded-full bg-surface-alt overflow-hidden">
 					<div
 						className="h-full bg-primary-500 rounded-full transition-all duration-300"
 						style={{ width: `${((currentIndex + 1) / QUIZ_LENGTH) * 100}%` }}
@@ -222,7 +222,7 @@ export function Quiz() {
 
 			{/* Question */}
 			<div className="text-center py-8">
-				<p className="text-sm text-(--color-text-muted) mb-2">
+				<p className="text-sm text-text-muted mb-2">
 					{currentQuestion.type === "kana-to-romaji"
 						? t("quiz.selectRomaji")
 						: t("quiz.selectKana")}
@@ -234,7 +234,7 @@ export function Quiz() {
 			<div className="grid grid-cols-2 gap-3">
 				{currentQuestion.options.map((option, i) => {
 					let style =
-						"border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)";
+						"border-border bg-surface hover:bg-surface-hover";
 					let animClass = "";
 					if (selectedIndex !== null) {
 						if (i === currentQuestion.correctIndex) {
@@ -263,7 +263,7 @@ export function Quiz() {
 									: "cursor-default"
 							}`}
 						>
-							<span className="absolute top-2 left-3 text-xs text-(--color-text-muted) hidden sm:flex items-center gap-1">
+							<span className="absolute top-2 left-3 text-xs text-text-muted hidden sm:flex items-center gap-1">
 								<Keyboard size={12} />
 								{i + 1}
 							</span>
@@ -349,8 +349,8 @@ function QuizStart({ onStart }: { onStart: () => void }) {
 				</>
 			) : (
 				<div className="flex flex-col items-center justify-center py-16 gap-4">
-					<BarChart3 size={48} className="text-(--color-text-muted)" />
-					<p className="text-(--color-text-secondary) text-center max-w-md">
+					<BarChart3 size={48} className="text-text-muted" />
+					<p className="text-text-secondary text-center max-w-md">
 						{t("analytics.noData")}
 					</p>
 				</div>

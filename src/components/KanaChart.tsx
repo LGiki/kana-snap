@@ -44,7 +44,10 @@ export function KanaChart() {
 	const animateRef = useCallback((el: HTMLDivElement | null) => {
 		if (el && !animatedElements.current.has(el)) {
 			animatedElements.current.add(el);
-			autoAnimate(el);
+			autoAnimate(el, {
+				duration: 250,
+				easing: 'ease-in-out',
+			});
 		}
 	}, []);
 
@@ -114,7 +117,7 @@ export function KanaChart() {
 					className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors ${
 						isShuffled
 							? "bg-primary-600 text-white border-primary-600"
-							: "border-(--color-border) bg-(--color-surface) text-(--color-text-secondary) hover:bg-(--color-surface-hover)"
+							: "border-border bg-surface text-text-secondary hover:bg-surface-hover"
 					}`}
 				>
 					<Shuffle size={16} />
@@ -125,7 +128,7 @@ export function KanaChart() {
 			{/* Groups */}
 			{groups.map((group) => (
 				<section key={group.id}>
-					<h2 className="text-lg font-semibold mb-3 text-(--color-text-primary)">
+					<h2 className="text-lg font-semibold mb-3 text-text-primary">
 						{t(group.nameKey)}
 					</h2>
 					<div

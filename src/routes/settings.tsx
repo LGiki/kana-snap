@@ -41,15 +41,15 @@ function ToggleSwitch({
 			role="switch"
 			aria-checked={checked}
 			onClick={() => onChange(!checked)}
-			className="w-full flex items-center justify-between gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
+			className="w-full flex items-center justify-between gap-3 p-3 rounded-xl border border-border hover:bg-surface-hover transition-colors text-left"
 		>
 			<div className="flex flex-col gap-0.5">
 				<span className="text-sm font-medium">{label}</span>
-				<span className="text-xs text-(--color-text-muted)">{description}</span>
+				<span className="text-xs text-text-muted">{description}</span>
 			</div>
 			<div
 				className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${
-					checked ? "bg-primary-500" : "bg-(--color-border)"
+					checked ? "bg-primary-500" : "bg-border"
 				}`}
 			>
 				<div
@@ -237,8 +237,8 @@ function SettingsPage() {
 			<h1 className="text-2xl font-bold">{t("settings.title")}</h1>
 
 			{/* General */}
-			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
 					{t("settings.sectionGeneral")}
 				</h2>
 				<div className="px-4 pb-4 space-y-4">
@@ -254,7 +254,7 @@ function SettingsPage() {
 									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
 										theme === mode
 											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-(--color-border) hover:bg-(--color-surface-hover)"
+											: "border-border hover:bg-surface-hover"
 									}`}
 								>
 									<Icon
@@ -262,7 +262,7 @@ function SettingsPage() {
 										className={
 											theme === mode
 												? "text-primary-600 dark:text-primary-400"
-												: "text-(--color-text-secondary)"
+												: "text-text-secondary"
 										}
 									/>
 									<span className="text-sm font-medium">{label}</span>
@@ -282,7 +282,7 @@ function SettingsPage() {
 									className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all ${
 										colorScheme === scheme.id
 											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-(--color-border) hover:bg-(--color-surface-hover)"
+											: "border-border hover:bg-surface-hover"
 									}`}
 								>
 									<span
@@ -310,7 +310,7 @@ function SettingsPage() {
 									className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
 										language === code
 											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
-											: "border-(--color-border) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
+											: "border-border hover:bg-surface-hover text-text-primary"
 									}`}
 								>
 									{label}
@@ -322,8 +322,8 @@ function SettingsPage() {
 			</section>
 
 			{/* Kana Chart */}
-			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
 					{t("settings.sectionChart")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
@@ -337,7 +337,7 @@ function SettingsPage() {
 								className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
 									kanaCardClickAction === action
 										? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-										: "border-(--color-border) hover:bg-(--color-surface-hover)"
+										: "border-border hover:bg-surface-hover"
 								}`}
 							>
 								<Icon
@@ -345,7 +345,7 @@ function SettingsPage() {
 									className={
 										kanaCardClickAction === action
 											? "text-primary-600 dark:text-primary-400"
-											: "text-(--color-text-secondary)"
+											: "text-text-secondary"
 									}
 								/>
 								<span className="text-sm font-medium">{label}</span>
@@ -356,8 +356,8 @@ function SettingsPage() {
 			</section>
 
 			{/* Learn */}
-			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
 					{t("settings.sectionLearn")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
@@ -377,8 +377,8 @@ function SettingsPage() {
 			</section>
 
 			{/* Quiz */}
-			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
 					{t("settings.sectionQuiz")}
 				</h2>
 				<div className="px-4 pb-4 space-y-4">
@@ -393,7 +393,7 @@ function SettingsPage() {
 									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
 										quizAdvanceMode === mode
 											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-(--color-border) hover:bg-(--color-surface-hover)"
+											: "border-border hover:bg-surface-hover"
 									}`}
 								>
 									<Icon
@@ -401,7 +401,7 @@ function SettingsPage() {
 										className={
 											quizAdvanceMode === mode
 												? "text-primary-600 dark:text-primary-400"
-												: "text-(--color-text-secondary)"
+												: "text-text-secondary"
 										}
 									/>
 									<span className="text-sm font-medium">{label}</span>
@@ -411,7 +411,7 @@ function SettingsPage() {
 					</div>
 					{quizAdvanceMode === "auto" && (
 						<div className="space-y-2">
-							<h3 className="text-sm text-(--color-text-secondary)">
+							<h3 className="text-sm text-text-secondary">
 								{t("settings.quizAdvanceDelay")}
 							</h3>
 							<div className="grid grid-cols-5 gap-2">
@@ -423,7 +423,7 @@ function SettingsPage() {
 										className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
 											quizAutoAdvanceDelay === seconds
 												? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
-												: "border-(--color-border) hover:bg-(--color-surface-hover) text-(--color-text-primary)"
+												: "border-border hover:bg-surface-hover text-text-primary"
 										}`}
 									>
 										{t("settings.quizAdvanceDelaySeconds", { seconds })}
@@ -436,25 +436,25 @@ function SettingsPage() {
 			</section>
 
 			{/* Data */}
-			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-(--color-text-secondary) uppercase tracking-wider">
+			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
 					{t("settings.sectionData")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
 					<button
 						type="button"
 						onClick={handleExport}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
+						className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-surface-hover transition-colors text-left"
 					>
-						<Download size={20} className="text-(--color-text-secondary)" />
+						<Download size={20} className="text-text-secondary" />
 						<span className="font-medium">{t("settings.export")}</span>
 					</button>
 					<button
 						type="button"
 						onClick={handleImport}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-(--color-border) hover:bg-(--color-surface-hover) transition-colors text-left"
+						className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-surface-hover transition-colors text-left"
 					>
-						<Upload size={20} className="text-(--color-text-secondary)" />
+						<Upload size={20} className="text-text-secondary" />
 						<span className="font-medium">{t("settings.import")}</span>
 					</button>
 					<input
@@ -476,7 +476,7 @@ function SettingsPage() {
 			</section>
 
 			{/* About */}
-			<section className="rounded-2xl border border-(--color-border) bg-(--color-surface) overflow-hidden">
+			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
 				<div className="px-4 pt-4 pb-3 flex flex-col items-center gap-1">
 					<AppIcon size={56} />
 					<span className="text-lg font-bold text-primary-600 dark:text-primary-400">
@@ -485,19 +485,19 @@ function SettingsPage() {
 				</div>
 				<div className="px-4 pb-4 space-y-2 text-sm">
 					<div className="flex justify-between">
-						<span className="text-(--color-text-secondary)">
+						<span className="text-text-secondary">
 							{t("settings.version")}
 						</span>
 						<span className="font-mono">{__APP_VERSION__}</span>
 					</div>
 					<div className="flex justify-between">
-						<span className="text-(--color-text-secondary)">
+						<span className="text-text-secondary">
 							{t("settings.commitHash")}
 						</span>
 						<span className="font-mono">{__COMMIT_HASH__}</span>
 					</div>
 					<div className="flex justify-between">
-						<span className="text-(--color-text-secondary)">
+						<span className="text-text-secondary">
 							{t("settings.commitDate")}
 						</span>
 						<span className="font-mono">

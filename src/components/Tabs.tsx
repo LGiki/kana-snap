@@ -43,7 +43,7 @@ export function Tabs<T extends string>({
 	return (
 		<div
 			role="tablist"
-			className="flex rounded-lg border border-(--color-border) overflow-hidden w-fit"
+			className="flex rounded-lg border border-border overflow-hidden w-fit"
 		>
 			{tabs.map((tab, i) => {
 				const selected = value === tab.value;
@@ -62,7 +62,7 @@ export function Tabs<T extends string>({
 						className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium transition-colors ${
 							selected
 								? "bg-primary-600 text-white"
-								: "bg-(--color-surface) text-(--color-text-secondary) hover:bg-(--color-surface-hover)"
+								: "bg-surface text-text-secondary hover:bg-surface-hover"
 						}`}
 					>
 						{tab.icon &&
