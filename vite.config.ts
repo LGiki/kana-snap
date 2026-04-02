@@ -5,7 +5,6 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
 
@@ -19,6 +18,9 @@ try {
 }
 
 export default defineConfig({
+	resolve: {
+		tsconfigPaths: true,
+	},
 	define: {
 		__APP_VERSION__: JSON.stringify(pkg.version),
 		__COMMIT_HASH__: JSON.stringify(commitHash),
@@ -31,7 +33,6 @@ export default defineConfig({
 		}),
 		react(),
 		tailwindcss(),
-		tsconfigPaths({ projects: ["./tsconfig.json"] }),
 		VitePWA({
 			registerType: "autoUpdate",
 			includeAssets: ["icon.svg", "apple-touch-icon-180x180.png"],
