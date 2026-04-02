@@ -74,23 +74,23 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.currentStreak"),
 			value: currentStreak,
 			unit: t("analytics.days"),
-			color: "text-orange-500",
-			bgColor: "bg-orange-100 dark:bg-orange-900/30",
+			color: "text-primary-600 dark:text-primary-400",
+			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 		{
 			icon: Award,
 			label: t("analytics.longestStreak"),
 			value: longestStreak,
 			unit: t("analytics.days"),
-			color: "text-yellow-500",
-			bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
+			color: "text-primary-500 dark:text-primary-400",
+			bgColor: "bg-primary-50 dark:bg-primary-900/20",
 		},
 		{
 			icon: Calendar,
 			label: t("analytics.quizzesCompleted"),
 			value: totalQuizzes,
 			unit: t("analytics.quizzes"),
-			color: "text-primary-500",
+			color: "text-primary-600 dark:text-primary-400",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 		{
@@ -98,18 +98,17 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.averageScore"),
 			value: `${avgScore.toFixed(1)}/10`,
 			unit: "",
-			color: "text-green-500",
-			bgColor: "bg-green-100 dark:bg-green-900/30",
+			color: "text-primary-500 dark:text-primary-400",
+			bgColor: "bg-primary-50 dark:bg-primary-900/20",
 		},
 	];
 
 	return (
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-			{stats.map((stat, i) => (
+			{stats.map((stat) => (
 				<div
 					key={stat.label}
-					className="flex items-center gap-4 p-4 rounded-xl border border-(--color-border) bg-(--color-surface) animate-slide-up-fade"
-					style={{ animationDelay: `${i * 0.06}s` }}
+					className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface"
 				>
 					<div className={`p-3 rounded-full ${stat.bgColor}`}>
 						<stat.icon size={24} className={stat.color} />
@@ -120,13 +119,13 @@ export function StreakCounter({ records }: StreakCounterProps) {
 							{stat.unit && (
 								<>
 									{" "}
-									<span className="text-sm font-normal text-(--color-text-muted)">
+									<span className="text-sm font-normal text-text-muted">
 										{stat.unit}
 									</span>
 								</>
 							)}
 						</p>
-						<p className="text-sm text-(--color-text-secondary)">
+						<p className="text-sm text-text-secondary">
 							{stat.label}
 						</p>
 					</div>

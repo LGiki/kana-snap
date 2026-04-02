@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getColorScheme } from "#/data/colorSchemes";
 import type { QuizRecord } from "#/stores/useAppStore";
+import { useAppStore } from "#/stores/useAppStore";
 import { getLocalDateKey } from "#/utils/date";
 
 interface HeatmapProps {
@@ -16,15 +18,25 @@ function getDaysBetween(start: Date, end: Date): number {
 }
 
 const EMPTY_COLOR = "var(--color-surface-alt)";
-const INTENSITY_COLORS = ["#c6e48b", "#7bc96f", "#239a3b", "#196127"] as const;
 
 export function Heatmap({ records }: HeatmapProps) {
 	const { t, i18n } = useTranslation();
+	const colorSchemeId = useAppStore((s) => s.colorScheme);
 	const [tooltip, setTooltip] = useState<{
 		text: string;
 		x: number;
 		y: number;
 	} | null>(null);
+
+	const intensityColors = useMemo(() => {
+		const scheme = getColorScheme(colorSchemeId);
+		return [
+			scheme.colors["--color-primary-200"],
+			scheme.colors["--color-primary-400"],
+			scheme.colors["--color-primary-600"],
+			scheme.colors["--color-primary-800"],
+		] as const;
+	}, [colorSchemeId]);
 
 	const { cells, weeks, maxCount, months } = useMemo(() => {
 		const countMap = new Map<string, number>();
@@ -85,7 +97,7 @@ export function Heatmap({ records }: HeatmapProps) {
 		if (count === 0 || maxCount === 0) return EMPTY_COLOR;
 		const intensity = count / maxCount;
 		const index = Math.min(Math.floor(intensity * 4), 3);
-		return INTENSITY_COLORS[index];
+		return intensityColors[index];
 	};
 
 	const cellSize = 13;
@@ -153,9 +165,9 @@ export function Heatmap({ records }: HeatmapProps) {
 			</div>
 
 			{/* Legend */}
-			<div className="flex items-center gap-2 text-xs text-(--color-text-muted)">
+			<div className="flex items-center gap-2 text-xs text-text-muted">
 				<span>{t("analytics.less")}</span>
-				{[EMPTY_COLOR, ...INTENSITY_COLORS].map((color) => (
+				{[EMPTY_COLOR, ...intensityColors].map((color) => (
 					<div
 						key={color}
 						className="w-3 h-3 rounded-sm"

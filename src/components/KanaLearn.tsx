@@ -4,26 +4,19 @@ import {
 	useCallback,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
+import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana, speakKana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
 
 const STREAK_INTERVAL = 10;
 const POP_QUIZ_INTERVAL = 20;
 const OPTIONS_COUNT = 4;
-
-const confettiColors = [
-	"#6366f1",
-	"#f43f5e",
-	"#10b981",
-	"#f59e0b",
-	"#8b5cf6",
-	"#0ea5e9",
-];
 
 /** Pre-shuffled kana source used for modulo-based indexing (no infinite array growth). */
 const BASE_KANA = getAllKana();
@@ -84,13 +77,13 @@ const LearnSlide = memo(function LearnSlide({ kana }: { kana: Kana }) {
 				<button
 					type="button"
 					onClick={() => speakKana(kana.hiragana)}
-					className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-(--color-text-primary) transition-transform active:scale-95 cursor-pointer"
+					className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary transition-transform active:scale-95 cursor-pointer"
 					aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
 				>
 					{kana.hiragana}
 				</button>
 
-				<div className="text-4xl sm:text-5xl md:text-6xl text-(--color-text-secondary) mt-4">
+				<div className="text-4xl sm:text-5xl md:text-6xl text-text-secondary mt-4">
 					{kana.katakana}
 				</div>
 
@@ -120,21 +113,21 @@ function PopQuizOverlay({
 	const isCorrect = selected === question.correctIndex;
 
 	return (
-		<div className="fixed inset-0 z-[60] bg-(--color-surface)/95 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+		<div className="fixed inset-0 z-60 bg-surface/95 backdrop-blur-sm flex items-center justify-center animate-fade-in">
 			<div className="max-w-sm w-full mx-4 space-y-6">
 				<div className="text-center space-y-2">
 					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-sm font-semibold">
 						<Zap size={16} />
 						{t("learn.popQuizTitle")}
 					</div>
-					<p className="text-sm text-(--color-text-secondary)">
+					<p className="text-sm text-text-secondary">
 						{t("learn.popQuizSelectRomaji")}
 					</p>
 				</div>
 
 				<div className="text-center py-4">
 					<p className="text-8xl">{question.kana.hiragana}</p>
-					<p className="text-3xl text-(--color-text-secondary) mt-3">
+					<p className="text-3xl text-text-secondary mt-3">
 						{question.kana.katakana}
 					</p>
 				</div>
@@ -142,7 +135,7 @@ function PopQuizOverlay({
 				<div className="grid grid-cols-2 gap-3">
 					{question.options.map((option, i) => {
 						let style =
-							"border-(--color-border) bg-(--color-surface) hover:bg-(--color-surface-hover)";
+							"border-border bg-surface hover:bg-surface-hover";
 						let animClass = "";
 						if (selected !== null) {
 							if (i === question.correctIndex) {
@@ -214,7 +207,7 @@ function StreakToast({
 
 	return (
 		<div
-			className={`fixed top-20 sm:top-20 left-1/2 z-[55] px-4 py-2.5 rounded-full bg-primary-600 text-white text-sm font-semibold shadow-lg whitespace-nowrap ${
+			className={`fixed top-20 sm:top-20 left-1/2 z-55 px-4 py-2.5 rounded-full bg-primary-600 text-white text-sm font-semibold shadow-lg whitespace-nowrap ${
 				visible ? "animate-toast-in" : "animate-toast-out"
 			}`}
 		>
@@ -225,6 +218,18 @@ function StreakToast({
 
 export function KanaLearn() {
 	const { t } = useTranslation();
+	const colorSchemeId = useAppStore((s) => s.colorScheme);
+	const confettiColors = useMemo(() => {
+		const scheme = getColorScheme(colorSchemeId);
+		return [
+			scheme.colors["--color-primary-200"],
+			scheme.colors["--color-primary-300"],
+			scheme.colors["--color-primary-400"],
+			scheme.colors["--color-primary-500"],
+			scheme.colors["--color-primary-600"],
+			scheme.colors["--color-primary-700"],
+		];
+	}, [colorSchemeId]);
 
 	// Fixed shuffled pool — items are looked up with modulo, never appended.
 	const [pool] = useState(buildShuffledPool);
@@ -414,7 +419,7 @@ export function KanaLearn() {
 	}
 
 	return (
-		<div className="fixed top-0 sm:top-14 left-0 right-0 bottom-16 sm:bottom-0 z-40 bg-(--color-surface) flex flex-col">
+		<div className="fixed top-0 sm:top-14 left-0 right-0 bottom-16 sm:bottom-0 z-40 bg-surface flex flex-col">
 			<div
 				ref={containerRef}
 				className="flex-1 overflow-y-auto snap-y snap-mandatory learn-scrollbar-none relative"
@@ -425,14 +430,14 @@ export function KanaLearn() {
 			</div>
 
 			{/* Auto-play audio toggle */}
-			<div className="fixed right-4 top-4 sm:top-auto sm:bottom-4 z-[45] flex flex-col items-center gap-3">
+			<div className="fixed right-4 top-4 sm:top-auto sm:bottom-4 z-45 flex flex-col items-center gap-3">
 				<button
 					type="button"
 					onClick={() => setLearnAutoPlayAudio(!learnAutoPlayAudio)}
 					className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
 						learnAutoPlayAudio
 							? "bg-primary-600 text-white hover:bg-primary-700"
-							: "bg-black/15 dark:bg-white/15 text-(--color-text-primary) hover:bg-black/25 dark:hover:bg-white/25"
+							: "bg-black/15 dark:bg-white/15 text-text-primary hover:bg-black/25 dark:hover:bg-white/25"
 					}`}
 					aria-label={t("learn.autoPlayAudio")}
 				>
@@ -442,7 +447,7 @@ export function KanaLearn() {
 
 			{/* Scroll hint on first slide */}
 			{currentIndex === 0 && (
-				<div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-[45] flex flex-col items-center text-(--color-text-muted) animate-bounce">
+				<div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted animate-bounce">
 					<ChevronDown size={24} />
 				</div>
 			)}

@@ -1,7 +1,9 @@
 import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
+import { getColorScheme } from "#/data/colorSchemes";
+import { useAppStore } from "#/stores/useAppStore";
 
 interface AnswerRecord {
 	question: {
@@ -19,16 +21,6 @@ interface QuizResultProps {
 	onRetry: () => void;
 	onBack: () => void;
 }
-
-const CONFETTI_COLORS = [
-	"#f59e0b",
-	"#ef4444",
-	"#8b5cf6",
-	"#10b981",
-	"#3b82f6",
-	"#ec4899",
-	"#f97316",
-];
 
 function useCountUp(target: number, duration = 600): number {
 	const [value, setValue] = useState(0);
@@ -65,6 +57,19 @@ function useCountUp(target: number, duration = 600): number {
 
 export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 	const { t } = useTranslation();
+	const colorSchemeId = useAppStore((s) => s.colorScheme);
+	const confettiColors = useMemo(() => {
+		const scheme = getColorScheme(colorSchemeId);
+		return [
+			scheme.colors["--color-primary-200"],
+			scheme.colors["--color-primary-300"],
+			scheme.colors["--color-primary-400"],
+			scheme.colors["--color-primary-500"],
+			scheme.colors["--color-primary-600"],
+			scheme.colors["--color-primary-700"],
+		];
+	}, [colorSchemeId]);
+
 	const score = answers.filter((a) => a.correct).length;
 	const total = answers.length;
 	const incorrect = answers.filter((a) => !a.correct);
@@ -79,7 +84,7 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 					height={window.innerHeight}
 					recycle={false}
 					numberOfPieces={200}
-					colors={CONFETTI_COLORS}
+					colors={confettiColors}
 					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
 				/>
 			)}
@@ -87,23 +92,18 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 			{/* Score */}
 			<div className="text-center py-8 space-y-4 animate-slide-up-fade">
 				<div
-					className={`inline-flex items-center justify-center w-20 h-20 rounded-full ${
-						isPerfect
-							? "bg-yellow-100 dark:bg-yellow-900/30 animate-trophy-bounce"
-							: "bg-primary-100 dark:bg-primary-900/30"
+					className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-900/30 ${
+						isPerfect ? "animate-trophy-bounce" : ""
 					}`}
 				>
-					<Trophy
-						size={40}
-						className={isPerfect ? "text-yellow-500" : "text-primary-500"}
-					/>
+					<Trophy size={40} className="text-primary-500" />
 				</div>
 				<h1 className="text-2xl font-bold">{t("quiz.result")}</h1>
 				<p className="text-4xl font-bold text-primary-600 dark:text-primary-400 animate-score-pop">
 					{t("quiz.score", { score: displayScore, total })}
 				</p>
 				{isPerfect && (
-					<p className="text-yellow-600 dark:text-yellow-400 font-medium animate-fade-in stagger-2">
+					<p className="text-primary-600 dark:text-primary-400 font-medium animate-fade-in stagger-2">
 						{t("quiz.perfect")}
 					</p>
 				)}
@@ -119,12 +119,12 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 						{incorrect.map((a, i) => (
 							<div
 								key={i}
-								className="flex items-center justify-between p-3 rounded-lg border border-(--color-border) bg-(--color-surface-alt) animate-slide-up-fade"
+								className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-alt animate-slide-up-fade"
 								style={{ animationDelay: `${0.1 + i * 0.06}s` }}
 							>
 								<div className="flex items-center gap-4">
 									<span className="text-2xl">{a.question.kana.hiragana}</span>
-									<span className="text-(--color-text-muted)">
+									<span className="text-text-muted">
 										{a.question.kana.romaji}
 									</span>
 								</div>
@@ -149,7 +149,7 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 				<button
 					type="button"
 					onClick={onBack}
-					className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-(--color-border) bg-(--color-surface-alt) hover:bg-(--color-surface) active:scale-95 transition-all"
+					className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-surface-alt hover:bg-surface active:scale-95 transition-all"
 				>
 					<ArrowLeft size={18} />
 					{t("quiz.back")}
