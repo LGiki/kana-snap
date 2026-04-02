@@ -134,8 +134,7 @@ function PopQuizOverlay({
 
 				<div className="grid grid-cols-2 gap-3">
 					{question.options.map((option, i) => {
-						let style =
-							"border-border bg-surface hover:bg-surface-hover";
+						let style = "border-border bg-surface hover:bg-surface-hover";
 						let animClass = "";
 						if (selected !== null) {
 							if (i === question.correctIndex) {

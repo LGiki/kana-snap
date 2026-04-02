@@ -125,9 +125,7 @@ export function StreakCounter({ records }: StreakCounterProps) {
 								</>
 							)}
 						</p>
-						<p className="text-sm text-text-secondary">
-							{stat.label}
-						</p>
+						<p className="text-sm text-text-secondary">{stat.label}</p>
 					</div>
 				</div>
 			))}

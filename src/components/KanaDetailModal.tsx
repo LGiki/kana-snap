@@ -81,9 +81,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 					</div>
 
 					<div>
-						<p className="text-xs text-text-muted mb-1">
-							{t("modal.romaji")}
-						</p>
+						<p className="text-xs text-text-muted mb-1">{t("modal.romaji")}</p>
 						<p className="text-2xl font-medium text-primary-600 dark:text-primary-400">
 							{kana.romaji}
 						</p>

@@ -46,7 +46,7 @@ export function KanaChart() {
 			animatedElements.current.add(el);
 			autoAnimate(el, {
 				duration: 250,
-				easing: 'ease-in-out',
+				easing: "ease-in-out",
 			});
 		}
 	}, []);

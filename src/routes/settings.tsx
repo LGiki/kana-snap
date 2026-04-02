@@ -1,3 +1,4 @@
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	Download,
@@ -11,7 +12,6 @@ import {
 	Upload,
 	Volume2,
 } from "lucide-react";
-import { SiGithub } from '@icons-pack/react-simple-icons';
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
@@ -486,9 +486,7 @@ function SettingsPage() {
 				</div>
 				<div className="px-4 pb-4 space-y-2 text-sm">
 					<div className="flex justify-between">
-						<span className="text-text-secondary">
-							{t("settings.version")}
-						</span>
+						<span className="text-text-secondary">{t("settings.version")}</span>
 						<a
 							href="https://github.com/LGiki/kana-snap"
 							target="_blank"

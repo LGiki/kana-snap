@@ -70,10 +70,7 @@ export function ConfirmDialog({
 							/>
 						</div>
 					)}
-					<h3
-						id={titleId}
-						className="text-lg font-semibold text-text-primary"
-					>
+					<h3 id={titleId} className="text-lg font-semibold text-text-primary">
 						{title}
 					</h3>
 					<p id={descId} className="text-sm text-text-secondary">
