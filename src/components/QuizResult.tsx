@@ -1,5 +1,6 @@
 import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 
 interface AnswerRecord {
@@ -28,46 +29,6 @@ const CONFETTI_COLORS = [
 	"#ec4899",
 	"#f97316",
 ];
-
-function Confetti() {
-	const containerRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		const prefersReduced = window.matchMedia(
-			"(prefers-reduced-motion: reduce)",
-		).matches;
-		if (prefersReduced || !containerRef.current) return;
-
-		const container = containerRef.current;
-		const pieces: HTMLDivElement[] = [];
-
-		for (let i = 0; i < 40; i++) {
-			const piece = document.createElement("div");
-			piece.className = "confetti-piece";
-			piece.style.left = `${Math.random() * 100}vw`;
-			piece.style.backgroundColor =
-				CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-			piece.style.animationDuration = `${1.5 + Math.random() * 2}s`;
-			piece.style.animationDelay = `${Math.random() * 0.5}s`;
-			piece.style.width = `${6 + Math.random() * 6}px`;
-			piece.style.height = `${6 + Math.random() * 6}px`;
-			piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
-			container.appendChild(piece);
-			pieces.push(piece);
-		}
-
-		const timeout = setTimeout(() => {
-			for (const p of pieces) p.remove();
-		}, 4000);
-
-		return () => {
-			clearTimeout(timeout);
-			for (const p of pieces) p.remove();
-		};
-	}, []);
-
-	return <div ref={containerRef} />;
-}
 
 function useCountUp(target: number, duration = 600): number {
 	const [value, setValue] = useState(0);
@@ -112,7 +73,16 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 
 	return (
 		<div className="max-w-lg mx-auto space-y-8">
-			{isPerfect && <Confetti />}
+			{isPerfect && (
+				<ReactConfetti
+					width={window.innerWidth}
+					height={window.innerHeight}
+					recycle={false}
+					numberOfPieces={200}
+					colors={CONFETTI_COLORS}
+					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
+				/>
+			)}
 
 			{/* Score */}
 			<div className="text-center py-8 space-y-4 animate-slide-up-fade">

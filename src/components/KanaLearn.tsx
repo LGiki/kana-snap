@@ -7,6 +7,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana, speakKana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
@@ -23,25 +24,6 @@ const confettiColors = [
 	"#8b5cf6",
 	"#0ea5e9",
 ];
-
-const CONFETTI_COUNT = 20;
-
-function triggerConfetti() {
-	const container = document.createElement("div");
-	container.setAttribute("aria-hidden", "true");
-	for (let i = 0; i < CONFETTI_COUNT; i++) {
-		const piece = document.createElement("div");
-		piece.className = "confetti-piece";
-		piece.style.left = `${Math.random() * 100}vw`;
-		piece.style.backgroundColor =
-			confettiColors[Math.floor(Math.random() * confettiColors.length)];
-		piece.style.animationDuration = `${1.5 + Math.random() * 2}s`;
-		piece.style.animationDelay = `${Math.random() * 0.5}s`;
-		container.appendChild(piece);
-	}
-	document.body.appendChild(container);
-	setTimeout(() => container.remove(), 4000);
-}
 
 /** Pre-shuffled kana source used for modulo-based indexing (no infinite array growth). */
 const BASE_KANA = getAllKana();
@@ -273,6 +255,9 @@ export function KanaLearn() {
 	const [toastVisible, setToastVisible] = useState(false);
 	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+	// Confetti state
+	const [showConfetti, setShowConfetti] = useState(false);
+
 	// Pop quiz state
 	const [popQuiz, setPopQuiz] = useState<PopQuizQuestion | null>(null);
 	const lastQuizIndexRef = useRef(0);
@@ -385,11 +370,8 @@ export function KanaLearn() {
 			Math.floor(viewedCount / STREAK_INTERVAL) * STREAK_INTERVAL;
 		if (milestone >= STREAK_INTERVAL && milestone > lastMilestone) {
 			setLastMilestone(milestone);
-			const schedule =
-				"requestIdleCallback" in window
-					? requestIdleCallback
-					: (cb: () => void) => setTimeout(cb, 0);
-			schedule(() => triggerConfetti());
+			setShowConfetti(true);
+			setTimeout(() => setShowConfetti(false), 4000);
 			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
 			setToastMessage(t("learn.streakMilestone", { count: milestone }));
 			setToastVisible(true);
@@ -463,6 +445,18 @@ export function KanaLearn() {
 				<div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-[45] flex flex-col items-center text-(--color-text-muted) animate-bounce">
 					<ChevronDown size={24} />
 				</div>
+			)}
+
+			{/* Streak confetti */}
+			{showConfetti && (
+				<ReactConfetti
+					width={window.innerWidth}
+					height={window.innerHeight}
+					recycle={false}
+					numberOfPieces={150}
+					colors={confettiColors}
+					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
+				/>
 			)}
 
 			{/* Streak toast */}
