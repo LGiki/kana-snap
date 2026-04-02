@@ -1,3 +1,4 @@
+import { useBlocker } from "@tanstack/react-router";
 import { BarChart3, Keyboard, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -5,6 +6,7 @@ import { getAllKana, type Kana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
 import { getLocalDateKey } from "#/utils/date";
 import { weightedRandomSelect } from "#/utils/quiz";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { Heatmap } from "./Heatmap";
 import { LineChart } from "./LineChart";
 import { QuizResult } from "./QuizResult";
@@ -87,6 +89,11 @@ export function Quiz() {
 	const [finished, setFinished] = useState(false);
 
 	const currentQuestion = questions[currentIndex];
+	const isQuizInProgress = started && !finished;
+
+	const { proceed, reset, status } = useBlocker({
+		condition: isQuizInProgress,
+	});
 
 	const startQuiz = useCallback(() => {
 		setQuestions(generateQuestions(mistakeWeights));
@@ -203,102 +210,115 @@ export function Quiz() {
 			: currentQuestion.kana.romaji;
 
 	return (
-		<div className="max-w-lg mx-auto space-y-6">
-			{/* Progress */}
-			<div className="space-y-2">
-				<p className="text-sm text-text-secondary">
-					{t("quiz.questionOf", {
-						current: currentIndex + 1,
-						total: QUIZ_LENGTH,
-					})}
-				</p>
-				<div className="h-2 rounded-full bg-surface-alt overflow-hidden">
-					<div
-						className="h-full bg-primary-500 rounded-full transition-all duration-300"
-						style={{ width: `${((currentIndex + 1) / QUIZ_LENGTH) * 100}%` }}
-					/>
+		<>
+			<ConfirmDialog
+				open={status === "blocked"}
+				title={t("quiz.leaveTitle")}
+				message={t("quiz.leaveMessage")}
+				confirmLabel={t("quiz.leaveConfirm")}
+				cancelLabel={t("common.cancel")}
+				onConfirm={proceed}
+				onCancel={reset}
+			/>
+			<div className="max-w-lg mx-auto space-y-6">
+				{/* Progress */}
+				<div className="space-y-2">
+					<p className="text-sm text-text-secondary">
+						{t("quiz.questionOf", {
+							current: currentIndex + 1,
+							total: QUIZ_LENGTH,
+						})}
+					</p>
+					<div className="h-2 rounded-full bg-surface-alt overflow-hidden">
+						<div
+							className="h-full bg-primary-500 rounded-full transition-all duration-300"
+							style={{
+								width: `${((currentIndex + 1) / QUIZ_LENGTH) * 100}%`,
+							}}
+						/>
+					</div>
 				</div>
-			</div>
 
-			{/* Question */}
-			<div className="text-center py-8">
-				<p className="text-sm text-text-muted mb-2">
-					{currentQuestion.type === "kana-to-romaji"
-						? t("quiz.selectRomaji")
-						: t("quiz.selectKana")}
-				</p>
-				<p className="text-7xl">{prompt}</p>
-			</div>
+				{/* Question */}
+				<div className="text-center py-8">
+					<p className="text-sm text-text-muted mb-2">
+						{currentQuestion.type === "kana-to-romaji"
+							? t("quiz.selectRomaji")
+							: t("quiz.selectKana")}
+					</p>
+					<p className="text-7xl">{prompt}</p>
+				</div>
 
-			{/* Options */}
-			<div className="grid grid-cols-2 gap-3">
-				{currentQuestion.options.map((option, i) => {
-					let style =
-						"border-border bg-surface hover:bg-surface-hover";
-					let animClass = "";
-					if (selectedIndex !== null) {
-						if (i === currentQuestion.correctIndex) {
-							style =
-								"border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400";
-							animClass = "animate-pulse-correct";
-						} else if (
-							i === selectedIndex &&
-							!answers[answers.length - 1]?.correct
-						) {
-							style =
-								"border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400";
-							animClass = "animate-shake";
+				{/* Options */}
+				<div className="grid grid-cols-2 gap-3">
+					{currentQuestion.options.map((option, i) => {
+						let style =
+							"border-border bg-surface hover:bg-surface-hover";
+						let animClass = "";
+						if (selectedIndex !== null) {
+							if (i === currentQuestion.correctIndex) {
+								style =
+									"border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400";
+								animClass = "animate-pulse-correct";
+							} else if (
+								i === selectedIndex &&
+								!answers[answers.length - 1]?.correct
+							) {
+								style =
+									"border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400";
+								animClass = "animate-shake";
+							}
 						}
-					}
 
-					return (
-						<button
-							key={`${currentIndex}-${i}`}
-							type="button"
-							onClick={() => handleSelect(i)}
-							disabled={selectedIndex !== null}
-							className={`relative p-4 rounded-xl border-2 text-lg font-medium transition-all ${style} ${animClass} ${
-								selectedIndex === null
-									? "cursor-pointer active:scale-95"
-									: "cursor-default"
+						return (
+							<button
+								key={`${currentIndex}-${i}`}
+								type="button"
+								onClick={() => handleSelect(i)}
+								disabled={selectedIndex !== null}
+								className={`relative p-4 rounded-xl border-2 text-lg font-medium transition-all ${style} ${animClass} ${
+									selectedIndex === null
+										? "cursor-pointer active:scale-95"
+										: "cursor-default"
+								}`}
+							>
+								<span className="absolute top-2 left-3 text-xs text-text-muted hidden sm:flex items-center gap-1">
+									<Keyboard size={12} />
+									{i + 1}
+								</span>
+								{option}
+							</button>
+						);
+					})}
+				</div>
+
+				{/* Feedback & Next */}
+				{selectedIndex !== null && (
+					<div className="text-center space-y-4 animate-slide-up-fade">
+						<p
+							className={`text-lg font-medium ${
+								answers[answers.length - 1]?.correct
+									? "text-green-600 dark:text-green-400"
+									: "text-red-600 dark:text-red-400"
 							}`}
 						>
-							<span className="absolute top-2 left-3 text-xs text-text-muted hidden sm:flex items-center gap-1">
-								<Keyboard size={12} />
-								{i + 1}
-							</span>
-							{option}
+							{answers[answers.length - 1]?.correct
+								? t("quiz.correct")
+								: t("quiz.incorrect")}
+						</p>
+						<button
+							type="button"
+							onClick={handleNext}
+							className="px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
+						>
+							{currentIndex < questions.length - 1
+								? t("quiz.next")
+								: t("quiz.result")}
 						</button>
-					);
-				})}
+					</div>
+				)}
 			</div>
-
-			{/* Feedback & Next */}
-			{selectedIndex !== null && (
-				<div className="text-center space-y-4 animate-slide-up-fade">
-					<p
-						className={`text-lg font-medium ${
-							answers[answers.length - 1]?.correct
-								? "text-green-600 dark:text-green-400"
-								: "text-red-600 dark:text-red-400"
-						}`}
-					>
-						{answers[answers.length - 1]?.correct
-							? t("quiz.correct")
-							: t("quiz.incorrect")}
-					</p>
-					<button
-						type="button"
-						onClick={handleNext}
-						className="px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
-					>
-						{currentIndex < questions.length - 1
-							? t("quiz.next")
-							: t("quiz.result")}
-					</button>
-				</div>
-			)}
-		</div>
+		</>
 	);
 }
 

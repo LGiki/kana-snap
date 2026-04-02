@@ -40,6 +40,10 @@ export default {
 		incorrectAnswers: "Incorrect Answers",
 		yourAnswer: "Your answer",
 		correctAnswer: "Correct answer",
+		leaveTitle: "Leave Quiz?",
+		leaveMessage:
+			"You have an unfinished quiz. Your progress will be lost if you leave.",
+		leaveConfirm: "Leave",
 	},
 	analytics: {
 		title: "Learning Analytics",

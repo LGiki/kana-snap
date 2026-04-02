@@ -40,6 +40,10 @@ export default {
 		incorrectAnswers: "間違えた問題",
 		yourAnswer: "あなたの回答",
 		correctAnswer: "正解",
+		leaveTitle: "クイズを中断しますか？",
+		leaveMessage:
+			"クイズがまだ終わっていません。ページを離れると進捗が失われます。",
+		leaveConfirm: "離れる",
 	},
 	analytics: {
 		title: "学習分析",

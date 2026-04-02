@@ -19,7 +19,7 @@ export default {
 	modal: {
 		hiragana: "平假名",
 		katakana: "片假名",
-		romaji: "罗马字",
+		romaji: "罗马音",
 		playAudio: "播放发音",
 		close: "关闭",
 	},
@@ -27,7 +27,7 @@ export default {
 		title: "假名测验",
 		start: "开始测验",
 		questionOf: "第 {{current}} 题，共 {{total}} 题",
-		selectRomaji: "选择正确的罗马字",
+		selectRomaji: "选择正确的罗马音",
 		selectKana: "选择正确的假名",
 		correct: "正确！",
 		incorrect: "错误",
@@ -40,6 +40,9 @@ export default {
 		incorrectAnswers: "错误的题目",
 		yourAnswer: "你的回答",
 		correctAnswer: "正确答案",
+		leaveTitle: "离开测验？",
+		leaveMessage: "测验尚未完成，离开后进度将会丢失。",
+		leaveConfirm: "离开",
 	},
 	analytics: {
 		title: "学习分析",
@@ -60,7 +63,7 @@ export default {
 	learn: {
 		streakMilestone: "已学习 {{count}} 个假名！继续加油！",
 		popQuizTitle: "随堂测验！",
-		popQuizSelectRomaji: "这个假名的罗马字是什么？",
+		popQuizSelectRomaji: "这个假名的罗马音是什么？",
 		popQuizCorrect: "正确！",
 		popQuizWrong: "正确答案是 {{answer}}",
 		popQuizContinue: "继续",

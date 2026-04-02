@@ -40,6 +40,9 @@ export default {
 		incorrectAnswers: "錯誤的題目",
 		yourAnswer: "你的回答",
 		correctAnswer: "正確答案",
+		leaveTitle: "離開測驗？",
+		leaveMessage: "測驗尚未完成，離開後進度將會遺失。",
+		leaveConfirm: "離開",
 	},
 	analytics: {
 		title: "學習分析",
