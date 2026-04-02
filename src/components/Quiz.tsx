@@ -94,6 +94,7 @@ export function Quiz() {
 
 	const { proceed, reset, status } = useBlocker({
 		shouldBlockFn: () => isQuizInProgress,
+		enableBeforeUnload: isQuizInProgress,
 		withResolver: true,
 	});
 
@@ -320,8 +321,9 @@ export function Quiz() {
 				{/* Feedback & Next */}
 				{selectedIndex !== null && (
 					<div className="text-center space-y-4 animate-slide-up-fade">
-						<p
-							className={`text-lg font-medium ${
+						<output
+							aria-live="polite"
+							className={`block text-lg font-medium ${
 								answers[answers.length - 1]?.correct
 									? "text-green-600 dark:text-green-400"
 									: "text-red-600 dark:text-red-400"
@@ -330,7 +332,7 @@ export function Quiz() {
 							{answers[answers.length - 1]?.correct
 								? t("quiz.correct")
 								: t("quiz.incorrect")}
-						</p>
+						</output>
 						<button
 							type="button"
 							onClick={handleNext}
@@ -387,10 +389,27 @@ function QuizStart({ onStart }: { onStart: () => void }) {
 						tabs={modes}
 						value={visualizationMode}
 						onChange={setVisualizationMode}
+						id="quiz-viz"
 					/>
 
-					{visualizationMode === "heatmap" && <Heatmap records={quizHistory} />}
-					{visualizationMode === "line" && <LineChart records={quizHistory} />}
+					{visualizationMode === "heatmap" && (
+						<div
+							role="tabpanel"
+							id="quiz-viz-panel-heatmap"
+							aria-labelledby="quiz-viz-tab-heatmap"
+						>
+							<Heatmap records={quizHistory} />
+						</div>
+					)}
+					{visualizationMode === "line" && (
+						<div
+							role="tabpanel"
+							id="quiz-viz-panel-line"
+							aria-labelledby="quiz-viz-tab-line"
+						>
+							<LineChart records={quizHistory} />
+						</div>
+					)}
 				</>
 			) : (
 				<div className="flex flex-col items-center justify-center py-16 gap-4">

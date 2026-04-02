@@ -12,7 +12,7 @@ import {
 	Upload,
 	Volume2,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
@@ -36,17 +36,25 @@ function ToggleSwitch({
 	label: string;
 	description: string;
 }) {
+	const labelId = useId();
+	const descId = useId();
 	return (
 		<button
 			type="button"
 			role="switch"
 			aria-checked={checked}
+			aria-labelledby={labelId}
+			aria-describedby={descId}
 			onClick={() => onChange(!checked)}
 			className="w-full flex items-center justify-between gap-3 p-3 rounded-xl border border-border hover:bg-surface-hover transition-colors text-left"
 		>
 			<div className="flex flex-col gap-0.5">
-				<span className="text-sm font-medium">{label}</span>
-				<span className="text-xs text-text-muted">{description}</span>
+				<span id={labelId} className="text-sm font-medium">
+					{label}
+				</span>
+				<span id={descId} className="text-xs text-text-muted">
+					{description}
+				</span>
 			</div>
 			<div
 				className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${
@@ -80,6 +88,8 @@ function SettingsPage() {
 	const setTheme = useAppStore((s) => s.setTheme);
 	const setColorScheme = useAppStore((s) => s.setColorScheme);
 	const setLanguage = useAppStore((s) => s.setLanguage);
+	const chartAutoPlayAudio = useAppStore((s) => s.chartAutoPlayAudio);
+	const setChartAutoPlayAudio = useAppStore((s) => s.setChartAutoPlayAudio);
 	const kanaCardClickAction = useAppStore((s) => s.kanaCardClickAction);
 	const setKanaCardClickAction = useAppStore((s) => s.setKanaCardClickAction);
 	const quizAdvanceMode = useAppStore((s) => s.quizAdvanceMode);
@@ -327,31 +337,39 @@ function SettingsPage() {
 				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
 					{t("settings.sectionChart")}
 				</h2>
-				<div className="px-4 pb-4 space-y-2">
-					<h3 className="text-sm font-medium">{t("settings.clickAction")}</h3>
-					<div className="grid grid-cols-2 gap-2">
-						{clickActionOptions.map(({ action, label, icon: Icon }) => (
-							<button
-								key={action}
-								type="button"
-								onClick={() => setKanaCardClickAction(action)}
-								className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-									kanaCardClickAction === action
-										? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-										: "border-border hover:bg-surface-hover"
-								}`}
-							>
-								<Icon
-									size={24}
-									className={
+				<div className="px-4 pb-4 space-y-4">
+					<ToggleSwitch
+						checked={chartAutoPlayAudio}
+						onChange={setChartAutoPlayAudio}
+						label={t("settings.chartAutoPlayAudio")}
+						description={t("settings.chartAutoPlayAudioDesc")}
+					/>
+					<div className="space-y-2">
+						<h3 className="text-sm font-medium">{t("settings.clickAction")}</h3>
+						<div className="grid grid-cols-2 gap-2">
+							{clickActionOptions.map(({ action, label, icon: Icon }) => (
+								<button
+									key={action}
+									type="button"
+									onClick={() => setKanaCardClickAction(action)}
+									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
 										kanaCardClickAction === action
-											? "text-primary-600 dark:text-primary-400"
-											: "text-text-secondary"
-									}
-								/>
-								<span className="text-sm font-medium">{label}</span>
-							</button>
-						))}
+											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+											: "border-border hover:bg-surface-hover"
+									}`}
+								>
+									<Icon
+										size={24}
+										className={
+											kanaCardClickAction === action
+												? "text-primary-600 dark:text-primary-400"
+												: "text-text-secondary"
+										}
+									/>
+									<span className="text-sm font-medium">{label}</span>
+								</button>
+							))}
+						</div>
 					</div>
 				</div>
 			</section>
@@ -529,7 +547,6 @@ function SettingsPage() {
 				cancelLabel={dialog.cancelLabel}
 				destructive={dialog.destructive}
 				onConfirm={() => {
-					closeDialog();
 					dialog.onConfirm();
 				}}
 				onCancel={closeDialog}

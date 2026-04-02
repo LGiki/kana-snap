@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { Kana } from "#/data/kana";
 import { speakKana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
+import { useAppStore } from "#/stores/useAppStore";
 
 interface KanaDetailModalProps {
 	kana: Kana | null;
@@ -14,14 +15,15 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 	const { t } = useTranslation();
 	const titleId = useId();
 	const dialogRef = useFocusTrap(kana !== null);
+	const chartAutoPlayAudio = useAppStore((s) => s.chartAutoPlayAudio);
 
 	const playAudio = useCallback(() => {
 		if (kana) speakKana(kana.hiragana);
 	}, [kana]);
 
 	useEffect(() => {
-		if (kana) playAudio();
-	}, [kana, playAudio]);
+		if (kana && chartAutoPlayAudio) playAudio();
+	}, [kana, chartAutoPlayAudio, playAudio]);
 
 	useEffect(() => {
 		const handler = (e: KeyboardEvent) => {

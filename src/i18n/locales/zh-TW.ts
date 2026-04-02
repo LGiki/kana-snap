@@ -96,6 +96,8 @@ export default {
 		colorScheme_teal: "青綠",
 		colorScheme_slate: "石板",
 		language: "語言",
+		chartAutoPlayAudio: "自動播放發音",
+		chartAutoPlayAudioDesc: "開啟假名詳情時自動播放發音",
 		clickAction: "假名卡片點擊動作",
 		clickActionDetail: "顯示詳情",
 		clickActionAudio: "播放發音",

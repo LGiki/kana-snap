@@ -40,6 +40,7 @@ interface AppState {
 	quizAutoAdvanceDelay: number;
 	learnStreakEnabled: boolean;
 	learnPopQuizEnabled: boolean;
+	chartAutoPlayAudio: boolean;
 	learnAutoPlayAudio: boolean;
 	quizHistory: QuizRecord[];
 	mistakeWeights: Record<string, number>;
@@ -54,6 +55,7 @@ interface AppState {
 	setQuizAutoAdvanceDelay: (delay: number) => void;
 	setLearnStreakEnabled: (enabled: boolean) => void;
 	setLearnPopQuizEnabled: (enabled: boolean) => void;
+	setChartAutoPlayAudio: (enabled: boolean) => void;
 	setLearnAutoPlayAudio: (enabled: boolean) => void;
 	addQuizRecord: (record: QuizRecord) => void;
 	addMistake: (romaji: string) => void;
@@ -73,6 +75,7 @@ const initialState = {
 	quizAutoAdvanceDelay: 2,
 	learnStreakEnabled: true,
 	learnPopQuizEnabled: true,
+	chartAutoPlayAudio: true,
 	learnAutoPlayAudio: false,
 	quizHistory: [] as QuizRecord[],
 	mistakeWeights: {} as Record<string, number>,
@@ -94,6 +97,7 @@ export const useAppStore = create<AppState>()(
 			setLearnStreakEnabled: (enabled) => set({ learnStreakEnabled: enabled }),
 			setLearnPopQuizEnabled: (enabled) =>
 				set({ learnPopQuizEnabled: enabled }),
+			setChartAutoPlayAudio: (enabled) => set({ chartAutoPlayAudio: enabled }),
 			setLearnAutoPlayAudio: (enabled) => set({ learnAutoPlayAudio: enabled }),
 
 			addQuizRecord: (record) =>
@@ -123,6 +127,7 @@ export const useAppStore = create<AppState>()(
 					kanaCardClickAction,
 					quizAdvanceMode,
 					quizAutoAdvanceDelay,
+					chartAutoPlayAudio,
 					learnStreakEnabled,
 					learnPopQuizEnabled,
 					learnAutoPlayAudio,
@@ -139,6 +144,7 @@ export const useAppStore = create<AppState>()(
 						kanaCardClickAction,
 						quizAdvanceMode,
 						quizAutoAdvanceDelay,
+						chartAutoPlayAudio,
 						learnStreakEnabled,
 						learnPopQuizEnabled,
 						learnAutoPlayAudio,
@@ -238,6 +244,10 @@ export const useAppStore = create<AppState>()(
 							"manual",
 						),
 						quizAutoAdvanceDelay: delay,
+						chartAutoPlayAudio:
+							typeof data.chartAutoPlayAudio === "boolean"
+								? data.chartAutoPlayAudio
+								: true,
 						learnStreakEnabled:
 							typeof data.learnStreakEnabled === "boolean"
 								? data.learnStreakEnabled

@@ -26,6 +26,7 @@ export function Heatmap({ records }: HeatmapProps) {
 		text: string;
 		x: number;
 		y: number;
+		below: boolean;
 	} | null>(null);
 
 	const intensityColors = useMemo(() => {
@@ -108,10 +109,12 @@ export function Heatmap({ records }: HeatmapProps) {
 
 	const showTooltip = (target: SVGRectElement, text: string) => {
 		const rect = target.getBoundingClientRect();
+		const showBelow = rect.top < 40;
 		setTooltip({
 			text,
 			x: rect.left + rect.width / 2,
-			y: rect.top - 8,
+			y: showBelow ? rect.bottom + 8 : rect.top - 8,
+			below: showBelow,
 		});
 	};
 
@@ -180,7 +183,7 @@ export function Heatmap({ records }: HeatmapProps) {
 			{/* Tooltip */}
 			{tooltip && (
 				<div
-					className="fixed z-50 px-2 py-1 text-xs bg-gray-900 text-white rounded shadow-lg pointer-events-none -translate-x-1/2 -translate-y-full"
+					className={`fixed z-50 px-2 py-1 text-xs bg-gray-900 text-white rounded shadow-lg pointer-events-none -translate-x-1/2 ${tooltip.below ? "" : "-translate-y-full"}`}
 					style={{ left: tooltip.x, top: tooltip.y }}
 				>
 					{tooltip.text}

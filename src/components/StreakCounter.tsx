@@ -13,7 +13,7 @@ function computeStreaks(records: QuizRecord[]) {
 	const sortedDates = Array.from(dates).sort();
 
 	if (sortedDates.length === 0) {
-		return { currentStreak: 0, longestStreak: 0, totalQuizzes: 0 };
+		return { currentStreak: 0, longestStreak: 0, totalQuizzes: 0, avgScore: 0 };
 	}
 
 	let longestStreak = 1;
@@ -34,9 +34,12 @@ function computeStreaks(records: QuizRecord[]) {
 		if (currentRun > longestStreak) longestStreak = currentRun;
 	}
 
-	// Current streak: count back from today
+	// Current streak: count back from today (or yesterday if no quiz today yet)
 	let currentStreak = 0;
 	const checkDate = new Date();
+	if (!dates.has(getLocalDateKey(checkDate))) {
+		checkDate.setDate(checkDate.getDate() - 1);
+	}
 
 	while (true) {
 		const dateStr = getLocalDateKey(checkDate);
@@ -82,8 +85,8 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.longestStreak"),
 			value: longestStreak,
 			unit: t("analytics.days"),
-			color: "text-primary-500 dark:text-primary-400",
-			bgColor: "bg-primary-50 dark:bg-primary-900/20",
+			color: "text-primary-600 dark:text-primary-400",
+			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 		{
 			icon: Calendar,
@@ -98,8 +101,8 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.averageScore"),
 			value: `${avgScore.toFixed(1)}/10`,
 			unit: "",
-			color: "text-primary-500 dark:text-primary-400",
-			bgColor: "bg-primary-50 dark:bg-primary-900/20",
+			color: "text-primary-600 dark:text-primary-400",
+			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 	];
 

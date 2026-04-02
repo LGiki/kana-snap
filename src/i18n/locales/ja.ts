@@ -98,6 +98,8 @@ export default {
 		colorScheme_teal: "ティール",
 		colorScheme_slate: "スレート",
 		language: "言語",
+		chartAutoPlayAudio: "自動音声再生",
+		chartAutoPlayAudioDesc: "仮名の詳細を開いたときに発音を自動再生",
 		clickAction: "仮名カードのタップ動作",
 		clickActionDetail: "詳細を表示",
 		clickActionAudio: "音声を再生",

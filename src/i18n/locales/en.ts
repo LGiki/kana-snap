@@ -97,6 +97,8 @@ export default {
 		colorScheme_teal: "Teal",
 		colorScheme_slate: "Slate",
 		language: "Language",
+		chartAutoPlayAudio: "Auto Play Audio",
+		chartAutoPlayAudioDesc: "Play pronunciation when opening kana detail",
 		clickAction: "Kana Card Tap Action",
 		clickActionDetail: "Show Detail",
 		clickActionAudio: "Play Audio",

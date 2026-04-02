@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { type KeyboardEvent, type ReactNode, useRef } from "react";
+import { type KeyboardEvent, type ReactNode, useId, useRef } from "react";
 
 interface Tab<T extends string> {
 	value: T;
@@ -11,13 +11,17 @@ interface TabsProps<T extends string> {
 	tabs: Tab<T>[];
 	value: T;
 	onChange: (value: T) => void;
+	id?: string;
 }
 
 export function Tabs<T extends string>({
 	tabs,
 	value,
 	onChange,
+	id,
 }: TabsProps<T>) {
+	const autoId = useId();
+	const baseId = id ?? autoId;
 	const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
 	const handleKeyDown = (e: KeyboardEvent, index: number) => {
@@ -55,7 +59,9 @@ export function Tabs<T extends string>({
 						}}
 						type="button"
 						role="tab"
+						id={`${baseId}-tab-${tab.value}`}
 						aria-selected={selected}
+						aria-controls={`${baseId}-panel-${tab.value}`}
 						tabIndex={selected ? 0 : -1}
 						onClick={() => onChange(tab.value)}
 						onKeyDown={(e) => handleKeyDown(e, i)}

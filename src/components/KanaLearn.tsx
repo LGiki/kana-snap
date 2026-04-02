@@ -12,6 +12,8 @@ import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana, speakKana } from "#/data/kana";
+import { useFocusTrap } from "#/hooks/useFocusTrap";
+import { useWindowSize } from "#/hooks/useWindowSize";
 import { useAppStore } from "#/stores/useAppStore";
 
 const STREAK_INTERVAL = 10;
@@ -104,17 +106,37 @@ function PopQuizOverlay({
 }) {
 	const { t } = useTranslation();
 	const [selected, setSelected] = useState<number | null>(null);
+	const dialogRef = useFocusTrap(true);
 
 	const handleSelect = (index: number) => {
 		if (selected !== null) return;
 		setSelected(index);
 	};
 
+	useEffect(() => {
+		dialogRef.current?.focus();
+	}, [dialogRef]);
+
+	useEffect(() => {
+		const handler = (e: KeyboardEvent) => {
+			if (e.key === "Escape" && selected !== null) onDone();
+		};
+		window.addEventListener("keydown", handler);
+		return () => window.removeEventListener("keydown", handler);
+	}, [onDone, selected]);
+
 	const isCorrect = selected === question.correctIndex;
 
 	return (
 		<div className="fixed inset-0 z-60 bg-surface/95 backdrop-blur-sm flex items-center justify-center animate-fade-in">
-			<div className="max-w-sm w-full mx-4 space-y-6">
+			<div
+				ref={dialogRef}
+				role="dialog"
+				aria-modal="true"
+				aria-label={t("learn.popQuizTitle")}
+				tabIndex={-1}
+				className="max-w-sm w-full mx-4 space-y-6 outline-none"
+			>
 				<div className="text-center space-y-2">
 					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-sm font-semibold">
 						<Zap size={16} />
@@ -229,6 +251,8 @@ export function KanaLearn() {
 			scheme.colors["--color-primary-700"],
 		];
 	}, [colorSchemeId]);
+
+	const { width: windowWidth, height: windowHeight } = useWindowSize();
 
 	// Fixed shuffled pool — items are looked up with modulo, never appended.
 	const [pool] = useState(buildShuffledPool);
@@ -454,8 +478,8 @@ export function KanaLearn() {
 			{/* Streak confetti */}
 			{showConfetti && (
 				<ReactConfetti
-					width={window.innerWidth}
-					height={window.innerHeight}
+					width={windowWidth}
+					height={windowHeight}
 					recycle={false}
 					numberOfPieces={150}
 					colors={confettiColors}

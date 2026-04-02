@@ -11,6 +11,7 @@ import { useMemo } from "react";
 import { Line } from "react-chartjs-2";
 import { useTranslation } from "react-i18next";
 import type { QuizRecord } from "#/stores/useAppStore";
+import { useAppStore } from "#/stores/useAppStore";
 
 ChartJS.register(
 	CategoryScale,
@@ -27,6 +28,7 @@ interface LineChartProps {
 
 export function LineChart({ records }: LineChartProps) {
 	const { t } = useTranslation();
+	const colorSchemeId = useAppStore((s) => s.colorScheme);
 
 	const aggregated = useMemo(() => {
 		const byDate = new Map<string, { count: number; totalScore: number }>();
@@ -46,13 +48,20 @@ export function LineChart({ records }: LineChartProps) {
 			}));
 	}, [records]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: colorSchemeId triggers re-read of CSS variables after scheme change
+	const cssColors = useMemo(() => {
+		const style = getComputedStyle(document.documentElement);
+		return {
+			primary500: style.getPropertyValue("--color-primary-500").trim(),
+			primary100: style.getPropertyValue("--color-primary-100").trim(),
+			textMuted: style.getPropertyValue("--color-text-muted").trim(),
+			border: style.getPropertyValue("--color-border").trim(),
+		};
+	}, [colorSchemeId]);
+
 	if (aggregated.length === 0) return null;
 
-	const style = getComputedStyle(document.documentElement);
-	const primary500 = style.getPropertyValue("--color-primary-500").trim();
-	const primary100 = style.getPropertyValue("--color-primary-100").trim();
-	const textMuted = style.getPropertyValue("--color-text-muted").trim();
-	const border = style.getPropertyValue("--color-border").trim();
+	const { primary500, primary100, textMuted, border } = cssColors;
 
 	const data = {
 		labels: aggregated.map((d) => d.date.slice(5)),

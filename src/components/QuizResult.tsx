@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { getColorScheme } from "#/data/colorSchemes";
+import { useWindowSize } from "#/hooks/useWindowSize";
 import { useAppStore } from "#/stores/useAppStore";
 
 interface AnswerRecord {
@@ -70,6 +71,7 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 		];
 	}, [colorSchemeId]);
 
+	const { width: windowWidth, height: windowHeight } = useWindowSize();
 	const score = answers.filter((a) => a.correct).length;
 	const total = answers.length;
 	const incorrect = answers.filter((a) => !a.correct);
@@ -80,8 +82,8 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 		<div className="max-w-lg mx-auto space-y-8">
 			{isPerfect && (
 				<ReactConfetti
-					width={window.innerWidth}
-					height={window.innerHeight}
+					width={windowWidth}
+					height={windowHeight}
 					recycle={false}
 					numberOfPieces={200}
 					colors={confettiColors}
