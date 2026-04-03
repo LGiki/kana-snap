@@ -44,9 +44,30 @@ export function KanaChart() {
 	const animateRef = useCallback((el: HTMLDivElement | null) => {
 		if (el && !animatedElements.current.has(el)) {
 			animatedElements.current.add(el);
-			autoAnimate(el, {
-				duration: 250,
-				easing: "ease-in-out",
+			autoAnimate(el, (el, action, oldCoords, newCoords) => {
+				let keyframes: Keyframe[];
+				if (action === "remain") {
+					const deltaX = (oldCoords?.left ?? 0) - (newCoords?.left ?? 0);
+					const deltaY = (oldCoords?.top ?? 0) - (newCoords?.top ?? 0);
+					keyframes = [
+						{ transform: `translate(${deltaX}px, ${deltaY}px)` },
+						{ transform: "translate(0, 0)" },
+					];
+				} else if (action === "add") {
+					keyframes = [
+						{ opacity: 0 },
+						{ opacity: 1 },
+					];
+				} else {
+					keyframes = [
+						{ opacity: 1 },
+						{ opacity: 0 },
+					];
+				}
+				return new KeyframeEffect(el, keyframes, {
+					duration: 300,
+					easing: "ease-in-out",
+				});
 			});
 		}
 	}, []);
