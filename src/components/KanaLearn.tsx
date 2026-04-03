@@ -75,15 +75,15 @@ const LearnSlide = memo(function LearnSlide({ kana }: { kana: Kana }) {
 
 	return (
 		<div className="h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-3.5rem)] w-full snap-start snap-always flex items-center justify-center relative select-none">
-			<div className="relative flex flex-col items-center">
-				<button
-					type="button"
-					onClick={() => speakKana(kana.hiragana)}
-					className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary transition-transform active:scale-95 cursor-pointer"
-					aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
-				>
+			<button
+				type="button"
+				onClick={() => speakKana(kana.hiragana)}
+				className="relative flex flex-col items-center cursor-pointer transition-transform active:scale-95"
+				aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
+			>
+				<div className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary">
 					{kana.hiragana}
-				</button>
+				</div>
 
 				<div className="text-4xl sm:text-5xl md:text-6xl text-text-secondary mt-4">
 					{kana.katakana}
@@ -92,7 +92,7 @@ const LearnSlide = memo(function LearnSlide({ kana }: { kana: Kana }) {
 				<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest mt-6">
 					{kana.romaji}
 				</div>
-			</div>
+			</button>
 		</div>
 	);
 });
