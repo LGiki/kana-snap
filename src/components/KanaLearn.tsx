@@ -11,7 +11,8 @@ import {
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { getColorScheme } from "#/data/colorSchemes";
-import { getAllKana, type Kana, speakKana } from "#/data/kana";
+import { getAllKana, type Kana } from "#/data/kana";
+import { speakKana } from "#/lib/speakKana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
 import { useWindowSize } from "#/hooks/useWindowSize";
 import { useAppStore } from "#/stores/useAppStore";
