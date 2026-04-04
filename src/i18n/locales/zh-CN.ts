@@ -21,6 +21,12 @@ export default {
 		katakana: "片假名",
 		romaji: "罗马音",
 		playAudio: "播放发音",
+		strokeOrder: "笔顺",
+		replay: "重播",
+		replayStroke: "重播笔画动画",
+		copy: "复制{{type}}",
+		copyButton: "复制",
+		copied: "已复制",
 		close: "关闭",
 	},
 	quiz: {
@@ -124,5 +130,7 @@ export default {
 		version: "版本",
 		commitHash: "提交",
 		commitDate: "构建日期",
+		credits: "致谢",
+		strokeAnimations: "笔画动画",
 	},
 };

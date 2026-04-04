@@ -2,11 +2,11 @@ import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
+import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
+import { minify } from "html-minifier-terser";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import legacy from '@vitejs/plugin-legacy';
-import { minify } from 'html-minifier-terser';
 import { colorSchemes } from "./src/data/colorSchemes";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
@@ -32,7 +32,7 @@ export default defineConfig({
 	plugins: [
 		// Inject inline script to apply persisted theme/color scheme before first paint (prevents FOUC)
 		{
-			name: 'anti-fouc',
+			name: "anti-fouc",
 			transformIndexHtml(html) {
 				const schemeMap: Record<string, Record<string, string>> = {};
 				for (const scheme of colorSchemes) {
@@ -41,7 +41,7 @@ export default defineConfig({
 					schemeMap[scheme.id] = scheme.colors;
 				}
 				const script = `<script>(function(){try{var s=localStorage.getItem("kana-snap-storage");if(!s)return;var t=JSON.parse(s).state;if(!t)return;var m=t.theme;document.documentElement.setAttribute("data-theme",m==="dark"||m==="light"?m:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var c=${JSON.stringify(schemeMap)}[t.colorScheme];if(c){var r=document.documentElement;for(var p in c)r.style.setProperty(p,c[p])}}catch(e){}})()</script>`;
-				return html.replace('</head>', `${script}\n</head>`);
+				return html.replace("</head>", `${script}\n</head>`);
 			},
 		},
 		tanstackRouter({
@@ -103,21 +103,22 @@ export default defineConfig({
 			},
 		}),
 		legacy({
-			targets: ['defaults', 'not IE 11'],
+			targets: ["defaults", "not IE 11"],
 		}),
 		{
-			name: 'htmlMinify',
-			enforce: 'post',
-			apply: 'build',
-			transformIndexHtml: async (html: string) => await minify(html, {
-			collapseWhitespace: true,
-			removeComments: true,
-			minifyJS: true,
-			minifyCSS: true,
-			}),
-		}
+			name: "htmlMinify",
+			enforce: "post",
+			apply: "build",
+			transformIndexHtml: async (html: string) =>
+				await minify(html, {
+					collapseWhitespace: true,
+					removeComments: true,
+					minifyJS: true,
+					minifyCSS: true,
+				}),
+		},
 	],
 	build: {
-		minify: 'terser'
-	}
+		minify: "terser",
+	},
 });

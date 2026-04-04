@@ -207,4 +207,3 @@ export function getAllKana(): Kana[] {
 	}
 	return kanas;
 }
-

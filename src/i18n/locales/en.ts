@@ -21,6 +21,12 @@ export default {
 		katakana: "Katakana",
 		romaji: "Romaji",
 		playAudio: "Play Audio",
+		strokeOrder: "Stroke Order",
+		replay: "Replay",
+		replayStroke: "Replay stroke animation",
+		copy: "Copy {{type}}",
+		copyButton: "Copy",
+		copied: "Copied",
 		close: "Close",
 	},
 	quiz: {
@@ -126,5 +132,7 @@ export default {
 		version: "Version",
 		commitHash: "Commit",
 		commitDate: "Build Date",
+		credits: "Credits",
+		strokeAnimations: "Stroke Animations",
 	},
 };

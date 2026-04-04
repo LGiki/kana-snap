@@ -55,15 +55,9 @@ export function KanaChart() {
 						{ transform: "translate(0, 0)" },
 					];
 				} else if (action === "add") {
-					keyframes = [
-						{ opacity: 0 },
-						{ opacity: 1 },
-					];
+					keyframes = [{ opacity: 0 }, { opacity: 1 }];
 				} else {
-					keyframes = [
-						{ opacity: 1 },
-						{ opacity: 0 },
-					];
+					keyframes = [{ opacity: 1 }, { opacity: 0 }];
 				}
 				return new KeyframeEffect(el, keyframes, {
 					duration: 300,

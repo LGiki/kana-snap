@@ -372,14 +372,14 @@ function SettingsPage() {
 							))}
 						</div>
 					</div>
-					{
-						kanaCardClickAction === 'showDetail' && <ToggleSwitch
+					{kanaCardClickAction === "showDetail" && (
+						<ToggleSwitch
 							checked={chartAutoPlayAudio}
 							onChange={setChartAutoPlayAudio}
 							label={t("settings.chartAutoPlayAudio")}
 							description={t("settings.chartAutoPlayAudioDesc")}
 						/>
-					}
+					)}
 				</div>
 			</section>
 
@@ -547,6 +547,30 @@ function SettingsPage() {
 						<span className="font-mono">
 							{new Date(__COMMIT_DATE__).toLocaleDateString()}
 						</span>
+					</div>
+					<div className="border-t border-border pt-2 mt-2">
+						<p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+							{t("settings.credits")}
+						</p>
+						<div className="flex justify-between items-center">
+							<span className="text-text-secondary">
+								{t("settings.strokeAnimations")}
+							</span>
+							<div className="flex flex-col gap-0.5 items-end">
+								<a
+									href="https://github.com/zhengkyl/strokesvg"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="inline-flex items-center gap-1.5 font-mono text-primary-600 dark:text-primary-400 hover:underline"
+								>
+									<SiGithub size={14} />
+									strokesvg
+								</a>
+								<span className="text-xs text-text-muted">
+									MIT / SIL Open Font License
+								</span>
+							</div>
+						</div>
 					</div>
 				</div>
 			</section>
