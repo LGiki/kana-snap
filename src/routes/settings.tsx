@@ -1,11 +1,16 @@
 import { SiGithub } from "@icons-pack/react-simple-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+	BookOpen,
+	CircleHelp,
+	Database,
 	Download,
+	Grid3X3,
 	Info,
 	Moon,
 	MousePointerClick,
 	Play,
+	Settings,
 	Sun,
 	SunMoon,
 	Trash2,
@@ -249,7 +254,8 @@ function SettingsPage() {
 
 			{/* General */}
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+					<Settings size={16} />
 					{t("settings.sectionGeneral")}
 				</h2>
 				<div className="px-4 pb-4 space-y-4">
@@ -334,16 +340,11 @@ function SettingsPage() {
 
 			{/* Kana Chart */}
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+					<Grid3X3 size={16} />
 					{t("settings.sectionChart")}
 				</h2>
 				<div className="px-4 pb-4 space-y-4">
-					<ToggleSwitch
-						checked={chartAutoPlayAudio}
-						onChange={setChartAutoPlayAudio}
-						label={t("settings.chartAutoPlayAudio")}
-						description={t("settings.chartAutoPlayAudioDesc")}
-					/>
 					<div className="space-y-2">
 						<h3 className="text-sm font-medium">{t("settings.clickAction")}</h3>
 						<div className="grid grid-cols-2 gap-2">
@@ -371,12 +372,21 @@ function SettingsPage() {
 							))}
 						</div>
 					</div>
+					{
+						kanaCardClickAction === 'showDetail' && <ToggleSwitch
+							checked={chartAutoPlayAudio}
+							onChange={setChartAutoPlayAudio}
+							label={t("settings.chartAutoPlayAudio")}
+							description={t("settings.chartAutoPlayAudioDesc")}
+						/>
+					}
 				</div>
 			</section>
 
 			{/* Learn */}
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+					<BookOpen size={16} />
 					{t("settings.sectionLearn")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
@@ -397,7 +407,8 @@ function SettingsPage() {
 
 			{/* Quiz */}
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+					<CircleHelp size={16} />
 					{t("settings.sectionQuiz")}
 				</h2>
 				<div className="px-4 pb-4 space-y-4">
@@ -456,7 +467,8 @@ function SettingsPage() {
 
 			{/* Data */}
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
-				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider">
+				<h2 className="px-4 pt-4 pb-2 text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+					<Database size={16} />
 					{t("settings.sectionData")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
