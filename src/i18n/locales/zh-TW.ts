@@ -32,6 +32,7 @@ export default {
 	quiz: {
 		title: "測驗",
 		start: "開始測驗",
+		option: "選項",
 		questionOf: "第 {{current}} 題，共 {{total}} 題",
 		selectRomaji: "選擇正確的羅馬字",
 		selectKana: "選擇正確的假名",

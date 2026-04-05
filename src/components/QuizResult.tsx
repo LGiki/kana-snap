@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { getColorScheme } from "#/data/colorSchemes";
+import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { useWindowSize } from "#/hooks/useWindowSize";
 import { useAppStore } from "#/stores/useAppStore";
 
@@ -71,6 +72,7 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 		];
 	}, [colorSchemeId]);
 
+	const prefersReducedMotion = usePrefersReducedMotion();
 	const { width: windowWidth, height: windowHeight } = useWindowSize();
 	const score = answers.filter((a) => a.correct).length;
 	const total = answers.length;
@@ -80,7 +82,7 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 
 	return (
 		<div className="max-w-lg mx-auto space-y-8">
-			{isPerfect && (
+			{isPerfect && !prefersReducedMotion && (
 				<ReactConfetti
 					width={windowWidth}
 					height={windowHeight}

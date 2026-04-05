@@ -1,6 +1,6 @@
 import { useBlocker } from "@tanstack/react-router";
 import { ArrowLeft, BarChart3, Keyboard, Play, TrendingUp } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
@@ -88,6 +88,7 @@ export function Quiz() {
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 	const [finished, setFinished] = useState(false);
 	const [showBackConfirm, setShowBackConfirm] = useState(false);
+	const advancingRef = useRef(false);
 
 	const currentQuestion = questions[currentIndex];
 	const isQuizInProgress = started && !finished;
@@ -126,14 +127,18 @@ export function Quiz() {
 	);
 
 	const handleNext = useCallback(() => {
+		// Guard against double-fire from auto-advance + manual click
+		if (advancingRef.current) return;
+		advancingRef.current = true;
+		queueMicrotask(() => {
+			advancingRef.current = false;
+		});
+
 		if (currentIndex < questions.length - 1) {
 			setCurrentIndex((i) => i + 1);
 			setSelectedIndex(null);
 		} else {
 			const finalAnswers = [...answers];
-			if (selectedIndex !== null && currentQuestion) {
-				// answers already includes this one from handleSelect
-			}
 			const score = finalAnswers.filter((a) => a.correct).length;
 			addQuizRecord({
 				date: getLocalDateKey(),
@@ -145,14 +150,7 @@ export function Quiz() {
 			});
 			setFinished(true);
 		}
-	}, [
-		currentIndex,
-		questions.length,
-		answers,
-		addQuizRecord,
-		selectedIndex,
-		currentQuestion,
-	]);
+	}, [currentIndex, questions.length, answers, addQuizRecord]);
 
 	// Keyboard shortcuts
 	useEffect(() => {
@@ -302,6 +300,7 @@ export function Quiz() {
 								type="button"
 								onClick={() => handleSelect(i)}
 								disabled={selectedIndex !== null}
+								aria-label={`${t("quiz.option")} ${i + 1}: ${option}`}
 								className={`relative p-4 rounded-xl border-2 text-lg font-medium transition-all ${style} ${animClass} ${
 									selectedIndex === null
 										? "cursor-pointer active:scale-95"

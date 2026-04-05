@@ -32,6 +32,7 @@ export default {
 	quiz: {
 		title: "测验",
 		start: "开始测验",
+		option: "选项",
 		questionOf: "第 {{current}} 题，共 {{total}} 题",
 		selectRomaji: "选择正确的罗马音",
 		selectKana: "选择正确的假名",

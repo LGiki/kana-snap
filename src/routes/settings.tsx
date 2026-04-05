@@ -222,6 +222,15 @@ function SettingsPage() {
 						onConfirm: closeDialog,
 					});
 				};
+				reader.onerror = () => {
+					setDialog({
+						open: true,
+						title: t("settings.import"),
+						message: t("settings.importError"),
+						confirmLabel: t("common.ok"),
+						onConfirm: closeDialog,
+					});
+				};
 				reader.readAsText(pending);
 			},
 		});

@@ -32,6 +32,7 @@ export default {
 	quiz: {
 		title: "Quiz",
 		start: "Start Quiz",
+		option: "Option",
 		questionOf: "Question {{current}} of {{total}}",
 		selectRomaji: "Select the correct romaji",
 		selectKana: "Select the correct kana",

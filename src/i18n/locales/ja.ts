@@ -32,6 +32,7 @@ export default {
 	quiz: {
 		title: "クイズ",
 		start: "クイズ開始",
+		option: "選択肢",
 		questionOf: "問題 {{current}} / {{total}}",
 		selectRomaji: "正しいローマ字を選んでください",
 		selectKana: "正しい仮名を選んでください",

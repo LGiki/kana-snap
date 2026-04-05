@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { ErrorBoundary } from "#/components/ErrorBoundary";
 import { Navigation } from "#/components/Navigation";
 import { getColorScheme } from "#/data/colorSchemes";
 import { useAppStore } from "#/stores/useAppStore";
@@ -47,11 +48,13 @@ function RootLayout() {
 	}, [language, i18n]);
 
 	return (
-		<div className="min-h-screen bg-surface text-text-primary">
-			<Navigation />
-			<main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-6">
-				<Outlet />
-			</main>
-		</div>
+		<ErrorBoundary>
+			<div className="min-h-screen bg-surface text-text-primary">
+				<Navigation />
+				<main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-6">
+					<Outlet />
+				</main>
+			</div>
+		</ErrorBoundary>
 	);
 }

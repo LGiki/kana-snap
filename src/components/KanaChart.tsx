@@ -143,7 +143,7 @@ export function KanaChart() {
 
 			{/* Groups */}
 			{groups.map((group) => (
-				<section key={group.id}>
+				<section key={group.id} aria-label={t(group.nameKey)}>
 					<h2 className="text-lg font-semibold mb-3 text-text-primary">
 						{t(group.nameKey)}
 					</h2>

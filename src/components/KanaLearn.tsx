@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
+import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { useWindowSize } from "#/hooks/useWindowSize";
 import { speakKana } from "#/lib/speakKana";
 import { useAppStore } from "#/stores/useAppStore";
@@ -253,11 +254,18 @@ export function KanaLearn() {
 		];
 	}, [colorSchemeId]);
 
+	const prefersReducedMotion = usePrefersReducedMotion();
 	const { width: windowWidth, height: windowHeight } = useWindowSize();
 
 	// Fixed shuffled pool — items are looked up with modulo, never appended.
 	const [pool] = useState(buildShuffledPool);
-	const getKanaAt = useCallback((i: number) => pool[i % pool.length], [pool]);
+	const getKanaAt = useCallback(
+		(i: number) => {
+			if (pool.length === 0) return BASE_KANA[0];
+			return pool[i % pool.length];
+		},
+		[pool],
+	);
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const currentIndexRef = useRef(0);
@@ -286,10 +294,19 @@ export function KanaLearn() {
 
 	// Confetti state
 	const [showConfetti, setShowConfetti] = useState(false);
+	const confettiTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	// Pop quiz state
 	const [popQuiz, setPopQuiz] = useState<PopQuizQuestion | null>(null);
 	const lastQuizIndexRef = useRef(0);
+
+	// Clean up timers on unmount
+	useEffect(() => {
+		return () => {
+			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+			if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
+		};
+	}, []);
 
 	// Measure slide height — cached in a ref so handlers avoid layout reads.
 	useEffect(() => {
@@ -400,7 +417,8 @@ export function KanaLearn() {
 		if (milestone >= STREAK_INTERVAL && milestone > lastMilestone) {
 			setLastMilestone(milestone);
 			setShowConfetti(true);
-			setTimeout(() => setShowConfetti(false), 4000);
+			if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
+			confettiTimerRef.current = setTimeout(() => setShowConfetti(false), 4000);
 			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
 			setToastMessage(t("learn.streakMilestone", { count: milestone }));
 			setToastVisible(true);
@@ -471,13 +489,15 @@ export function KanaLearn() {
 
 			{/* Scroll hint on first slide */}
 			{currentIndex === 0 && (
-				<div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted animate-bounce">
+				<div
+					className={`fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${prefersReducedMotion ? "" : "animate-bounce"}`}
+				>
 					<ChevronDown size={24} />
 				</div>
 			)}
 
 			{/* Streak confetti */}
-			{showConfetti && (
+			{showConfetti && !prefersReducedMotion && (
 				<ReactConfetti
 					width={windowWidth}
 					height={windowHeight}
