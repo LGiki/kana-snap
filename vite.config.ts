@@ -54,15 +54,18 @@ export default defineConfig({
 			registerType: "autoUpdate",
 			includeAssets: ["icon.svg", "apple-touch-icon-180x180.png"],
 			manifest: {
-				name: "KanaSnap",
+				name: "KanaSnap — Learn Japanese Kana",
 				short_name: "KanaSnap",
 				description:
-					"Interactive Japanese Kana learning app with charts, quizzes, and analytics",
+					"Interactive Japanese Kana learning app. Master Hiragana and Katakana with charts, quizzes, stroke order animations, and smart analytics.",
 				theme_color: "#6366f1",
 				background_color: "#ffffff",
 				display: "standalone",
+				orientation: "portrait-primary",
 				scope: "/",
 				start_url: "/",
+				lang: "en",
+				categories: ["education", "productivity"],
 				icons: [
 					{
 						src: "pwa-192x192.png",
@@ -78,7 +81,7 @@ export default defineConfig({
 						src: "pwa-512x512.png",
 						sizes: "512x512",
 						type: "image/png",
-						purpose: "any maskable",
+						purpose: "maskable",
 					},
 				],
 			},

@@ -2,11 +2,42 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta name="theme-color" content="#6366f1" />
-		<title>KanaSnap</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+		<meta name="theme-color" content="#6366f1" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#312e81" media="(prefers-color-scheme: dark)" />
+		<meta name="color-scheme" content="light dark" />
+
+		<title>KanaSnap — Learn Japanese Kana</title>
+		<meta name="description" content="Interactive Japanese Kana learning app. Master Hiragana and Katakana with charts, quizzes, stroke order animations, and smart analytics." />
+		<meta name="keywords" content="Japanese, Kana, Hiragana, Katakana, learn Japanese, quiz, flashcards, stroke order" />
+		<meta name="author" content="KanaSnap" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="KanaSnap — Learn Japanese Kana" />
+		<meta property="og:description" content="Interactive Japanese Kana learning app. Master Hiragana and Katakana with charts, quizzes, stroke order animations, and smart analytics." />
+		<meta property="og:image" content="/pwa-512x512.png" />
+		<meta property="og:site_name" content="KanaSnap" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content="KanaSnap — Learn Japanese Kana" />
+		<meta name="twitter:description" content="Interactive Japanese Kana learning app. Master Hiragana and Katakana with charts, quizzes, stroke order animations, and smart analytics." />
+		<meta name="twitter:image" content="/pwa-512x512.png" />
+
+		<!-- Favicon -->
 		<link rel="icon" type="image/svg+xml" href="/icon.svg" />
+		<link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+
+		<!-- iOS PWA -->
 		<link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="KanaSnap" />
+
+		<!-- Android PWA -->
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="application-name" content="KanaSnap" />
 	</head>
 	<body>
 		<div id="root"></div>
