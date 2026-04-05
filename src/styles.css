@@ -93,6 +93,21 @@ body {
 	}
 }
 
+@property --countdown-angle {
+	syntax: "<angle>";
+	initial-value: 360deg;
+	inherits: false;
+}
+
+@keyframes countdown-border {
+	from {
+		--countdown-angle: 0deg;
+	}
+	to {
+		--countdown-angle: 360deg;
+	}
+}
+
 @keyframes scale-in {
 	from {
 		opacity: 0;

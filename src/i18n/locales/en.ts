@@ -30,7 +30,7 @@ export default {
 		close: "Close",
 	},
 	quiz: {
-		title: "Kana Quiz",
+		title: "Quiz",
 		start: "Start Quiz",
 		questionOf: "Question {{current}} of {{total}}",
 		selectRomaji: "Select the correct romaji",

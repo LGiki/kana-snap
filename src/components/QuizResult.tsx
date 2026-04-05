@@ -125,9 +125,15 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 								style={{ animationDelay: `${0.1 + i * 0.06}s` }}
 							>
 								<div className="flex items-center gap-4">
-									<span className="text-2xl">{a.question.kana.hiragana}</span>
-									<span className="text-text-muted">
-										{a.question.kana.romaji}
+									<span className="text-2xl min-w-14">
+										{a.question.type === "kana-to-romaji"
+											? a.question.kana.hiragana
+											: a.question.kana.romaji}
+									</span>
+									<span className="text-text-muted text-xl">
+										{a.question.type === "kana-to-romaji"
+											? a.question.kana.romaji
+											: a.question.kana.hiragana}
 									</span>
 								</div>
 								<div className="text-right text-sm">

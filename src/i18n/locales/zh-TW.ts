@@ -30,7 +30,7 @@ export default {
 		close: "關閉",
 	},
 	quiz: {
-		title: "假名測驗",
+		title: "測驗",
 		start: "開始測驗",
 		questionOf: "第 {{current}} 題，共 {{total}} 題",
 		selectRomaji: "選擇正確的羅馬字",

@@ -336,11 +336,23 @@ export function Quiz() {
 						<button
 							type="button"
 							onClick={handleNext}
-							className="px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
+							className="relative overflow-hidden px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
 						>
-							{currentIndex < questions.length - 1
-								? t("quiz.next")
-								: t("quiz.result")}
+							{quizAdvanceMode === "auto" && (
+								<span
+									key={currentIndex}
+									className="absolute inset-0 pointer-events-none"
+									style={{
+										background: `conic-gradient(from 0deg, transparent var(--countdown-angle), rgba(0,0,0,0.2) var(--countdown-angle))`,
+										animation: `countdown-border ${quizAutoAdvanceDelay}s linear forwards`,
+									}}
+								/>
+							)}
+							<span className="relative">
+								{currentIndex < questions.length - 1
+									? t("quiz.next")
+									: t("quiz.result")}
+							</span>
 						</button>
 					</div>
 				)}

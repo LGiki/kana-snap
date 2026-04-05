@@ -30,7 +30,7 @@ export default {
 		close: "关闭",
 	},
 	quiz: {
-		title: "假名测验",
+		title: "测验",
 		start: "开始测验",
 		questionOf: "第 {{current}} 题，共 {{total}} 题",
 		selectRomaji: "选择正确的罗马音",

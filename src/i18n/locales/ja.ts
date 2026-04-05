@@ -30,7 +30,7 @@ export default {
 		close: "閉じる",
 	},
 	quiz: {
-		title: "仮名クイズ",
+		title: "クイズ",
 		start: "クイズ開始",
 		questionOf: "問題 {{current}} / {{total}}",
 		selectRomaji: "正しいローマ字を選んでください",
