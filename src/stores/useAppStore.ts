@@ -241,7 +241,7 @@ export const useAppStore = create<AppState>()(
 						quizAdvanceMode: oneOf(
 							data.quizAdvanceMode,
 							validAdvanceModes,
-							"manual",
+							"auto",
 						),
 						quizAutoAdvanceDelay: delay,
 						chartAutoPlayAudio:
