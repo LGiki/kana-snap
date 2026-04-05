@@ -336,15 +336,14 @@ export function Quiz() {
 						<button
 							type="button"
 							onClick={handleNext}
-							className="relative overflow-hidden px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
+							className="relative w-full overflow-hidden px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
 						>
 							{quizAdvanceMode === "auto" && (
 								<span
 									key={currentIndex}
-									className="absolute inset-0 pointer-events-none"
+									className="absolute inset-0 pointer-events-none bg-black/20"
 									style={{
-										background: `conic-gradient(from 0deg, transparent var(--countdown-angle), rgba(0,0,0,0.2) var(--countdown-angle))`,
-										animation: `countdown-border ${quizAutoAdvanceDelay}s linear forwards`,
+										animation: `quiz-next-question-countdown ${quizAutoAdvanceDelay}s linear forwards`,
 									}}
 								/>
 							)}

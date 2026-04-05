@@ -93,18 +93,12 @@ body {
 	}
 }
 
-@property --countdown-angle {
-	syntax: "<angle>";
-	initial-value: 360deg;
-	inherits: false;
-}
-
-@keyframes countdown-border {
+@keyframes quiz-next-question-countdown {
 	from {
-		--countdown-angle: 0deg;
+		width: 100%;
 	}
 	to {
-		--countdown-angle: 360deg;
+		width: 0%;
 	}
 }
 
