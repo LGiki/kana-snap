@@ -1,5 +1,5 @@
 import { useBlocker } from "@tanstack/react-router";
-import { ArrowLeft, BarChart3, Keyboard, TrendingUp } from "lucide-react";
+import { ArrowLeft, BarChart3, Keyboard, Play, TrendingUp } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana } from "#/data/kana";
@@ -387,8 +387,9 @@ function QuizStart({ onStart }: { onStart: () => void }) {
 				<button
 					type="button"
 					onClick={onStart}
-					className="px-6 py-2.5 rounded-xl bg-primary-600 text-white text-base font-medium hover:bg-primary-700 transition-colors"
+					className="px-6 py-2.5 rounded-xl bg-primary-600 text-white text-base font-medium hover:bg-primary-700 transition-colors inline-flex items-center gap-1.5"
 				>
+					<Play size={18} />
 					{t("quiz.start")}
 				</button>
 			</div>
