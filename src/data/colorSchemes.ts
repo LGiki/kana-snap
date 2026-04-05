@@ -6,7 +6,11 @@ export type ColorSchemeId =
 	| "violet"
 	| "sky"
 	| "teal"
-	| "slate";
+	| "coral"
+	| "orange"
+	| "cyan"
+	| "lime"
+	| "blue";
 
 export interface ColorScheme {
 	id: ColorSchemeId;
@@ -120,18 +124,78 @@ export const colorSchemes: ColorScheme[] = [
 		},
 	},
 	{
-		id: "slate",
+		id: "coral",
 		colors: {
-			"--color-primary-50": "#f8fafc",
-			"--color-primary-100": "#f1f5f9",
-			"--color-primary-200": "#e2e8f0",
-			"--color-primary-300": "#cbd5e1",
-			"--color-primary-400": "#94a3b8",
-			"--color-primary-500": "#64748b",
-			"--color-primary-600": "#475569",
-			"--color-primary-700": "#334155",
-			"--color-primary-800": "#1e293b",
-			"--color-primary-900": "#0f172a",
+			"--color-primary-50": "#fff5f2",
+			"--color-primary-100": "#ffe8e0",
+			"--color-primary-200": "#ffd0c2",
+			"--color-primary-300": "#ffb09a",
+			"--color-primary-400": "#ff9472",
+			"--color-primary-500": "#f2709c",
+			"--color-primary-600": "#e05a88",
+			"--color-primary-700": "#c44572",
+			"--color-primary-800": "#a3375e",
+			"--color-primary-900": "#862d4e",
+		},
+	},
+	{
+		id: "orange",
+		colors: {
+			"--color-primary-50": "#fff7ed",
+			"--color-primary-100": "#ffedd5",
+			"--color-primary-200": "#fed7aa",
+			"--color-primary-300": "#fdba74",
+			"--color-primary-400": "#fb923c",
+			"--color-primary-500": "#f97316",
+			"--color-primary-600": "#ea580c",
+			"--color-primary-700": "#c2410c",
+			"--color-primary-800": "#9a3412",
+			"--color-primary-900": "#7c2d12",
+		},
+	},
+	{
+		id: "cyan",
+		colors: {
+			"--color-primary-50": "#ecfeff",
+			"--color-primary-100": "#cffafe",
+			"--color-primary-200": "#a5f3fc",
+			"--color-primary-300": "#67e8f9",
+			"--color-primary-400": "#22d3ee",
+			"--color-primary-500": "#06b6d4",
+			"--color-primary-600": "#0891b2",
+			"--color-primary-700": "#0e7490",
+			"--color-primary-800": "#155e75",
+			"--color-primary-900": "#164e63",
+		},
+	},
+	{
+		id: "lime",
+		colors: {
+			"--color-primary-50": "#f7fee7",
+			"--color-primary-100": "#ecfccb",
+			"--color-primary-200": "#d9f99d",
+			"--color-primary-300": "#bef264",
+			"--color-primary-400": "#a3e635",
+			"--color-primary-500": "#84cc16",
+			"--color-primary-600": "#65a30d",
+			"--color-primary-700": "#4d7c0f",
+			"--color-primary-800": "#3f6212",
+			"--color-primary-900": "#365314",
+		},
+	},
+	{
+		id: "blue",
+		colors: {
+			"--color-primary-50": "#eff6ff",
+			"--color-primary-100": "#dbeafe",
+			"--color-primary-200": "#bfdbfe",
+			"--color-primary-300": "#93c5fd",
+			"--color-primary-400": "#60a5fa",
+			"--color-primary-500": "#3b82f6",
+			"--color-primary-600": "#2563eb",
+			"--color-primary-700": "#1d4ed8",
+			"--color-primary-800": "#1e40af",
+			"--color-primary-900": "#1e3a8a",
 		},
 	},
 ];

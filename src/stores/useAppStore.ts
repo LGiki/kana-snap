@@ -66,7 +66,7 @@ interface AppState {
 
 const initialState = {
 	theme: "auto" as ThemeMode,
-	colorScheme: "indigo" as ColorSchemeId,
+	colorScheme: "coral" as ColorSchemeId,
 	language: detectLanguage(),
 	visualizationMode: "heatmap" as VisualizationMode,
 	displayMode: "hiragana" as DisplayMode,
@@ -178,7 +178,11 @@ export const useAppStore = create<AppState>()(
 						"violet",
 						"sky",
 						"teal",
-						"slate",
+						"coral",
+						"orange",
+						"cyan",
+						"lime",
+						"blue",
 					] as const;
 					const validLangs = ["en", "ja", "zh-CN", "zh-TW"] as const;
 					const validVizModes = ["heatmap", "line"] as const;
@@ -225,7 +229,7 @@ export const useAppStore = create<AppState>()(
 						quizHistory,
 						mistakeWeights,
 						theme: oneOf(data.theme, validThemes, "auto"),
-						colorScheme: oneOf(data.colorScheme, validSchemes, "indigo"),
+						colorScheme: oneOf(data.colorScheme, validSchemes, "coral"),
 						language: oneOf(data.language, validLangs, detectLanguage()),
 						visualizationMode: oneOf(
 							data.visualizationMode,
