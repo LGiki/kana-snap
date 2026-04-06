@@ -1,11 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, BrainCircuit, Grid3X3, Settings } from "lucide-react";
+import {
+	BookOpen,
+	BrainCircuit,
+	Grid3X3,
+	PenLine,
+	Settings,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
 
 const navItems = [
 	{ to: "/", labelKey: "nav.chart", icon: Grid3X3 },
 	{ to: "/learn", labelKey: "nav.learn", icon: BookOpen },
+	{ to: "/practice", labelKey: "nav.practice", icon: PenLine },
 	{ to: "/quiz", labelKey: "nav.quiz", icon: BrainCircuit },
 	{ to: "/settings", labelKey: "nav.settings", icon: Settings },
 ] as const;
