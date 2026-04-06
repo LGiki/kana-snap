@@ -1,10 +1,12 @@
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 import { minify } from "html-minifier-terser";
+import { optimize } from "svgo";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import { colorSchemes } from "./src/data/colorSchemes";
@@ -119,6 +121,42 @@ export default defineConfig({
 					minifyJS: true,
 					minifyCSS: true,
 				}),
+		},
+		{
+			name: "svgMinify",
+			apply: "build",
+			closeBundle() {
+				const outDir = "dist";
+				const svgFiles: string[] = [];
+				const collectSvgs = (dir: string) => {
+					for (const entry of readdirSync(dir)) {
+						const full = join(dir, entry);
+						if (statSync(full).isDirectory()) {
+							collectSvgs(full);
+						} else if (entry.endsWith(".svg")) {
+							svgFiles.push(full);
+						}
+					}
+				};
+				collectSvgs(outDir);
+				let totalBefore = 0;
+				let totalAfter = 0;
+				for (const file of svgFiles) {
+					const input = readFileSync(file, "utf-8");
+					const result = optimize(input, { multipass: true });
+					totalBefore += input.length;
+					totalAfter += result.data.length;
+					writeFileSync(file, result.data);
+				}
+				const saved = totalBefore - totalAfter;
+				const pct =
+					totalBefore > 0
+						? ((saved / totalBefore) * 100).toFixed(1)
+						: "0";
+				console.log(
+					`\n[svgMinify] Optimized ${svgFiles.length} SVGs: ${(totalBefore / 1024).toFixed(1)}KB → ${(totalAfter / 1024).toFixed(1)}KB (−${pct}%)`,
+				);
+			},
 		},
 	],
 	build: {
