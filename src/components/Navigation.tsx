@@ -1,5 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, BrainCircuit, Grid3X3, Settings } from "lucide-react";
+import {
+	BookOpen,
+	BrainCircuit,
+	Grid3X3,
+	Settings,
+	Wrench,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
 
@@ -7,6 +13,7 @@ const navItems = [
 	{ to: "/", labelKey: "nav.chart", icon: Grid3X3 },
 	{ to: "/learn", labelKey: "nav.learn", icon: BookOpen },
 	{ to: "/quiz", labelKey: "nav.quiz", icon: BrainCircuit },
+	{ to: "/tools", labelKey: "nav.tools", icon: Wrench },
 	{ to: "/settings", labelKey: "nav.settings", icon: Settings },
 ] as const;
 
@@ -43,12 +50,12 @@ export function Navigation() {
 			</nav>
 			{/* Mobile bottom nav */}
 			<div className="sm:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-surface z-50">
-				<div className="flex justify-around py-2">
+				<div className="flex justify-around py-1 items-center">
 					{navItems.map((item) => (
 						<Link
 							key={item.to}
 							to={item.to}
-							className="flex-1 flex flex-col items-center gap-0.5 px-3 py-2 text-xs text-text-secondary [&.active]:text-primary-600 dark:[&.active]:text-primary-400 transition-colors"
+							className="flex-1 flex flex-col items-center gap-0.5 px-3 py-2 text-xs text-text-secondary [&.active]:text-primary-600 dark:[&.active]:text-primary-400 transition-colors text-center"
 						>
 							<item.icon size={20} />
 							{t(item.labelKey)}

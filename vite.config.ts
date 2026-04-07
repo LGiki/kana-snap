@@ -150,9 +150,7 @@ export default defineConfig({
 				}
 				const saved = totalBefore - totalAfter;
 				const pct =
-					totalBefore > 0
-						? ((saved / totalBefore) * 100).toFixed(1)
-						: "0";
+					totalBefore > 0 ? ((saved / totalBefore) * 100).toFixed(1) : "0";
 				console.log(
 					`\n[svgMinify] Optimized ${svgFiles.length} SVGs: ${(totalBefore / 1024).toFixed(1)}KB → ${(totalAfter / 1024).toFixed(1)}KB (−${pct}%)`,
 				);

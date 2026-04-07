@@ -66,11 +66,13 @@ src/
     LineChart.tsx            # SVG line chart for quiz activity
     StreakCounter.tsx         # Current/longest streak + total quizzes + average score
     Tabs.tsx                 # Reusable tab switcher component
+    JapaneseTools.tsx         # Tools page: weekday/month cards, number converter, date converter, counters
   routes/
     __root.tsx               # Root layout: theme sync, language sync, nav
     index.tsx                # / — Kana Chart page
     quiz.tsx                 # /quiz — Quiz page (includes analytics tab)
     feed.tsx                 # /feed — Infinite scroll kana feed with embedded quizzes
+    tools.tsx                # /tools — Japanese learning tools (calendar, numbers)
     settings.tsx             # /settings — Theme, color scheme, language, data import/export/reset, version info
 ```
 
