@@ -142,7 +142,22 @@ export default defineConfig({
 				let totalAfter = 0;
 				for (const file of svgFiles) {
 					const input = readFileSync(file, "utf-8");
-					const result = optimize(input, { multipass: true });
+					// Stroke SVGs are inlined into the same DOM (hiragana + katakana,
+					// plus compound yoon like きゃ), so their IDs must stay unique
+					// across files. The originals use Unicode-codepoint prefixes;
+					// disable cleanupIds so SVGO doesn't collapse them all to a/b/c.
+					const isStrokeSvg = file.includes(`${join(outDir, "strokesvg")}`);
+					const result = optimize(input, {
+						multipass: true,
+						plugins: [
+							{
+								name: "preset-default",
+								params: {
+									overrides: isStrokeSvg ? { cleanupIds: false } : {},
+								},
+							},
+						],
+					});
 					totalBefore += input.length;
 					totalAfter += result.data.length;
 					writeFileSync(file, result.data);
