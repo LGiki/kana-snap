@@ -65,7 +65,7 @@ function RootLayout() {
 		<ErrorBoundary>
 			<div className="min-h-screen bg-surface text-text-primary">
 				<Navigation />
-				<main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-6">
+				<main className="max-w-5xl mx-auto pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-6">
 					<Outlet />
 				</main>
 			</div>

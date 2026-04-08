@@ -23,8 +23,8 @@ export function Navigation() {
 	return (
 		<>
 			{/* Desktop top nav */}
-			<nav className="hidden sm:block border-b border-border bg-surface sticky top-0 z-50">
-				<div className="max-w-5xl mx-auto px-4">
+			<nav className="hidden sm:block border-b border-border bg-surface sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
+				<div className="max-w-5xl mx-auto pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))]">
 					<div className="flex items-center justify-between h-14">
 						<Link
 							to="/"
@@ -49,8 +49,8 @@ export function Navigation() {
 				</div>
 			</nav>
 			{/* Mobile bottom nav */}
-			<div className="sm:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-surface z-50">
-				<div className="flex justify-around py-1 items-center">
+			<div className="sm:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-surface z-50 pb-[env(safe-area-inset-bottom)]">
+				<div className="flex justify-around py-1 items-center pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
 					{navItems.map((item) => (
 						<Link
 							key={item.to}

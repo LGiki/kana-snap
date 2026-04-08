@@ -76,7 +76,7 @@ const LearnSlide = memo(function LearnSlide({ kana }: { kana: Kana }) {
 	const { t } = useTranslation();
 
 	return (
-		<div className="h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-3.5rem)] w-full snap-start snap-always flex items-center justify-center relative select-none">
+		<div className="h-[calc(100dvh-4rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] sm:h-[calc(100dvh-3.5rem-env(safe-area-inset-top))] w-full snap-start snap-always flex items-center justify-center relative select-none">
 			<button
 				type="button"
 				onClick={() => speakKana(kana.hiragana)}
@@ -461,7 +461,7 @@ export function KanaLearn() {
 	}
 
 	return (
-		<div className="fixed top-0 sm:top-14 left-0 right-0 bottom-16 sm:bottom-0 z-40 bg-surface flex flex-col">
+		<div className="fixed left-0 right-0 z-40 bg-surface flex flex-col top-[env(safe-area-inset-top)] sm:top-[calc(3.5rem+env(safe-area-inset-top))] bottom-[calc(4rem+env(safe-area-inset-bottom))] sm:bottom-0">
 			<div
 				ref={containerRef}
 				className="flex-1 overflow-y-auto snap-y snap-mandatory learn-scrollbar-none relative"
@@ -472,7 +472,7 @@ export function KanaLearn() {
 			</div>
 
 			{/* Auto-play audio toggle */}
-			<div className="fixed right-4 top-4 sm:top-auto sm:bottom-4 z-45 flex flex-col items-center gap-3">
+			<div className="fixed right-[max(1rem,env(safe-area-inset-right))] top-[calc(1rem+env(safe-area-inset-top))] sm:top-auto sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] z-45 flex flex-col items-center gap-3">
 				<button
 					type="button"
 					onClick={() => setLearnAutoPlayAudio(!learnAutoPlayAudio)}
@@ -490,7 +490,7 @@ export function KanaLearn() {
 			{/* Scroll hint on first slide */}
 			{currentIndex === 0 && (
 				<div
-					className={`fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${prefersReducedMotion ? "" : "animate-bounce"}`}
+					className={`fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${prefersReducedMotion ? "" : "animate-bounce"}`}
 				>
 					<ChevronDown size={24} />
 				</div>

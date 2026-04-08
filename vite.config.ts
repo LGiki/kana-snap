@@ -54,6 +54,7 @@ export default defineConfig({
 			registerType: "autoUpdate",
 			includeAssets: ["icon.svg", "apple-touch-icon-180x180.png"],
 			manifest: {
+				id: "/",
 				name: "KanaSnap — Learn Japanese Kana",
 				short_name: "KanaSnap",
 				description:
