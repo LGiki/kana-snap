@@ -16,10 +16,24 @@ function RootLayout() {
 	const language = useAppStore((s) => s.language);
 	const { i18n } = useTranslation();
 
-	// Apply theme
+	// Apply theme + sync iOS/Android title bar color via <meta name="theme-color">
 	useEffect(() => {
 		const apply = (mode: "light" | "dark") => {
 			document.documentElement.setAttribute("data-theme", mode);
+			const scheme = getColorScheme(colorScheme);
+			const color =
+				mode === "dark"
+					? scheme.colors["--color-primary-900"]
+					: scheme.colors["--color-primary-500"];
+			let meta = document.querySelector<HTMLMetaElement>(
+				'meta[name="theme-color"]',
+			);
+			if (!meta) {
+				meta = document.createElement("meta");
+				meta.name = "theme-color";
+				document.head.appendChild(meta);
+			}
+			meta.content = color;
 		};
 
 		if (theme === "auto") {
@@ -31,7 +45,7 @@ function RootLayout() {
 			return () => mq.removeEventListener("change", handler);
 		}
 		apply(theme);
-	}, [theme]);
+	}, [theme, colorScheme]);
 
 	// Apply color scheme
 	useEffect(() => {

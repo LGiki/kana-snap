@@ -38,11 +38,9 @@ export default defineConfig({
 			transformIndexHtml(html) {
 				const schemeMap: Record<string, Record<string, string>> = {};
 				for (const scheme of colorSchemes) {
-					// Skip default scheme — its values are already in CSS @theme
-					if (scheme.id === "indigo") continue;
 					schemeMap[scheme.id] = scheme.colors;
 				}
-				const script = `<script>(function(){try{var s=localStorage.getItem("kana-snap-storage");if(!s)return;var t=JSON.parse(s).state;if(!t)return;var m=t.theme;document.documentElement.setAttribute("data-theme",m==="dark"||m==="light"?m:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var c=${JSON.stringify(schemeMap)}[t.colorScheme];if(c){var r=document.documentElement;for(var p in c)r.style.setProperty(p,c[p])}}catch(e){}})()</script>`;
+				const script = `<script>(function(){try{var s=localStorage.getItem("kana-snap-storage");var t=s?(JSON.parse(s).state||{}):{};var m=t.theme;var mode=m==="dark"||m==="light"?m:window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",mode);var schemes=${JSON.stringify(schemeMap)};var c=schemes[t.colorScheme]||schemes.coral;if(c){var r=document.documentElement;for(var p in c)r.style.setProperty(p,c[p]);var meta=document.querySelector('meta[name="theme-color"]');if(!meta){meta=document.createElement("meta");meta.name="theme-color";document.head.appendChild(meta)}meta.content=mode==="dark"?c["--color-primary-900"]:c["--color-primary-500"]}}catch(e){}})()</script>`;
 				return html.replace("</head>", `${script}\n</head>`);
 			},
 		},
@@ -60,7 +58,7 @@ export default defineConfig({
 				short_name: "KanaSnap",
 				description:
 					"Interactive Japanese Kana learning app. Master Hiragana and Katakana with charts, quizzes, stroke order animations, and smart analytics.",
-				theme_color: "#6366f1",
+				theme_color: "#f2709c",
 				background_color: "#ffffff",
 				display: "standalone",
 				orientation: "portrait-primary",
