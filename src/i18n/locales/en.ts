@@ -107,6 +107,12 @@ export default {
 		ok: "OK",
 		close: "Close",
 	},
+	update: {
+		title: "Update available",
+		message: "A new version of KanaSnap is ready.",
+		reload: "Reload",
+		dismiss: "Dismiss",
+	},
 	tools: {
 		title: "Tools",
 		tabCalendar: "Calendar",

@@ -110,6 +110,12 @@ export default {
 		ok: "OK",
 		close: "閉じる",
 	},
+	update: {
+		title: "更新があります",
+		message: "KanaSnap の新しいバージョンが利用可能です。",
+		reload: "再読み込み",
+		dismiss: "閉じる",
+	},
 	tools: {
 		title: "ツール",
 		tabCalendar: "カレンダー",

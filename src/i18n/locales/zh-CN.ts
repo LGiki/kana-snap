@@ -105,6 +105,12 @@ export default {
 		ok: "确定",
 		close: "关闭",
 	},
+	update: {
+		title: "有可用更新",
+		message: "KanaSnap 新版本已就绪。",
+		reload: "重新加载",
+		dismiss: "关闭",
+	},
 	tools: {
 		title: "工具",
 		tabCalendar: "日历",
