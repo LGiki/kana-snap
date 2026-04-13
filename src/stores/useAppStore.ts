@@ -276,6 +276,11 @@ export const useAppStore = create<AppState>()(
 					colorSchemes.map((s) => s.id),
 					"coral",
 				);
+				state.language = oneOf(
+					state.language,
+					["en", "ja", "zh-CN", "zh-TW"],
+					current.language,
+				);
 				state.visualizationMode = oneOf(
 					state.visualizationMode,
 					["heatmap", "line"],
@@ -296,6 +301,16 @@ export const useAppStore = create<AppState>()(
 					["manual", "auto"],
 					"auto",
 				);
+				if (!Array.isArray(state.quizHistory)) {
+					state.quizHistory = current.quizHistory;
+				}
+				if (
+					typeof state.mistakeWeights !== "object" ||
+					state.mistakeWeights === null ||
+					Array.isArray(state.mistakeWeights)
+				) {
+					state.mistakeWeights = current.mistakeWeights;
+				}
 				return state;
 			},
 		},

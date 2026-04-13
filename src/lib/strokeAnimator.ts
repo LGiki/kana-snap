@@ -109,6 +109,7 @@ export function createStrokeAnimator(
 	}
 
 	function play() {
+		if (strokes.length === 0) return;
 		if (timeoutId != null || requestFrameId != null) {
 			return;
 		}

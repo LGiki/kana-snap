@@ -31,21 +31,14 @@ export function LineChart({ records }: LineChartProps) {
 	const colorSchemeId = useAppStore((s) => s.colorScheme);
 
 	const aggregated = useMemo(() => {
-		const byDate = new Map<string, { count: number; totalScore: number }>();
+		const byDate = new Map<string, number>();
 		for (const r of records) {
-			const entry = byDate.get(r.date) || { count: 0, totalScore: 0 };
-			entry.count += 1;
-			entry.totalScore += r.score;
-			byDate.set(r.date, entry);
+			byDate.set(r.date, (byDate.get(r.date) ?? 0) + 1);
 		}
 		return Array.from(byDate.entries())
 			.sort(([a], [b]) => a.localeCompare(b))
 			.slice(-30)
-			.map(([date, data]) => ({
-				date,
-				count: data.count,
-				avgScore: data.totalScore / data.count,
-			}));
+			.map(([date, count]) => ({ date, count }));
 	}, [records]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: colorSchemeId triggers re-read of CSS variables after scheme change
