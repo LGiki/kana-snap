@@ -1,11 +1,15 @@
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { RefreshCw, X } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
 export function UpdatePrompt() {
 	const { t } = useTranslation();
+	const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+	const listenerRef = useRef<(() => void) | null>(null);
+
 	const {
 		needRefresh: [needRefresh, setNeedRefresh],
 		updateServiceWorker,
@@ -16,12 +20,26 @@ export function UpdatePrompt() {
 				if (registration.installing || !navigator.onLine) return;
 				registration.update().catch(() => {});
 			};
-			setInterval(checkForUpdates, UPDATE_CHECK_INTERVAL_MS);
-			document.addEventListener("visibilitychange", () => {
+			intervalRef.current = setInterval(
+				checkForUpdates,
+				UPDATE_CHECK_INTERVAL_MS,
+			);
+			const onVisibilityChange = () => {
 				if (document.visibilityState === "visible") checkForUpdates();
-			});
+			};
+			listenerRef.current = onVisibilityChange;
+			document.addEventListener("visibilitychange", onVisibilityChange);
 		},
 	});
+
+	useEffect(() => {
+		return () => {
+			if (intervalRef.current) clearInterval(intervalRef.current);
+			if (listenerRef.current) {
+				document.removeEventListener("visibilitychange", listenerRef.current);
+			}
+		};
+	}, []);
 
 	if (!needRefresh) return null;
 

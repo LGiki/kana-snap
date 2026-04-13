@@ -1,17 +1,28 @@
 import { useBlocker } from "@tanstack/react-router";
 import { ArrowLeft, BarChart3, Keyboard, Play, TrendingUp } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useAppStore } from "#/stores/useAppStore";
 import { getLocalDateKey } from "#/utils/date";
 import { weightedRandomSelect } from "#/utils/quiz";
+import { buildQuizOptions } from "#/utils/quizOptions";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { Heatmap } from "./Heatmap";
-import { LineChart } from "./LineChart";
 import { QuizResult } from "./QuizResult";
 import { StreakCounter } from "./StreakCounter";
 import { Tabs } from "./Tabs";
+
+const LazyLineChart = lazy(() =>
+	import("./LineChart").then((m) => ({ default: m.LineChart })),
+);
 
 interface Question {
 	kana: Kana;
@@ -27,11 +38,6 @@ interface AnswerRecord {
 }
 
 const QUIZ_LENGTH = 10;
-const OPTIONS_COUNT = 4;
-
-function isYoon(kana: Kana): boolean {
-	return kana.hiragana.length > 1;
-}
 
 function generateQuestions(weights: Record<string, number>): Question[] {
 	const allKana = getAllKana();
@@ -41,33 +47,9 @@ function generateQuestions(weights: Record<string, number>): Question[] {
 		const type: Question["type"] =
 			Math.random() > 0.5 ? "kana-to-romaji" : "romaji-to-kana";
 
-		// Pick distractors from the same category (yoon vs non-yoon)
-		// so users can't eliminate answers by structural differences
-		const questionIsYoon = isYoon(kana);
-		const sameCategory = allKana.filter(
-			(k) => k.romaji !== kana.romaji && isYoon(k) === questionIsYoon,
-		);
-		const pool =
-			sameCategory.length >= OPTIONS_COUNT - 1
-				? sameCategory
-				: allKana.filter((k) => k.romaji !== kana.romaji);
-
-		const shuffledOthers = pool
-			.sort(() => Math.random() - 0.5)
-			.slice(0, OPTIONS_COUNT - 1);
-
-		const correctIndex = Math.floor(Math.random() * OPTIONS_COUNT);
-		const options: string[] = [];
-
-		let otherIdx = 0;
-		for (let i = 0; i < OPTIONS_COUNT; i++) {
-			if (i === correctIndex) {
-				options.push(type === "kana-to-romaji" ? kana.romaji : kana.hiragana);
-			} else {
-				const other = shuffledOthers[otherIdx++];
-				options.push(type === "kana-to-romaji" ? other.romaji : other.hiragana);
-			}
-		}
+		const getLabel = (k: Kana) =>
+			type === "kana-to-romaji" ? k.romaji : k.hiragana;
+		const { options, correctIndex } = buildQuizOptions(allKana, kana, getLabel);
 
 		return { kana, type, options, correctIndex };
 	});
@@ -89,6 +71,8 @@ export function Quiz() {
 	const [finished, setFinished] = useState(false);
 	const [showBackConfirm, setShowBackConfirm] = useState(false);
 	const advancingRef = useRef(false);
+	const answersRef = useRef(answers);
+	answersRef.current = answers;
 
 	const currentQuestion = questions[currentIndex];
 	const isQuizInProgress = started && !finished;
@@ -138,7 +122,7 @@ export function Quiz() {
 			setCurrentIndex((i) => i + 1);
 			setSelectedIndex(null);
 		} else {
-			const finalAnswers = [...answers];
+			const finalAnswers = answersRef.current;
 			const score = finalAnswers.filter((a) => a.correct).length;
 			addQuizRecord({
 				date: getLocalDateKey(),
@@ -150,7 +134,7 @@ export function Quiz() {
 			});
 			setFinished(true);
 		}
-	}, [currentIndex, questions.length, answers, addQuizRecord]);
+	}, [currentIndex, questions.length, addQuizRecord]);
 
 	// Keyboard shortcuts
 	useEffect(() => {
@@ -418,7 +402,15 @@ function QuizStart({ onStart }: { onStart: () => void }) {
 							id="quiz-viz-panel-line"
 							aria-labelledby="quiz-viz-tab-line"
 						>
-							<LineChart records={quizHistory} />
+							<Suspense
+								fallback={
+									<div className="h-48 flex items-center justify-center text-text-muted text-sm">
+										Loading...
+									</div>
+								}
+							>
+								<LazyLineChart records={quizHistory} />
+							</Suspense>
 						</div>
 					)}
 				</>

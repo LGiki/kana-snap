@@ -22,11 +22,14 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 	const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const copyToClipboard = useCallback((text: string, type: string) => {
-		navigator.clipboard.writeText(text).then(() => {
-			setCopiedType(type);
-			if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-			copyTimeoutRef.current = setTimeout(() => setCopiedType(null), 1500);
-		});
+		navigator.clipboard
+			.writeText(text)
+			.then(() => {
+				setCopiedType(type);
+				if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+				copyTimeoutRef.current = setTimeout(() => setCopiedType(null), 1500);
+			})
+			.catch(() => {});
 	}, []);
 
 	useEffect(() => {
@@ -109,6 +112,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 							type="button"
 							onClick={playAudio}
 							className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+							aria-label={t("modal.playAudio")}
 							title={t("modal.playAudio")}
 						>
 							<Volume2 size={14} />

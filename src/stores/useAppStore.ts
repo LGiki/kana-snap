@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ColorSchemeId } from "#/data/colorSchemes";
+import { STORAGE_KEY } from "#/constants";
+import { type ColorSchemeId, colorSchemes } from "#/data/colorSchemes";
 
 export interface QuizRecord {
 	date: string;
@@ -15,6 +16,7 @@ export type Language = "en" | "ja" | "zh-CN" | "zh-TW";
 const supportedLanguages: Language[] = ["en", "ja", "zh-CN", "zh-TW"];
 
 function detectLanguage(): Language {
+	if (typeof navigator === "undefined") return "en";
 	for (const lang of navigator.languages ?? [navigator.language]) {
 		if (supportedLanguages.includes(lang as Language)) return lang as Language;
 		const match = supportedLanguages.find(
@@ -113,7 +115,7 @@ export const useAppStore = create<AppState>()(
 					},
 				})),
 
-			resetData: () => set({ ...initialState }),
+			resetData: () => set({ ...initialState, language: detectLanguage() }),
 
 			exportData: () => {
 				const {
@@ -170,20 +172,7 @@ export const useAppStore = create<AppState>()(
 							: fallback;
 
 					const validThemes = ["light", "dark", "auto"] as const;
-					const validSchemes = [
-						"indigo",
-						"rose",
-						"emerald",
-						"amber",
-						"violet",
-						"sky",
-						"teal",
-						"coral",
-						"orange",
-						"cyan",
-						"lime",
-						"blue",
-					] as const;
+					const validSchemes = colorSchemes.map((s) => s.id) as ColorSchemeId[];
 					const validLangs = ["en", "ja", "zh-CN", "zh-TW"] as const;
 					const validVizModes = ["heatmap", "line"] as const;
 					const validDisplayModes = [
@@ -272,15 +261,41 @@ export const useAppStore = create<AppState>()(
 			},
 		}),
 		{
-			name: "kana-snap-storage",
+			name: STORAGE_KEY,
 			merge: (persisted, current) => {
 				const state = { ...current, ...(persisted as Partial<AppState>) };
-				if (
-					state.visualizationMode !== "heatmap" &&
-					state.visualizationMode !== "line"
-				) {
-					state.visualizationMode = "heatmap";
-				}
+				const oneOf = <T>(
+					val: unknown,
+					allowed: readonly T[],
+					fallback: T,
+				): T =>
+					(allowed as readonly unknown[]).includes(val) ? (val as T) : fallback;
+				state.theme = oneOf(state.theme, ["light", "dark", "auto"], "auto");
+				state.colorScheme = oneOf(
+					state.colorScheme,
+					colorSchemes.map((s) => s.id),
+					"coral",
+				);
+				state.visualizationMode = oneOf(
+					state.visualizationMode,
+					["heatmap", "line"],
+					"heatmap",
+				);
+				state.displayMode = oneOf(
+					state.displayMode,
+					["hiragana", "katakana", "comparison"],
+					"hiragana",
+				);
+				state.kanaCardClickAction = oneOf(
+					state.kanaCardClickAction,
+					["showDetail", "playAudio"],
+					"showDetail",
+				);
+				state.quizAdvanceMode = oneOf(
+					state.quizAdvanceMode,
+					["manual", "auto"],
+					"auto",
+				);
 				return state;
 			},
 		},

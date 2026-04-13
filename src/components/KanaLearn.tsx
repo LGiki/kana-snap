@@ -17,10 +17,10 @@ import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { useWindowSize } from "#/hooks/useWindowSize";
 import { speakKana } from "#/lib/speakKana";
 import { useAppStore } from "#/stores/useAppStore";
+import { buildQuizOptions } from "#/utils/quizOptions";
 
 const STREAK_INTERVAL = 10;
 const POP_QUIZ_INTERVAL = 20;
-const OPTIONS_COUNT = 4;
 
 /** Pre-shuffled kana source used for modulo-based indexing (no infinite array growth). */
 const BASE_KANA = getAllKana();
@@ -41,32 +41,11 @@ interface PopQuizQuestion {
 }
 
 function generatePopQuiz(allKana: Kana[], currentKana: Kana): PopQuizQuestion {
-	const isYoon = currentKana.hiragana.length > 1;
-	const sameCategory = allKana.filter((k) => {
-		if (k.romaji === currentKana.romaji) return false;
-		const kIsYoon = k.hiragana.length > 1;
-		return kIsYoon === isYoon;
-	});
-	const pool =
-		sameCategory.length >= OPTIONS_COUNT - 1
-			? sameCategory
-			: allKana.filter((k) => k.romaji !== currentKana.romaji);
-
-	const shuffled = [...pool]
-		.sort(() => Math.random() - 0.5)
-		.slice(0, OPTIONS_COUNT - 1);
-	const correctIndex = Math.floor(Math.random() * OPTIONS_COUNT);
-	const options: string[] = [];
-
-	let otherIdx = 0;
-	for (let i = 0; i < OPTIONS_COUNT; i++) {
-		if (i === correctIndex) {
-			options.push(currentKana.romaji);
-		} else {
-			options.push(shuffled[otherIdx++].romaji);
-		}
-	}
-
+	const { options, correctIndex } = buildQuizOptions(
+		allKana,
+		currentKana,
+		(k) => k.romaji,
+	);
 	return { kana: currentKana, options, correctIndex };
 }
 
@@ -230,7 +209,7 @@ function StreakToast({
 
 	return (
 		<div
-			className={`fixed top-20 sm:top-20 left-1/2 z-55 px-4 py-2.5 rounded-full bg-primary-600 text-white text-sm font-semibold shadow-lg whitespace-nowrap ${
+			className={`fixed top-20 sm:top-20 left-1/2 -translate-x-1/2 z-55 px-4 py-2.5 rounded-full bg-primary-600 text-white text-sm font-semibold shadow-lg whitespace-nowrap ${
 				visible ? "animate-toast-in" : "animate-toast-out"
 			}`}
 		>

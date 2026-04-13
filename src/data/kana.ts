@@ -196,14 +196,10 @@ export const yoon: KanaGroup = {
 
 export const allGroups: KanaGroup[] = [gojuon, dakuten, handakuten, yoon];
 
+const _allKana: Kana[] = allGroups.flatMap((g) =>
+	g.rows.flat().filter((c): c is Kana => c !== null),
+);
+
 export function getAllKana(): Kana[] {
-	const kanas: Kana[] = [];
-	for (const group of allGroups) {
-		for (const row of group.rows) {
-			for (const cell of row) {
-				if (cell) kanas.push(cell);
-			}
-		}
-	}
-	return kanas;
+	return _allKana;
 }

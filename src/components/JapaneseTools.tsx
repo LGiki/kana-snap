@@ -323,11 +323,14 @@ function CopyButton({ text }: { text: string }) {
 		<button
 			type="button"
 			onClick={() => {
-				navigator.clipboard.writeText(text).then(() => {
-					setCopied(true);
-					if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-					copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
-				});
+				navigator.clipboard
+					.writeText(text)
+					.then(() => {
+						setCopied(true);
+						if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+						copyTimeoutRef.current = setTimeout(() => setCopied(false), 1500);
+					})
+					.catch(() => {});
 			}}
 			aria-label={t("tools.copy")}
 			title={t("tools.copy")}

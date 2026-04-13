@@ -26,7 +26,7 @@ describe("importData validation", () => {
 		expect(useAppStore.getState().importData("{}")).toBe(true);
 		const state = useAppStore.getState();
 		expect(state.theme).toBe("auto");
-		expect(state.colorScheme).toBe("indigo");
+		expect(state.colorScheme).toBe("coral");
 		expect(state.quizHistory).toEqual([]);
 		expect(state.mistakeWeights).toEqual({});
 	});
@@ -42,10 +42,10 @@ describe("importData validation", () => {
 		expect(useAppStore.getState().importData(json)).toBe(true);
 		const state = useAppStore.getState();
 		expect(state.theme).toBe("auto");
-		expect(state.colorScheme).toBe("indigo");
+		expect(state.colorScheme).toBe("coral");
 		expect(state.displayMode).toBe("hiragana");
 		expect(state.kanaCardClickAction).toBe("showDetail");
-		expect(state.quizAdvanceMode).toBe("manual");
+		expect(state.quizAdvanceMode).toBe("auto");
 	});
 
 	it("accepts valid enum values", () => {
