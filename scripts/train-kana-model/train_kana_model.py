@@ -3,10 +3,10 @@
 Train kana handwriting recognition models for KanaSnap.
 
 Generates synthetic training data from Japanese fonts with heavy augmentation,
-trains CNN models, and exports to TensorFlow.js format.
+trains CNN models with PyTorch, and exports to ONNX format for web inference.
 
 Usage:
-    pip install tensorflow tensorflowjs Pillow numpy scipy
+    pip install torch torchvision onnx Pillow numpy scipy
     python scripts/train_kana_model.py
 
     # Custom options:
@@ -16,24 +16,25 @@ Usage:
     python scripts/train_kana_model.py --dataset-dir ./handwritten_data
 
 Output:
-    public/model/hiragana/model.json  (+ weight shards)
-    public/model/katakana/model.json  (+ weight shards)
+    public/model/hiragana/model.onnx
+    public/model/katakana/model.onnx
 """
 
 import argparse
 import glob
-import json
+import hashlib
 import math
 import os
 import platform
 import sys
 
 import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from scipy.ndimage import gaussian_filter, map_coordinates
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-import tensorflow as tf  # noqa: E402
+from torch.utils.data import DataLoader, TensorDataset
 
 # --------------------------------------------------------------------------- #
 # Kana labels — order MUST match kanaModel.ts buildSingleKana()
@@ -85,6 +86,10 @@ KATAKANA = [
 
 NUM_CLASSES = len(HIRAGANA)  # 71
 INPUT_SIZE = 64
+
+# Bump when augmentation logic, _bbox_fit_resize, or sample shape changes so
+# older caches are invalidated automatically.
+CACHE_VERSION = "1"
 
 # --------------------------------------------------------------------------- #
 # Font discovery
@@ -480,47 +485,121 @@ def _augment_collected(img: Image.Image, size: int) -> np.ndarray | None:
 # --------------------------------------------------------------------------- #
 
 
+def _font_cache_key(
+    font_path: str,
+    kana_type: str,
+    samples_per_font: int,
+    clean_per_font: int,
+) -> str:
+    """Hash the font bytes + generation params so any change invalidates the
+    cache. Using content hash (not path/mtime) means the cache survives
+    moving the font file or copying it to another machine."""
+    h = hashlib.sha256()
+    with open(font_path, "rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    meta = f"|{kana_type}|{samples_per_font}|{clean_per_font}|{INPUT_SIZE}|v{CACHE_VERSION}"
+    h.update(meta.encode())
+    return h.hexdigest()[:16]
+
+
+def _generate_font_samples(
+    chars: list[str],
+    font: str,
+    samples_per_font: int,
+    clean_per_font: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Generate all clean + augmented samples for one font across every char."""
+    X: list[np.ndarray] = []
+    y: list[int] = []
+    for ci, char in enumerate(chars):
+        for _ in range(clean_per_font):
+            sample = generate_sample(char, font, augment=False)
+            if sample is not None:
+                X.append(sample)
+                y.append(ci)
+        for _ in range(samples_per_font):
+            sample = generate_sample(char, font, augment=True)
+            if sample is not None:
+                X.append(sample)
+                y.append(ci)
+    return (
+        np.array(X, dtype=np.float32),
+        np.array(y, dtype=np.int32),
+    )
+
+
 def generate_dataset(
     chars: list[str],
     fonts: list[str],
     samples_per_font: int = 80,
     dataset_dir: str | None = None,
     augment_copies: int = 3,
+    cache_dir: str | None = None,
+    kana_type: str = "kana",
+    rebuild_cache: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Generate full training dataset (augmented + clean anchor samples).
+
+    If ``cache_dir`` is provided, per-font samples are saved to / loaded from
+    disk so unchanged fonts don't need to be re-rendered on subsequent runs.
+    The cache key is keyed by font content hash + generation parameters, so
+    any change to the font file or params produces a fresh cache entry.
 
     If ``dataset_dir`` is provided, collected handwritten images are loaded
     and merged with the font-generated data.
     """
-    X: list[np.ndarray] = []
-    y: list[int] = []
-
     clean_per_font = 3  # non-augmented anchors per font per character
-    total = len(chars) * len(fonts) * (samples_per_font + clean_per_font)
-    count = 0
 
-    for ci, char in enumerate(chars):
-        for font in fonts:
-            # Clean anchor samples (no augmentation)
-            for _ in range(clean_per_font):
-                sample = generate_sample(char, font, augment=False)
-                if sample is not None:
-                    X.append(sample)
-                    y.append(ci)
-                count += 1
+    X_parts: list[np.ndarray] = []
+    y_parts: list[np.ndarray] = []
 
-            # Augmented samples
-            for _ in range(samples_per_font):
-                sample = generate_sample(char, font, augment=True)
-                if sample is not None:
-                    X.append(sample)
-                    y.append(ci)
-                count += 1
-                if count % 2000 == 0:
-                    print(f"  {count}/{total} samples ({count * 100 // total}%)")
+    if cache_dir:
+        os.makedirs(cache_dir, exist_ok=True)
 
-    X_arr = np.array(X, dtype=np.float32)
-    y_arr = np.array(y, dtype=np.int32)
+    hits = 0
+    misses = 0
+    for fi, font in enumerate(fonts):
+        font_name = os.path.basename(font)
+        cache_path: str | None = None
+        if cache_dir:
+            key = _font_cache_key(font, kana_type, samples_per_font, clean_per_font)
+            cache_path = os.path.join(cache_dir, f"{kana_type}_{key}.npz")
+
+        loaded = False
+        if cache_path and not rebuild_cache and os.path.exists(cache_path):
+            try:
+                d = np.load(cache_path)
+                fx, fy = d["X"], d["y"]
+                loaded = True
+                hits += 1
+                print(f"  [{fi + 1}/{len(fonts)}] cache hit: {font_name} ({len(fx)} samples)")
+            except Exception as e:
+                print(f"  [{fi + 1}/{len(fonts)}] cache read failed for {font_name}: {e}")
+
+        if not loaded:
+            misses += 1
+            print(f"  [{fi + 1}/{len(fonts)}] generating: {font_name} …")
+            fx, fy = _generate_font_samples(chars, font, samples_per_font, clean_per_font)
+            if cache_path is not None and len(fx) > 0:
+                try:
+                    np.savez_compressed(cache_path, X=fx, y=fy)
+                except Exception as e:
+                    print(f"    warning: failed to save cache for {font_name}: {e}")
+
+        if len(fx) > 0:
+            X_parts.append(fx)
+            y_parts.append(fy)
+
+    if cache_dir:
+        print(f"  Cache summary: {hits} hit(s), {misses} miss(es)")
+
+    if X_parts:
+        X_arr = np.concatenate(X_parts)
+        y_arr = np.concatenate(y_parts)
+    else:
+        X_arr = np.empty((0, INPUT_SIZE, INPUT_SIZE), dtype=np.float32)
+        y_arr = np.empty(0, dtype=np.int32)
 
     # Merge collected handwritten dataset if provided
     if dataset_dir:
@@ -543,70 +622,106 @@ def generate_dataset(
 # --------------------------------------------------------------------------- #
 
 
-def build_model() -> tf.keras.Model:
-    """CNN for kana recognition — Functional API for Keras 3 + TF.js compat."""
-    inputs = tf.keras.Input(shape=(INPUT_SIZE, INPUT_SIZE, 1))
+class KanaNet(nn.Module):
+    """CNN for kana recognition — mirrors the original Keras architecture."""
 
-    # Block 1: 64x64 → 32x32
-    x = tf.keras.layers.Conv2D(64, 3, padding="same", activation="relu")(inputs)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Conv2D(64, 3, padding="same", activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.MaxPooling2D(2)(x)
-    x = tf.keras.layers.Dropout(0.2)(x)
-
-    # Block 2: 32x32 → 16x16
-    x = tf.keras.layers.Conv2D(128, 3, padding="same", activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Conv2D(128, 3, padding="same", activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.MaxPooling2D(2)(x)
-    x = tf.keras.layers.Dropout(0.2)(x)
-
-    # Block 3: 16x16 → 8x8
-    x = tf.keras.layers.Conv2D(256, 3, padding="same", activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Conv2D(256, 3, padding="same", activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.MaxPooling2D(2)(x)
-    x = tf.keras.layers.Dropout(0.25)(x)
-
-    # Block 4: 8x8 → global
-    x = tf.keras.layers.Conv2D(512, 3, padding="same", activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
-
-    # Classifier
-    x = tf.keras.layers.Dense(512, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
-    outputs = tf.keras.layers.Dense(NUM_CLASSES, activation="softmax")(x)
-
-    return tf.keras.Model(inputs=inputs, outputs=outputs)
-
-
-class CosineDecay(tf.keras.callbacks.Callback):
-    """Cosine-annealing learning rate schedule."""
-
-    def __init__(self, initial_lr: float, total_epochs: int, warmup_epochs: int = 3):
+    def __init__(self, num_classes: int = NUM_CLASSES):
         super().__init__()
-        self.initial_lr = initial_lr
-        self.total_epochs = total_epochs
-        self.warmup_epochs = warmup_epochs
 
-    def on_epoch_begin(self, epoch, logs=None):
-        if epoch < self.warmup_epochs:
-            lr = self.initial_lr * (epoch + 1) / self.warmup_epochs
-        else:
-            progress = (epoch - self.warmup_epochs) / max(1, self.total_epochs - self.warmup_epochs)
-            lr = self.initial_lr * 0.5 * (1 + math.cos(math.pi * progress))
-        self.model.optimizer.learning_rate.assign(lr)
+        # Block 1: 64x64 → 32x32
+        self.block1 = nn.Sequential(
+            nn.Conv2d(1, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.Conv2d(64, 64, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(64),
+            nn.MaxPool2d(2),
+            nn.Dropout(0.2),
+        )
+
+        # Block 2: 32x32 → 16x16
+        self.block2 = nn.Sequential(
+            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.Conv2d(128, 128, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(128),
+            nn.MaxPool2d(2),
+            nn.Dropout(0.2),
+        )
+
+        # Block 3: 16x16 → 8x8
+        self.block3 = nn.Sequential(
+            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
+            nn.Conv2d(256, 256, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(256),
+            nn.MaxPool2d(2),
+            nn.Dropout(0.25),
+        )
+
+        # Block 4: 8x8 → global
+        self.block4 = nn.Sequential(
+            nn.Conv2d(256, 512, 3, padding=1), nn.ReLU(), nn.BatchNorm2d(512),
+            nn.AdaptiveAvgPool2d(1),
+            nn.Dropout(0.4),
+        )
+
+        # Classifier
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(512, 512), nn.ReLU(), nn.BatchNorm1d(512),
+            nn.Dropout(0.4),
+            nn.Linear(512, num_classes),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.block1(x)
+        x = self.block2(x)
+        x = self.block3(x)
+        x = self.block4(x)
+        x = self.classifier(x)
+        return x
+
+
+# --------------------------------------------------------------------------- #
+# Training utilities
+# --------------------------------------------------------------------------- #
+
+
+def cosine_lr(optimizer: optim.Optimizer, epoch: int, total_epochs: int,
+              initial_lr: float, warmup_epochs: int = 8) -> float:
+    """Cosine-annealing learning rate with linear warmup."""
+    if epoch < warmup_epochs:
+        lr = initial_lr * (epoch + 1) / warmup_epochs
+    else:
+        progress = (epoch - warmup_epochs) / max(1, total_epochs - warmup_epochs)
+        lr = initial_lr * 0.5 * (1 + math.cos(math.pi * progress))
+    for pg in optimizer.param_groups:
+        pg["lr"] = lr
+    return lr
+
+
+class LabelSmoothingLoss(nn.Module):
+    """Cross-entropy with label smoothing."""
+
+    def __init__(self, num_classes: int, smoothing: float = 0.1):
+        super().__init__()
+        self.smoothing = smoothing
+        self.num_classes = num_classes
+
+    def forward(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        log_probs = torch.nn.functional.log_softmax(pred, dim=-1)
+        with torch.no_grad():
+            smooth = torch.full_like(log_probs, self.smoothing / (self.num_classes - 1))
+            smooth.scatter_(1, target.unsqueeze(1), 1.0 - self.smoothing)
+        return -(smooth * log_probs).sum(dim=-1).mean()
 
 
 # --------------------------------------------------------------------------- #
 # Train + export
 # --------------------------------------------------------------------------- #
+
+
+def get_device() -> torch.device:
+    """Select best available device."""
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
 
 
 def train_and_export(
@@ -617,16 +732,28 @@ def train_and_export(
     epochs: int,
     samples_per_font: int,
     dataset_dir: str | None = None,
+    cache_dir: str | None = None,
+    rebuild_cache: bool = False,
 ) -> float:
-    from tensorflowjs.converters import save_keras_model
-
     print(f"\n{'=' * 60}")
     print(f"  Training {kana_type} model")
     print(f"{'=' * 60}")
 
+    device = get_device()
+    print(f"Using device: {device}")
+
     print("Generating training data …")
-    X, y = generate_dataset(chars, fonts, samples_per_font, dataset_dir=dataset_dir)
-    X = X.reshape(-1, INPUT_SIZE, INPUT_SIZE, 1)
+    X, y = generate_dataset(
+        chars,
+        fonts,
+        samples_per_font,
+        dataset_dir=dataset_dir,
+        cache_dir=cache_dir,
+        kana_type=kana_type,
+        rebuild_cache=rebuild_cache,
+    )
+    # PyTorch uses NCHW: (N, 1, H, W)
+    X = X.reshape(-1, 1, INPUT_SIZE, INPUT_SIZE)
     print(f"Dataset: {X.shape[0]} samples, {len(set(y))} classes")
 
     # Shuffle + split
@@ -635,106 +762,128 @@ def train_and_export(
     split = int(len(X) * 0.9)
     X_train, X_val = X[:split], X[split:]
     y_train, y_val = y[:split], y[split:]
-
-    # One-hot encode for CategoricalCrossentropy with label smoothing
-    y_train_oh = tf.keras.utils.to_categorical(y_train, NUM_CLASSES)
-    y_val_oh = tf.keras.utils.to_categorical(y_val, NUM_CLASSES)
     print(f"Train: {len(X_train)}, Val: {len(X_val)}")
 
+    # DataLoaders
+    train_ds = TensorDataset(
+        torch.from_numpy(X_train).float(),
+        torch.from_numpy(y_train).long(),
+    )
+    val_ds = TensorDataset(
+        torch.from_numpy(X_val).float(),
+        torch.from_numpy(y_val).long(),
+    )
+    train_loader = DataLoader(train_ds, batch_size=64, shuffle=True, num_workers=0)
+    val_loader = DataLoader(val_ds, batch_size=256, shuffle=False, num_workers=0)
+
+    # Model + optimizer + loss
+    model = KanaNet(NUM_CLASSES).to(device)
     initial_lr = 0.0003
-    model = build_model()
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=initial_lr),
-        loss=tf.keras.losses.CategoricalCrossentropy(label_smoothing=0.1),
-        metrics=["accuracy"],
-    )
+    optimizer = optim.Adam(model.parameters(), lr=initial_lr)
+    criterion = LabelSmoothingLoss(NUM_CLASSES, smoothing=0.1)
 
-    callbacks = [
-        CosineDecay(initial_lr, epochs, warmup_epochs=8),
-        tf.keras.callbacks.EarlyStopping(
-            monitor="val_accuracy", patience=15, restore_best_weights=True,
-        ),
-    ]
+    best_val_acc = 0.0
+    best_state = None
+    patience = 15
+    patience_counter = 0
 
-    model.fit(
-        X_train, y_train_oh,
-        validation_data=(X_val, y_val_oh),
-        epochs=epochs,
-        batch_size=64,
-        callbacks=callbacks,
-    )
+    for epoch in range(epochs):
+        lr = cosine_lr(optimizer, epoch, epochs, initial_lr, warmup_epochs=8)
 
-    _, val_acc = model.evaluate(X_val, y_val_oh, verbose=0)
-    print(f"\nValidation accuracy: {val_acc:.4f}")
+        # --- Train ---
+        model.train()
+        train_loss = 0.0
+        train_correct = 0
+        train_total = 0
 
+        for batch_x, batch_y in train_loader:
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+            optimizer.zero_grad()
+            logits = model(batch_x)
+            loss = criterion(logits, batch_y)
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item() * batch_x.size(0)
+            train_correct += (logits.argmax(dim=1) == batch_y).sum().item()
+            train_total += batch_x.size(0)
+
+        train_loss /= train_total
+        train_acc = train_correct / train_total
+
+        # --- Validate ---
+        model.eval()
+        val_correct = 0
+        val_total = 0
+
+        with torch.no_grad():
+            for batch_x, batch_y in val_loader:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                logits = model(batch_x)
+                val_correct += (logits.argmax(dim=1) == batch_y).sum().item()
+                val_total += batch_x.size(0)
+
+        val_acc = val_correct / val_total
+
+        print(
+            f"Epoch {epoch + 1}/{epochs}  "
+            f"lr={lr:.6f}  "
+            f"loss={train_loss:.4f}  "
+            f"acc={train_acc:.4f}  "
+            f"val_acc={val_acc:.4f}"
+        )
+
+        # Early stopping
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            patience_counter = 0
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f"Early stopping at epoch {epoch + 1}")
+                break
+
+    # Restore best weights
+    if best_state is not None:
+        model.load_state_dict(best_state)
+    model.to(device)
+
+    print(f"\nBest validation accuracy: {best_val_acc:.4f}")
+
+    # Export to ONNX
     export_path = os.path.join(output_dir, kana_type)
     os.makedirs(export_path, exist_ok=True)
-    save_keras_model(model, export_path)
-    _fix_keras3_model_json(os.path.join(export_path, "model.json"))
-    print(f"Exported to {export_path}/")
-    return val_acc
+    onnx_path = os.path.join(export_path, "model.onnx")
 
+    model.eval()
+    model.to("cpu")
+    dummy_input = torch.randn(1, 1, INPUT_SIZE, INPUT_SIZE)
 
-def _fix_keras3_model_json(path: str) -> None:
-    """Patch Keras 3 model.json to be compatible with TensorFlow.js.
+    torch.onnx.export(
+        model,
+        dummy_input,
+        onnx_path,
+        input_names=["input"],
+        output_names=["output"],
+        dynamic_axes={
+            "input": {0: "batch_size"},
+            "output": {0: "batch_size"},
+        },
+        opset_version=17,
+    )
 
-    Keras 3 changed several serialization formats that the tensorflowjs
-    converter doesn't fully handle:
-    - InputLayer uses ``batch_shape`` instead of ``batch_input_shape``
-    - ``inbound_nodes`` use an object format instead of nested arrays
-    - ``input_layers``/``output_layers`` are flat instead of nested
-    - ``dtype`` is a DTypePolicy object instead of a plain string
-    - Initializers contain extra ``module``/``registered_name`` keys
-    """
-    with open(path) as f:
-        model = json.load(f)
+    print(f"Exported ONNX model to {onnx_path}")
 
-    config = model["modelTopology"]["model_config"]["config"]
+    # Verify exported model
+    import onnx
+    onnx_model = onnx.load(onnx_path)
+    onnx.checker.check_model(onnx_model)
+    file_size = os.path.getsize(onnx_path)
+    print(f"  Model size: {file_size / 1024 / 1024:.1f} MB")
+    print(f"  ONNX model verified successfully")
 
-    for layer in config["layers"]:
-        lc = layer["config"]
-
-        # batch_shape → batch_input_shape
-        if "batch_shape" in lc and "batch_input_shape" not in lc:
-            lc["batch_input_shape"] = lc.pop("batch_shape")
-
-        # DTypePolicy object → plain string
-        if isinstance(lc.get("dtype"), dict) and lc["dtype"].get("class_name") == "DTypePolicy":
-            lc["dtype"] = lc["dtype"]["config"]["name"]
-
-        # Strip module/registered_name from initializer-like sub-objects
-        for val in lc.values():
-            if isinstance(val, dict) and "module" in val:
-                val.pop("module", None)
-                val.pop("registered_name", None)
-
-        # Convert Keras 3 inbound_nodes to Keras 2 format
-        # Keras 3: [{"args": [{"class_name": "__keras_tensor__", ...}], "kwargs": ...}]
-        # Keras 2: [[["layer_name", node_index, tensor_index, {}]]]
-        if layer.get("inbound_nodes"):
-            new_nodes = []
-            for node in layer["inbound_nodes"]:
-                if isinstance(node, dict) and "args" in node:
-                    connections = []
-                    for arg in node["args"]:
-                        if isinstance(arg, dict) and arg.get("class_name") == "__keras_tensor__":
-                            history = arg["config"]["keras_history"]
-                            connections.append([history[0], history[1], history[2], {}])
-                    new_nodes.append(connections)
-                else:
-                    new_nodes.append(node)
-            layer["inbound_nodes"] = new_nodes
-
-    # input_layers / output_layers: flat → nested
-    for key in ("input_layers", "output_layers"):
-        val = config.get(key)
-        if val and isinstance(val[0], str):
-            config[key] = [val]
-
-    with open(path, "w") as f:
-        json.dump(model, f)
-
-    print(f"  Patched {path} for TensorFlow.js compatibility")
+    return best_val_acc
 
 
 # --------------------------------------------------------------------------- #
@@ -750,7 +899,16 @@ def main() -> None:
     parser.add_argument("--samples-per-font", type=int, default=80, help="Augmented samples per font per character (default: 80)")
     parser.add_argument("--type", choices=["hiragana", "katakana", "both"], default="both", help="Which model(s) to train")
     parser.add_argument("--dataset-dir", help="Directory of collected handwritten images (folders named by unicode hex, e.g. 0x3042/)")
+    parser.add_argument(
+        "--cache-dir",
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".sample_cache"),
+        help="Directory for cached per-font samples (default: scripts/train-kana-model/.sample_cache). Pass empty string to disable.",
+    )
+    parser.add_argument("--no-cache", action="store_true", help="Disable the per-font sample cache entirely")
+    parser.add_argument("--rebuild-cache", action="store_true", help="Regenerate all cached samples, overwriting existing cache files")
     args = parser.parse_args()
+
+    cache_dir: str | None = None if args.no_cache or not args.cache_dir else args.cache_dir
 
     # ── Find fonts ────────────────────────────────────────────────────────
     if args.fonts_dir:
@@ -793,11 +951,15 @@ def main() -> None:
         results["hiragana"] = train_and_export(
             "hiragana", HIRAGANA, fonts, output_dir, args.epochs, args.samples_per_font,
             dataset_dir=args.dataset_dir,
+            cache_dir=cache_dir,
+            rebuild_cache=args.rebuild_cache,
         )
     if args.type in ("katakana", "both"):
         results["katakana"] = train_and_export(
             "katakana", KATAKANA, fonts, output_dir, args.epochs, args.samples_per_font,
             dataset_dir=args.dataset_dir,
+            cache_dir=cache_dir,
+            rebuild_cache=args.rebuild_cache,
         )
 
     # ── Summary ───────────────────────────────────────────────────────────

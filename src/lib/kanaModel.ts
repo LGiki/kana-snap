@@ -23,12 +23,12 @@ export type KanaType = "hiragana" | "katakana";
 
 const INPUT_SIZE = 64;
 
-const loadedModels: Partial<
-	Record<KanaType, import("@tensorflow/tfjs").LayersModel>
+const loadedSessions: Partial<
+	Record<KanaType, import("onnxruntime-web").InferenceSession>
 > = {};
 
-async function getTf() {
-	return await import("@tensorflow/tfjs");
+async function getOrt() {
+	return await import("onnxruntime-web");
 }
 
 function toGrayscaleInverted(
@@ -44,17 +44,19 @@ function toGrayscaleInverted(
 	return gray;
 }
 
-/** Load pre-trained model from static files in /model/{type}/. */
+/** Load pre-trained ONNX model from static files in /model/{type}/. */
 export async function loadModel(type: KanaType): Promise<boolean> {
-	if (loadedModels[type]) return true;
+	if (loadedSessions[type]) return true;
 
-	const tf = await getTf();
+	const ort = await getOrt();
 	try {
-		const model = await tf.loadLayersModel(`/model/${type}/model.json`);
-		loadedModels[type] = model;
+		const session = await ort.InferenceSession.create(
+			`/model/${type}/model.onnx`,
+		);
+		loadedSessions[type] = session;
 		return true;
-	} catch (e){
-		console.log(e)
+	} catch (e) {
+		console.log(e);
 		return false;
 	}
 }
@@ -138,17 +140,33 @@ export async function predict(
 	type: KanaType,
 	canvasData: Float32Array,
 ): Promise<PredictionResult | null> {
-	const model = loadedModels[type];
-	if (!model) return null;
+	const session = loadedSessions[type];
+	if (!session) return null;
 
-	const tf = await getTf();
+	const ort = await getOrt();
 
-	const input = tf.tensor4d(canvasData, [1, INPUT_SIZE, INPUT_SIZE, 1]);
-	const output = model.predict(input) as import("@tensorflow/tfjs").Tensor;
-	const probs = await output.data();
+	// ONNX model expects NCHW: [1, 1, 64, 64]
+	const input = new ort.Tensor("float32", canvasData, [
+		1,
+		1,
+		INPUT_SIZE,
+		INPUT_SIZE,
+	]);
+	const results = await session.run({ input });
+	const logits = results.output.data as Float32Array;
 
-	input.dispose();
-	output.dispose();
+	// Apply softmax to get probabilities
+	const maxLogit = Math.max(...logits);
+	const exps = new Float32Array(logits.length);
+	let sumExp = 0;
+	for (let i = 0; i < logits.length; i++) {
+		exps[i] = Math.exp(logits[i] - maxLogit);
+		sumExp += exps[i];
+	}
+	const probs = new Float32Array(logits.length);
+	for (let i = 0; i < logits.length; i++) {
+		probs[i] = exps[i] / sumExp;
+	}
 
 	const indexed = Array.from(probs).map((p, i) => ({ prob: p, index: i }));
 	indexed.sort((a, b) => b.prob - a.prob);
