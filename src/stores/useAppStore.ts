@@ -28,6 +28,8 @@ export type VisualizationMode = "heatmap" | "line";
 export type DisplayMode = "hiragana" | "katakana" | "comparison";
 export type KanaCardClickAction = "showDetail" | "playAudio";
 export type QuizAdvanceMode = "manual" | "auto";
+export type QuizQuestionType = "hiragana" | "katakana" | "handwriting";
+export type HandwritingKanaType = "hiragana" | "katakana" | "both";
 
 interface AppState {
 	theme: ThemeMode;
@@ -38,6 +40,9 @@ interface AppState {
 	kanaCardClickAction: KanaCardClickAction;
 	quizAdvanceMode: QuizAdvanceMode;
 	quizAutoAdvanceDelay: number;
+	quizQuestionTypes: QuizQuestionType[];
+	quizQuestionCount: number;
+	handwritingKanaType: HandwritingKanaType;
 	learnStreakEnabled: boolean;
 	learnPopQuizEnabled: boolean;
 	chartAutoPlayAudio: boolean;
@@ -53,6 +58,9 @@ interface AppState {
 	setKanaCardClickAction: (action: KanaCardClickAction) => void;
 	setQuizAdvanceMode: (mode: QuizAdvanceMode) => void;
 	setQuizAutoAdvanceDelay: (delay: number) => void;
+	setQuizQuestionTypes: (types: QuizQuestionType[]) => void;
+	setQuizQuestionCount: (count: number) => void;
+	setHandwritingKanaType: (type: HandwritingKanaType) => void;
 	setLearnStreakEnabled: (enabled: boolean) => void;
 	setLearnPopQuizEnabled: (enabled: boolean) => void;
 	setChartAutoPlayAudio: (enabled: boolean) => void;
@@ -73,6 +81,9 @@ const initialState = {
 	kanaCardClickAction: "showDetail" as KanaCardClickAction,
 	quizAdvanceMode: "auto" as QuizAdvanceMode,
 	quizAutoAdvanceDelay: 2,
+	quizQuestionTypes: ["hiragana"] as QuizQuestionType[],
+	quizQuestionCount: 10,
+	handwritingKanaType: "hiragana" as HandwritingKanaType,
 	learnStreakEnabled: true,
 	learnPopQuizEnabled: true,
 	chartAutoPlayAudio: true,
@@ -94,6 +105,13 @@ export const useAppStore = create<AppState>()(
 			setKanaCardClickAction: (action) => set({ kanaCardClickAction: action }),
 			setQuizAdvanceMode: (mode) => set({ quizAdvanceMode: mode }),
 			setQuizAutoAdvanceDelay: (delay) => set({ quizAutoAdvanceDelay: delay }),
+			setQuizQuestionTypes: (types) =>
+				set({
+					quizQuestionTypes:
+						types.length > 0 ? types : (["hiragana"] as QuizQuestionType[]),
+				}),
+			setQuizQuestionCount: (count) => set({ quizQuestionCount: count }),
+			setHandwritingKanaType: (type) => set({ handwritingKanaType: type }),
 			setLearnStreakEnabled: (enabled) => set({ learnStreakEnabled: enabled }),
 			setLearnPopQuizEnabled: (enabled) =>
 				set({ learnPopQuizEnabled: enabled }),
@@ -127,6 +145,9 @@ export const useAppStore = create<AppState>()(
 					kanaCardClickAction,
 					quizAdvanceMode,
 					quizAutoAdvanceDelay,
+					quizQuestionTypes,
+					quizQuestionCount,
+					handwritingKanaType,
 					chartAutoPlayAudio,
 					learnStreakEnabled,
 					learnPopQuizEnabled,
@@ -144,6 +165,9 @@ export const useAppStore = create<AppState>()(
 						kanaCardClickAction,
 						quizAdvanceMode,
 						quizAutoAdvanceDelay,
+						quizQuestionTypes,
+						quizQuestionCount,
+						handwritingKanaType,
 						chartAutoPlayAudio,
 						learnStreakEnabled,
 						learnPopQuizEnabled,
@@ -193,6 +217,16 @@ export const useAppStore = create<AppState>()(
 					] as const;
 					const validClickActions = ["showDetail", "playAudio"] as const;
 					const validAdvanceModes = ["manual", "auto"] as const;
+					const validQuestionTypes = [
+						"hiragana",
+						"katakana",
+						"handwriting",
+					] as const;
+					const validHandwritingKanaTypes = [
+						"hiragana",
+						"katakana",
+						"both",
+					] as const;
 
 					const quizHistory = Array.isArray(data.quizHistory)
 						? data.quizHistory.filter(
@@ -225,6 +259,27 @@ export const useAppStore = create<AppState>()(
 							? data.quizAutoAdvanceDelay
 							: 2;
 
+					const rawTypes = Array.isArray(data.quizQuestionTypes)
+						? (data.quizQuestionTypes as unknown[]).filter(
+								(t): t is QuizQuestionType =>
+									(validQuestionTypes as readonly unknown[]).includes(t),
+							)
+						: typeof data.quizQuestionType === "string" &&
+								(validQuestionTypes as readonly unknown[]).includes(
+									data.quizQuestionType,
+								)
+							? [data.quizQuestionType as QuizQuestionType]
+							: [];
+					const quizQuestionTypes: QuizQuestionType[] =
+						rawTypes.length > 0 ? Array.from(new Set(rawTypes)) : ["hiragana"];
+
+					const validQuestionCounts = [5, 10, 15, 20] as const;
+					const quizQuestionCount = (
+						validQuestionCounts as readonly number[]
+					).includes(data.quizQuestionCount)
+						? (data.quizQuestionCount as number)
+						: 10;
+
 					set({
 						quizHistory,
 						mistakeWeights,
@@ -248,6 +303,13 @@ export const useAppStore = create<AppState>()(
 							"auto",
 						),
 						quizAutoAdvanceDelay: delay,
+						quizQuestionTypes,
+						quizQuestionCount,
+						handwritingKanaType: oneOf(
+							data.handwritingKanaType,
+							validHandwritingKanaTypes,
+							"hiragana",
+						),
 						chartAutoPlayAudio:
 							typeof data.chartAutoPlayAudio === "boolean"
 								? data.chartAutoPlayAudio
@@ -280,6 +342,33 @@ export const useAppStore = create<AppState>()(
 					state.visualizationMode !== "line"
 				) {
 					state.visualizationMode = "heatmap";
+				}
+				const legacy = persisted as {
+					quizQuestionType?: unknown;
+				} | null;
+				if (!Array.isArray(state.quizQuestionTypes)) {
+					if (
+						legacy &&
+						typeof legacy.quizQuestionType === "string" &&
+						(["hiragana", "katakana", "handwriting"] as const).includes(
+							legacy.quizQuestionType as QuizQuestionType,
+						)
+					) {
+						state.quizQuestionTypes = [
+							legacy.quizQuestionType as QuizQuestionType,
+						];
+					} else {
+						state.quizQuestionTypes = ["hiragana"];
+					}
+				}
+				if (state.quizQuestionTypes.length === 0) {
+					state.quizQuestionTypes = ["hiragana"];
+				}
+				if (
+					typeof state.quizQuestionCount !== "number" ||
+					![5, 10, 15, 20].includes(state.quizQuestionCount)
+				) {
+					state.quizQuestionCount = 10;
 				}
 				return state;
 			},

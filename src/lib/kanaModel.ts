@@ -1,8 +1,12 @@
 import type { Kana } from "#/data/kana";
 import { dakuten, gojuon, handakuten } from "#/data/kana";
 
-// Build ordered list of single kana (excluding yoon multi-char combinations).
-// Order MUST match scripts/train_kana_model.py label arrays.
+// Build ordered list of single kana phonemes (excluding yoon multi-char
+// combinations). Order MUST match the HIRAGANA / KATAKANA arrays in
+// scripts/train-kana-model/train_kana_model.py.
+//
+// The unified ONNX model outputs 2 * NUM_KANA logits: indices 0..NUM_KANA-1
+// are hiragana, NUM_KANA..2*NUM_KANA-1 are katakana — same phoneme order.
 function buildSingleKana(): Kana[] {
 	const groups = [gojuon, dakuten, handakuten];
 	const result: Kana[] = [];
@@ -17,15 +21,14 @@ function buildSingleKana(): Kana[] {
 }
 
 export const SINGLE_KANA = buildSingleKana();
-export const NUM_KANA = SINGLE_KANA.length; // 71
+export const NUM_KANA = SINGLE_KANA.length; // 71 phonemes
 
 export type KanaType = "hiragana" | "katakana";
 
 const INPUT_SIZE = 64;
 
-const loadedSessions: Partial<
-	Record<KanaType, import("onnxruntime-web").InferenceSession>
-> = {};
+let session: import("onnxruntime-web").InferenceSession | null = null;
+let loadPromise: Promise<boolean> | null = null;
 
 async function getOrt() {
 	return await import("onnxruntime-web");
@@ -44,21 +47,23 @@ function toGrayscaleInverted(
 	return gray;
 }
 
-/** Load pre-trained ONNX model from static files in /model/{type}/. */
-export async function loadModel(type: KanaType): Promise<boolean> {
-	if (loadedSessions[type]) return true;
-
-	const ort = await getOrt();
-	try {
-		const session = await ort.InferenceSession.create(
-			`/model/${type}/model.onnx`,
-		);
-		loadedSessions[type] = session;
-		return true;
-	} catch (e) {
-		console.log(e);
-		return false;
-	}
+/** Load the unified kana ONNX model from /model/kana/. Cached after first call. */
+export async function loadModel(): Promise<boolean> {
+	if (session) return true;
+	if (loadPromise) return loadPromise;
+	loadPromise = (async () => {
+		const ort = await getOrt();
+		try {
+			session = await ort.InferenceSession.create("/model/kana/model.onnx");
+			return true;
+		} catch (e) {
+			console.log(e);
+			return false;
+		} finally {
+			loadPromise = null;
+		}
+	})();
+	return loadPromise;
 }
 
 /** Centre-crop the user's drawing and resize to model input dimensions. */
@@ -140,7 +145,6 @@ export async function predict(
 	type: KanaType,
 	canvasData: Float32Array,
 ): Promise<PredictionResult | null> {
-	const session = loadedSessions[type];
 	if (!session) return null;
 
 	const ort = await getOrt();
@@ -155,16 +159,24 @@ export async function predict(
 	const results = await session.run({ input });
 	const logits = results.output.data as Float32Array;
 
-	// Apply softmax to get probabilities
-	const maxLogit = Math.max(...logits);
-	const exps = new Float32Array(logits.length);
+	// Restrict predictions to the script the user is drawing. Hiragana occupies
+	// the first NUM_KANA output slots, katakana the next NUM_KANA.
+	const offset = type === "hiragana" ? 0 : NUM_KANA;
+
+	let maxLogit = -Infinity;
+	for (let i = 0; i < NUM_KANA; i++) {
+		const v = logits[offset + i];
+		if (v > maxLogit) maxLogit = v;
+	}
+
+	const exps = new Float32Array(NUM_KANA);
 	let sumExp = 0;
-	for (let i = 0; i < logits.length; i++) {
-		exps[i] = Math.exp(logits[i] - maxLogit);
+	for (let i = 0; i < NUM_KANA; i++) {
+		exps[i] = Math.exp(logits[offset + i] - maxLogit);
 		sumExp += exps[i];
 	}
-	const probs = new Float32Array(logits.length);
-	for (let i = 0; i < logits.length; i++) {
+	const probs = new Float32Array(NUM_KANA);
+	for (let i = 0; i < NUM_KANA; i++) {
 		probs[i] = exps[i] / sumExp;
 	}
 

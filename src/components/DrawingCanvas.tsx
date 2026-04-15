@@ -1,12 +1,18 @@
 import { type RefObject, useEffect, useRef } from "react";
 
+export interface DrawingCanvasApi {
+	undo: () => void;
+	reset: () => void;
+}
+
 interface DrawingCanvasProps {
 	width?: number;
 	height?: number;
 	lineWidth?: number;
 	canvasRef: RefObject<HTMLCanvasElement | null>;
+	apiRef?: RefObject<DrawingCanvasApi | null>;
 	disabled?: boolean;
-	onStroke?: () => void;
+	onStrokeCountChange?: (count: number) => void;
 }
 
 export function DrawingCanvas({
@@ -14,11 +20,13 @@ export function DrawingCanvas({
 	height = 280,
 	lineWidth = 8,
 	canvasRef,
+	apiRef,
 	disabled = false,
-	onStroke,
+	onStrokeCountChange,
 }: DrawingCanvasProps) {
 	const isDrawing = useRef(false);
 	const lastPoint = useRef<{ x: number; y: number } | null>(null);
+	const history = useRef<ImageData[]>([]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -28,6 +36,37 @@ export function DrawingCanvas({
 		ctx.fillStyle = "white";
 		ctx.fillRect(0, 0, width, height);
 	}, [canvasRef, width, height]);
+
+	useEffect(() => {
+		if (!apiRef) return;
+		apiRef.current = {
+			undo() {
+				const canvas = canvasRef.current;
+				const ctx = canvas?.getContext("2d");
+				if (!canvas || !ctx) return;
+				const snapshot = history.current.pop();
+				if (snapshot) {
+					ctx.putImageData(snapshot, 0, 0);
+				} else {
+					ctx.fillStyle = "white";
+					ctx.fillRect(0, 0, canvas.width, canvas.height);
+				}
+				onStrokeCountChange?.(history.current.length);
+			},
+			reset() {
+				const canvas = canvasRef.current;
+				const ctx = canvas?.getContext("2d");
+				if (!canvas || !ctx) return;
+				ctx.fillStyle = "white";
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				history.current = [];
+				onStrokeCountChange?.(0);
+			},
+		};
+		return () => {
+			apiRef.current = null;
+		};
+	}, [apiRef, canvasRef, onStrokeCountChange]);
 
 	function getPoint(e: React.PointerEvent<HTMLCanvasElement>) {
 		const rect = e.currentTarget.getBoundingClientRect();
@@ -39,10 +78,14 @@ export function DrawingCanvas({
 
 	function handlePointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
 		if (disabled) return;
+		const canvas = canvasRef.current;
+		const ctx = canvas?.getContext("2d");
+		if (!canvas || !ctx) return;
+		history.current.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+		onStrokeCountChange?.(history.current.length);
 		isDrawing.current = true;
 		lastPoint.current = getPoint(e);
 		e.currentTarget.setPointerCapture(e.pointerId);
-		onStroke?.();
 	}
 
 	function handlePointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -68,16 +111,45 @@ export function DrawingCanvas({
 	}
 
 	return (
-		<canvas
-			ref={canvasRef}
-			width={width}
-			height={height}
-			className="border-2 border-border rounded-xl touch-none cursor-crosshair bg-white"
-			style={{ width: "100%", maxWidth: `${width}px`, aspectRatio: "1 / 1" }}
-			onPointerDown={handlePointerDown}
-			onPointerMove={handlePointerMove}
-			onPointerUp={handlePointerUp}
-			onPointerLeave={handlePointerUp}
-		/>
+		<div
+			className="relative w-full"
+			style={{ maxWidth: `${width}px`, aspectRatio: "1 / 1" }}
+		>
+			<canvas
+				ref={canvasRef}
+				width={width}
+				height={height}
+				className="block w-full h-full border-2 border-border rounded-xl touch-none cursor-crosshair bg-white"
+				onPointerDown={handlePointerDown}
+				onPointerMove={handlePointerMove}
+				onPointerUp={handlePointerUp}
+				onPointerLeave={handlePointerUp}
+			/>
+			<svg
+				className="absolute inset-0 w-full h-full pointer-events-none text-muted-foreground opacity-20"
+				viewBox={`0 0 ${width} ${height}`}
+				preserveAspectRatio="none"
+				aria-hidden="true"
+			>
+				<line
+					x1={width / 2}
+					y1={0}
+					x2={width / 2}
+					y2={height}
+					stroke="currentColor"
+					strokeWidth={1}
+					strokeDasharray="6 6"
+				/>
+				<line
+					x1={0}
+					y1={height / 2}
+					x2={width}
+					y2={height / 2}
+					stroke="currentColor"
+					strokeWidth={1}
+					strokeDasharray="6 6"
+				/>
+			</svg>
+		</div>
 	);
 }

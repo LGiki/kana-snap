@@ -81,7 +81,7 @@ export function LineChart({ records }: LineChartProps) {
 
 	const options = {
 		responsive: true,
-		maintainAspectRatio: true,
+		maintainAspectRatio: false,
 		interaction: {
 			intersect: false,
 			mode: "index" as const,
@@ -118,7 +118,7 @@ export function LineChart({ records }: LineChartProps) {
 	} as const;
 
 	return (
-		<div className="w-full">
+		<div className="relative w-full h-64 sm:h-72">
 			<Line data={data} options={options} />
 		</div>
 	);

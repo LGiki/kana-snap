@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorBoundary } from "#/components/ErrorBoundary";
 import { Navigation } from "#/components/Navigation";
+import { ToastProvider } from "#/components/Toast";
 import { getColorScheme } from "#/data/colorSchemes";
 import { useAppStore } from "#/stores/useAppStore";
 
@@ -49,12 +50,14 @@ function RootLayout() {
 
 	return (
 		<ErrorBoundary>
-			<div className="min-h-screen bg-surface text-text-primary">
-				<Navigation />
-				<main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-6">
-					<Outlet />
-				</main>
-			</div>
+			<ToastProvider>
+				<div className="min-h-screen bg-surface text-text-primary">
+					<Navigation />
+					<main className="max-w-5xl mx-auto px-4 py-6 pb-24 sm:pb-6">
+						<Outlet />
+					</main>
+				</div>
+			</ToastProvider>
 		</ErrorBoundary>
 	);
 }
