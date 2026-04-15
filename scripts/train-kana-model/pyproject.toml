@@ -1,0 +1,16 @@
+[project]
+name = "train-kana-model"
+version = "0.1.0"
+description = "Train kana handwriting recognition models for KanaSnap"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "torch>=2.0",
+    "onnx>=1.14",
+    "pillow>=10.0",
+    "numpy>=1.24",
+    "scipy>=1.11",
+]
+
+[tool.uv]
+# Script-only project — nothing to build or install as a package.
+package = false

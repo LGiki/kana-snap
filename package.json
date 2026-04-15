@@ -22,6 +22,7 @@
     "@tanstack/react-router": "^1.168.10",
     "@tanstack/react-router-devtools": "^1.166.11",
     "@tanstack/router-plugin": "^1.167.12",
+    "onnxruntime-web": "^1.21.0",
     "chart.js": "^4.5.1",
     "i18next": "^25.10.10",
 

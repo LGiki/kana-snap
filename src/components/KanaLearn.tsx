@@ -10,6 +10,7 @@ import {
 } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
+import { useToast } from "#/components/Toast";
 import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
@@ -198,26 +199,6 @@ function PopQuizOverlay({
 	);
 }
 
-function StreakToast({
-	message,
-	visible,
-}: {
-	message: string;
-	visible: boolean;
-}) {
-	if (!message) return null;
-
-	return (
-		<div
-			className={`fixed top-20 sm:top-20 left-1/2 -translate-x-1/2 z-55 px-4 py-2.5 rounded-full bg-primary-600 text-white text-sm font-semibold shadow-lg whitespace-nowrap ${
-				visible ? "animate-toast-in" : "animate-toast-out"
-			}`}
-		>
-			{message}
-		</div>
-	);
-}
-
 export function KanaLearn() {
 	const { t } = useTranslation();
 	const colorSchemeId = useAppStore((s) => s.colorScheme);
@@ -265,11 +246,10 @@ export function KanaLearn() {
 	const learnAutoPlayAudio = useAppStore((s) => s.learnAutoPlayAudio);
 	const setLearnAutoPlayAudio = useAppStore((s) => s.setLearnAutoPlayAudio);
 
+	const { showToast } = useToast();
+
 	// Streak state
 	const [lastMilestone, setLastMilestone] = useState(0);
-	const [toastMessage, setToastMessage] = useState("");
-	const [toastVisible, setToastVisible] = useState(false);
-	const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	// Confetti state
 	const [showConfetti, setShowConfetti] = useState(false);
@@ -282,7 +262,6 @@ export function KanaLearn() {
 	// Clean up timers on unmount
 	useEffect(() => {
 		return () => {
-			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
 			if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
 		};
 	}, []);
@@ -398,14 +377,9 @@ export function KanaLearn() {
 			setShowConfetti(true);
 			if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
 			confettiTimerRef.current = setTimeout(() => setShowConfetti(false), 4000);
-			if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-			setToastMessage(t("learn.streakMilestone", { count: milestone }));
-			setToastVisible(true);
-			toastTimerRef.current = setTimeout(() => {
-				setToastVisible(false);
-			}, 2500);
+			showToast(t("learn.streakMilestone", { count: milestone }), 2500);
 		}
-	}, [currentIndex, learnStreakEnabled, lastMilestone, t]);
+	}, [currentIndex, learnStreakEnabled, lastMilestone, showToast, t]);
 
 	// Pop quiz trigger
 	useEffect(() => {
@@ -485,11 +459,6 @@ export function KanaLearn() {
 					colors={confettiColors}
 					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
 				/>
-			)}
-
-			{/* Streak toast */}
-			{toastMessage && (
-				<StreakToast message={toastMessage} visible={toastVisible} />
 			)}
 
 			{/* Pop quiz overlay */}

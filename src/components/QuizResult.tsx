@@ -2,26 +2,79 @@ import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
+import type { AnswerRecord } from "#/components/Quiz";
 import { getColorScheme } from "#/data/colorSchemes";
 import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { useWindowSize } from "#/hooks/useWindowSize";
 import { useAppStore } from "#/stores/useAppStore";
 
-interface AnswerRecord {
-	question: {
-		kana: { hiragana: string; katakana: string; romaji: string };
-		type: "kana-to-romaji" | "romaji-to-kana";
-		options: string[];
-		correctIndex: number;
-	};
-	selectedIndex: number;
-	correct: boolean;
-}
-
 interface QuizResultProps {
 	answers: AnswerRecord[];
 	onRetry: () => void;
 	onBack: () => void;
+}
+
+function IncorrectAnswerRow({
+	answer,
+	animationDelay,
+}: {
+	answer: AnswerRecord;
+	animationDelay: number;
+}) {
+	const { t } = useTranslation();
+
+	if (answer.kind === "handwriting") {
+		const expectedChar = answer.kana[answer.kanaType];
+		return (
+			<div
+				className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-alt animate-slide-up-fade"
+				style={{ animationDelay: `${animationDelay}s` }}
+			>
+				<div className="flex items-center gap-4">
+					<span className="text-2xl min-w-14">{answer.kana.romaji}</span>
+					<span className="text-text-muted text-xl">{expectedChar}</span>
+				</div>
+				<div className="text-right text-sm">
+					<p className="text-red-500 line-through">
+						{t("quiz.predicted")}: {answer.predictedLabel}
+					</p>
+					<p className="text-green-600 dark:text-green-400">
+						{t("quiz.correctAnswer")}: {expectedChar}
+					</p>
+				</div>
+			</div>
+		);
+	}
+
+	const { question, selectedIndex } = answer;
+	const displayKana = question.kana[question.kanaType];
+	return (
+		<div
+			className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-alt animate-slide-up-fade"
+			style={{ animationDelay: `${animationDelay}s` }}
+		>
+			<div className="flex items-center gap-4">
+				<span className="text-2xl min-w-14">
+					{question.promptType === "kana-to-romaji"
+						? displayKana
+						: question.kana.romaji}
+				</span>
+				<span className="text-text-muted text-xl">
+					{question.promptType === "kana-to-romaji"
+						? question.kana.romaji
+						: displayKana}
+				</span>
+			</div>
+			<div className="text-right text-sm">
+				<p className="text-red-500 line-through">
+					{t("quiz.yourAnswer")}: {question.options[selectedIndex]}
+				</p>
+				<p className="text-green-600 dark:text-green-400">
+					{t("quiz.correctAnswer")}: {question.options[question.correctIndex]}
+				</p>
+			</div>
+		</div>
+	);
 }
 
 function useCountUp(target: number, duration = 600): number {
@@ -121,34 +174,11 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 					</h2>
 					<div className="space-y-2">
 						{incorrect.map((a, i) => (
-							<div
+							<IncorrectAnswerRow
 								key={i}
-								className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface-alt animate-slide-up-fade"
-								style={{ animationDelay: `${0.1 + i * 0.06}s` }}
-							>
-								<div className="flex items-center gap-4">
-									<span className="text-2xl min-w-14">
-										{a.question.type === "kana-to-romaji"
-											? a.question.kana.hiragana
-											: a.question.kana.romaji}
-									</span>
-									<span className="text-text-muted text-xl">
-										{a.question.type === "kana-to-romaji"
-											? a.question.kana.romaji
-											: a.question.kana.hiragana}
-									</span>
-								</div>
-								<div className="text-right text-sm">
-									<p className="text-red-500 line-through">
-										{t("quiz.yourAnswer")}:{" "}
-										{a.question.options[a.selectedIndex]}
-									</p>
-									<p className="text-green-600 dark:text-green-400">
-										{t("quiz.correctAnswer")}:{" "}
-										{a.question.options[a.question.correctIndex]}
-									</p>
-								</div>
-							</div>
+								answer={a}
+								animationDelay={0.1 + i * 0.06}
+							/>
 						))}
 					</div>
 				</div>
