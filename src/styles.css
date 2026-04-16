@@ -41,6 +41,12 @@ body {
 		color 0.2s;
 }
 
+button,
+[role="button"] {
+	-webkit-user-select: none;
+	user-select: none;
+}
+
 /* === Delight Animations === */
 
 @keyframes shake {
