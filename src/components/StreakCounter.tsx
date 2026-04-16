@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizRecord } from "#/stores/useAppStore";
 import { getLocalDateKey } from "#/utils/date";
+import { getAverageScoreOutOfTen } from "#/utils/quizStats";
 
 interface StreakCounterProps {
 	records: QuizRecord[];
@@ -51,10 +52,7 @@ function computeStreaks(records: QuizRecord[]) {
 		}
 	}
 
-	const avgScore =
-		records.length > 0
-			? records.reduce((sum, r) => sum + r.score, 0) / records.length
-			: 0;
+	const avgScore = getAverageScoreOutOfTen(records);
 
 	return {
 		currentStreak,

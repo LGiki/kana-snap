@@ -1,6 +1,7 @@
-import { Keyboard } from "lucide-react";
+import { Keyboard, Volume2 } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { speakKana } from "#/lib/speakKana";
 import type {
 	MultipleChoiceAnswer,
 	MultipleChoiceQuestion,
@@ -69,6 +70,18 @@ export function MultipleChoiceView({
 						: t("quiz.selectKana")}
 				</p>
 				<p className="text-7xl">{prompt}</p>
+				{question.promptType === "romaji-to-kana" && (
+					<button
+						type="button"
+						onClick={() => speakKana(question.kana.hiragana)}
+						aria-label={t("modal.playAudio")}
+						title={t("modal.playAudio")}
+						className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+					>
+						<Volume2 size={16} />
+						{t("modal.playAudio")}
+					</button>
+				)}
 			</div>
 
 			<div className="grid grid-cols-2 gap-3">
