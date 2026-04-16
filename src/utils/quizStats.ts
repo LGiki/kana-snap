@@ -1,6 +1,6 @@
 import type { QuizRecord } from "#/stores/useAppStore";
 
-function getScoreOutOfTen({ score, total }: QuizRecord) {
+export function getScoreOutOfTen({ score, total }: QuizRecord) {
 	if (typeof total === "number" && total > 0) {
 		return (score / total) * 10;
 	}
