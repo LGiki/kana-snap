@@ -75,6 +75,13 @@ export default {
 		modelNotFound: "Couldn't load handwriting recognition",
 		modelNotFoundHint:
 			"Check your connection and reload the page to try again.",
+		mistakeLeaderboardTitle: "Most Missed Kana",
+		mistakeLeaderboardDescription:
+			"These kana are weighted to appear more often in future quizzes.",
+		mistakeLeaderboardEmpty:
+			"No mistakes tracked yet. Finish a quiz to see which kana need more reps.",
+		mistakeLeaderboardButton: "Mistake Leaderboard",
+		mistakesLabel: "Mistakes",
 	},
 	analytics: {
 		title: "Learning Analytics",

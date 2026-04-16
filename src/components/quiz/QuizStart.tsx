@@ -17,6 +17,7 @@ import type {
 	QuizQuestionType,
 } from "#/stores/useAppStore";
 import { useAppStore } from "#/stores/useAppStore";
+import { MistakeLeaderboardButton } from "./MistakeLeaderboard";
 import { QUIZ_QUESTION_COUNT_OPTIONS } from "./types";
 
 export function QuizStart({ onStart }: { onStart: () => void }) {
@@ -28,6 +29,7 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 	const setQuizQuestionTypes = useAppStore((s) => s.setQuizQuestionTypes);
 	const quizQuestionCount = useAppStore((s) => s.quizQuestionCount);
 	const setQuizQuestionCount = useAppStore((s) => s.setQuizQuestionCount);
+	const mistakeWeights = useAppStore((s) => s.mistakeWeights);
 	const handwritingKanaType = useAppStore((s) => s.handwritingKanaType);
 	const setHandwritingKanaType = useAppStore((s) => s.setHandwritingKanaType);
 
@@ -191,10 +193,13 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 			</section>
 
 			<section className="space-y-4">
-				<h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
-					<BarChart3 size={16} />
-					{t("analytics.title")}
-				</h2>
+				<div className="flex items-center justify-between gap-3">
+					<h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+						<BarChart3 size={16} />
+						{t("analytics.title")}
+					</h2>
+					<MistakeLeaderboardButton mistakeWeights={mistakeWeights} />
+				</div>
 				{quizHistory.length > 0 ? (
 					<div className="space-y-4">
 						<StreakCounter records={quizHistory} />

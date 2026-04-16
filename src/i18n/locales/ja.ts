@@ -74,6 +74,13 @@ export default {
 		loadingModel: "手書き認識を準備中...",
 		modelNotFound: "手書き認識を読み込めませんでした",
 		modelNotFoundHint: "接続を確認してページを再読み込みしてください。",
+		mistakeLeaderboardTitle: "苦手かなランキング",
+		mistakeLeaderboardDescription:
+			"ここにあるかなは、次のクイズでより出やすくなります。",
+		mistakeLeaderboardEmpty:
+			"まだ苦手データがありません。クイズを完了すると、復習が必要なかながここに表示されます。",
+		mistakeLeaderboardButton: "苦手かなランキング",
+		mistakesLabel: "ミス",
 	},
 	analytics: {
 		title: "学習分析",

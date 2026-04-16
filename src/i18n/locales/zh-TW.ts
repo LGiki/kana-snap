@@ -73,6 +73,12 @@ export default {
 		loadingModel: "正在準備手寫辨識...",
 		modelNotFound: "無法載入手寫辨識",
 		modelNotFoundHint: "請檢查網路連線後重新載入頁面。",
+		mistakeLeaderboardTitle: "易錯假名排行",
+		mistakeLeaderboardDescription: "這些假名會在之後的測驗中更頻繁地出現。",
+		mistakeLeaderboardEmpty:
+			"還沒有錯題記錄。完成一次測驗後，這裡會顯示最需要複習的假名。",
+		mistakeLeaderboardButton: "易錯假名排行",
+		mistakesLabel: "錯誤",
 	},
 	analytics: {
 		title: "學習分析",

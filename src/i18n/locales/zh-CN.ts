@@ -73,6 +73,12 @@ export default {
 		loadingModel: "正在准备手写识别...",
 		modelNotFound: "无法加载手写识别",
 		modelNotFoundHint: "请检查网络连接后重新加载页面。",
+		mistakeLeaderboardTitle: "易错假名排行",
+		mistakeLeaderboardDescription: "这些假名会在之后的测验中更频繁地出现。",
+		mistakeLeaderboardEmpty:
+			"还没有错题记录。完成一次测验后，这里会显示最需要复习的假名。",
+		mistakeLeaderboardButton: "易错假名排行",
+		mistakesLabel: "错误",
 	},
 	analytics: {
 		title: "学习分析",
