@@ -27,11 +27,11 @@ export type KanaType = "hiragana" | "katakana";
 
 const INPUT_SIZE = 64;
 
-let session: import("onnxruntime-web").InferenceSession | null = null;
+let session: import("onnxruntime-web/wasm").InferenceSession | null = null;
 let loadPromise: Promise<boolean> | null = null;
 
 async function getOrt() {
-	return await import("onnxruntime-web");
+	return await import("onnxruntime-web/wasm");
 }
 
 function toGrayscaleInverted(
@@ -54,7 +54,9 @@ export async function loadModel(): Promise<boolean> {
 	loadPromise = (async () => {
 		const ort = await getOrt();
 		try {
-			session = await ort.InferenceSession.create("/model/kana/model.onnx");
+			session = await ort.InferenceSession.create("/model/kana/model.onnx", {
+				executionProviders: ["wasm"],
+			});
 			return true;
 		} catch (e) {
 			console.log(e);
