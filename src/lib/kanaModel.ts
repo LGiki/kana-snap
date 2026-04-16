@@ -141,6 +141,59 @@ export interface PredictionResult {
 	topK: Array<{ label: string; confidence: number; index: number }>;
 }
 
+export interface IdentifyCandidate {
+	kana: Kana;
+	script: KanaType;
+	confidence: number;
+}
+
+/** Run prediction across both hiragana and katakana to identify an unknown character. */
+export async function identifyKana(
+	canvasData: Float32Array,
+): Promise<IdentifyCandidate[] | null> {
+	if (!session) return null;
+
+	const ort = await getOrt();
+	const input = new ort.Tensor("float32", canvasData, [
+		1,
+		1,
+		INPUT_SIZE,
+		INPUT_SIZE,
+	]);
+	const results = await session.run({ input });
+	const logits = results.output.data as Float32Array;
+
+	const total = NUM_KANA * 2;
+
+	let maxLogit = -Infinity;
+	for (let i = 0; i < total; i++) {
+		if (logits[i] > maxLogit) maxLogit = logits[i];
+	}
+
+	const exps = new Float32Array(total);
+	let sumExp = 0;
+	for (let i = 0; i < total; i++) {
+		exps[i] = Math.exp(logits[i] - maxLogit);
+		sumExp += exps[i];
+	}
+
+	const indexed = Array.from({ length: total }, (_, i) => ({
+		prob: exps[i] / sumExp,
+		index: i,
+	}));
+	indexed.sort((a, b) => b.prob - a.prob);
+
+	return indexed.slice(0, 5).map(({ prob, index }) => {
+		const isKatakana = index >= NUM_KANA;
+		const kanaIndex = isKatakana ? index - NUM_KANA : index;
+		return {
+			kana: SINGLE_KANA[kanaIndex],
+			script: (isKatakana ? "katakana" : "hiragana") as KanaType,
+			confidence: prob,
+		};
+	});
+}
+
 export async function predict(
 	type: KanaType,
 	canvasData: Float32Array,

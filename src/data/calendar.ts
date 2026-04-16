@@ -1,0 +1,78 @@
+export const weekdays = [
+	{ kanji: "月曜日", reading: "げつようび", short: "月" },
+	{ kanji: "火曜日", reading: "かようび", short: "火" },
+	{ kanji: "水曜日", reading: "すいようび", short: "水" },
+	{ kanji: "木曜日", reading: "もくようび", short: "木" },
+	{ kanji: "金曜日", reading: "きんようび", short: "金" },
+	{ kanji: "土曜日", reading: "どようび", short: "土" },
+	{ kanji: "日曜日", reading: "にちようび", short: "日" },
+] as const;
+
+export const months = [
+	{ kanji: "一月", reading: "いちがつ", num: 1, traditional: "睦月" },
+	{ kanji: "二月", reading: "にがつ", num: 2, traditional: "如月" },
+	{ kanji: "三月", reading: "さんがつ", num: 3, traditional: "弥生" },
+	{ kanji: "四月", reading: "しがつ", num: 4, traditional: "卯月" },
+	{ kanji: "五月", reading: "ごがつ", num: 5, traditional: "皐月" },
+	{ kanji: "六月", reading: "ろくがつ", num: 6, traditional: "水無月" },
+	{ kanji: "七月", reading: "しちがつ", num: 7, traditional: "文月" },
+	{ kanji: "八月", reading: "はちがつ", num: 8, traditional: "葉月" },
+	{ kanji: "九月", reading: "くがつ", num: 9, traditional: "長月" },
+	{ kanji: "十月", reading: "じゅうがつ", num: 10, traditional: "神無月" },
+	{ kanji: "十一月", reading: "じゅういちがつ", num: 11, traditional: "霜月" },
+	{ kanji: "十二月", reading: "じゅうにがつ", num: 12, traditional: "師走" },
+] as const;
+
+export const dayReadings: Record<number, string> = {
+	1: "ついたち",
+	2: "ふつか",
+	3: "みっか",
+	4: "よっか",
+	5: "いつか",
+	6: "むいか",
+	7: "なのか",
+	8: "ようか",
+	9: "ここのか",
+	10: "とおか",
+	11: "じゅういちにち",
+	12: "じゅうににち",
+	13: "じゅうさんにち",
+	14: "じゅうよっか",
+	15: "じゅうごにち",
+	16: "じゅうろくにち",
+	17: "じゅうしちにち",
+	18: "じゅうはちにち",
+	19: "じゅうくにち",
+	20: "はつか",
+	21: "にじゅういちにち",
+	22: "にじゅうににち",
+	23: "にじゅうさんにち",
+	24: "にじゅうよっか",
+	25: "にじゅうごにち",
+	26: "にじゅうろくにち",
+	27: "にじゅうしちにち",
+	28: "にじゅうはちにち",
+	29: "にじゅうくにち",
+	30: "さんじゅうにち",
+	31: "さんじゅういちにち",
+};
+
+export const weekdayReadings = [
+	"にちようび",
+	"げつようび",
+	"かようび",
+	"すいようび",
+	"もくようび",
+	"きんようび",
+	"どようび",
+] as const;
+
+export const weekdayKanji = [
+	"日曜日",
+	"月曜日",
+	"火曜日",
+	"水曜日",
+	"木曜日",
+	"金曜日",
+	"土曜日",
+] as const;
