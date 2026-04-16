@@ -1,7 +1,7 @@
 import { Check, Copy, RotateCcw, Volume2, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StrokeSvg } from "#/components/StrokeSvg";
+import { StrokeSvg, type StrokeSvgHandle } from "#/components/StrokeSvg";
 import type { Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
 import { speakKana } from "#/lib/speakKana";
@@ -20,6 +20,8 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 	const [replayTrigger, setReplayTrigger] = useState(0);
 	const [copiedType, setCopiedType] = useState<string | null>(null);
 	const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	// Refs for second characters in compound kana (keyed by type)
+	const secondCharRefs = useRef<Record<string, StrokeSvgHandle | null>>({});
 
 	const copyToClipboard = useCallback((text: string, type: string) => {
 		navigator.clipboard
@@ -162,24 +164,40 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 						<div
 							className={`flex justify-center ${isCompound ? "gap-4 sm:gap-8" : "gap-8"}`}
 						>
-							{kanaEntries.map(({ type, chars }) => (
-								<div
-									key={type}
-									className={`flex justify-center ${isCompound ? "gap-1 sm:gap-1.5" : "gap-1.5"}`}
-								>
-									{[...chars].map((char) => (
-										<StrokeSvg
-											key={`${type}-${char}`}
-											character={char}
-											type={type}
-											replayTrigger={replayTrigger}
-											className={
-												isCompound ? "w-16 h-16 sm:w-22 sm:h-22" : "w-22 h-22"
-											}
-										/>
-									))}
-								</div>
-							))}
+							{kanaEntries.map(({ type, chars }) => {
+								const charList = [...chars];
+								return (
+									<div
+										key={type}
+										className={`flex justify-center ${isCompound ? "gap-1 sm:gap-1.5" : "gap-1.5"}`}
+									>
+										{charList.map((char, i) => (
+											<StrokeSvg
+												key={`${type}-${char}`}
+												ref={
+													isCompound && i > 0
+														? (handle) => {
+																secondCharRefs.current[type] = handle;
+															}
+														: undefined
+												}
+												character={char}
+												type={type}
+												replayTrigger={isCompound && i > 0 ? 0 : replayTrigger}
+												autoPlay={!(isCompound && i > 0)}
+												onComplete={
+													isCompound && i === 0
+														? () => secondCharRefs.current[type]?.play()
+														: undefined
+												}
+												className={
+													isCompound ? "w-16 h-16 sm:w-22 sm:h-22" : "w-22 h-22"
+												}
+											/>
+										))}
+									</div>
+								);
+							})}
 						</div>
 						<button
 							type="button"

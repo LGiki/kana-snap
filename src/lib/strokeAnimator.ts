@@ -6,6 +6,7 @@ export interface StrokeAnimatorOptions {
 	time?: number;
 	gap?: number;
 	delay?: number;
+	onComplete?: () => void;
 }
 
 export interface StrokeAnimatorControls {
@@ -15,7 +16,12 @@ export interface StrokeAnimatorControls {
 
 export function createStrokeAnimator(
 	svgEl: SVGSVGElement,
-	{ time = 500, gap = 300, delay = 300 }: StrokeAnimatorOptions = {},
+	{
+		time = 500,
+		gap = 300,
+		delay = 300,
+		onComplete,
+	}: StrokeAnimatorOptions = {},
 ): StrokeAnimatorControls {
 	const strokes: (SVGElement | SVGGElement)[] = [];
 
@@ -43,9 +49,10 @@ export function createStrokeAnimator(
 		}
 
 		stroke.style.strokeDasharray = `${length}`;
+		stroke.style.strokeDashoffset = `${length - epsilon}`;
 	}
 
-	let strokeIndex = strokes.length;
+	let strokeIndex = 0;
 	let requestFrameId: number | null = null;
 	let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -102,7 +109,11 @@ export function createStrokeAnimator(
 		if (currOffset === 0) {
 			requestFrameId = null;
 			strokeIndex++;
-			if (strokeIndex < strokes.length) startNextStroke(gap);
+			if (strokeIndex < strokes.length) {
+				startNextStroke(gap);
+			} else {
+				onComplete?.();
+			}
 		} else {
 			requestFrameId = requestAnimationFrame(pathFrame);
 		}
