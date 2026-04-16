@@ -69,6 +69,7 @@ interface AppState {
 	setLearnAutoPlayAudio: (enabled: boolean) => void;
 	addQuizRecord: (record: QuizRecord) => void;
 	addMistake: (romaji: string) => void;
+	resetQuizData: () => void;
 	resetData: () => void;
 	exportData: () => string;
 	importData: (json: string) => boolean;
@@ -132,6 +133,12 @@ export const useAppStore = create<AppState>()(
 						[romaji]: (state.mistakeWeights[romaji] || 0) + 1,
 					},
 				})),
+
+			resetQuizData: () =>
+				set({
+					quizHistory: [],
+					mistakeWeights: {},
+				}),
 
 			resetData: () => set({ ...initialState, language: detectLanguage() }),
 

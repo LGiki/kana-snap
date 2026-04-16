@@ -205,6 +205,9 @@ export default {
 		data: "Data",
 		export: "Export Data",
 		import: "Import Data",
+		resetQuizData: "Reset Quiz Data",
+		resetQuizDataConfirm:
+			"Are you sure you want to reset only quiz data? Your quiz history and mistake tracking will be cleared, but other settings will stay the same.",
 		reset: "Reset All Data",
 		resetConfirm:
 			"Are you sure you want to reset all data? This action cannot be undone.",
@@ -212,6 +215,7 @@ export default {
 		exportSuccess: "Data exported successfully!",
 		importSuccess: "Data imported successfully!",
 		importError: "Failed to import data. Invalid file format.",
+		resetQuizDataSuccess: "Quiz data has been reset.",
 		resetSuccess: "All data has been reset.",
 		version: "Version",
 		commitHash: "Commit",

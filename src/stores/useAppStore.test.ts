@@ -9,6 +9,33 @@ afterEach(() => {
 	resetStore();
 });
 
+describe("resetQuizData", () => {
+	it("clears quiz progress without changing quiz settings", () => {
+		useAppStore.setState({
+			quizHistory: [
+				{ date: "2025-01-01", score: 8, total: 10, mistakes: ["ka", "ki"] },
+			],
+			mistakeWeights: { ka: 3, ki: 1 },
+			quizAdvanceMode: "manual",
+			quizAutoAdvanceDelay: 5,
+			quizQuestionTypes: ["katakana", "handwriting"],
+			quizQuestionCount: 20,
+			handwritingKanaType: "both",
+		});
+
+		useAppStore.getState().resetQuizData();
+
+		const state = useAppStore.getState();
+		expect(state.quizHistory).toEqual([]);
+		expect(state.mistakeWeights).toEqual({});
+		expect(state.quizAdvanceMode).toBe("manual");
+		expect(state.quizAutoAdvanceDelay).toBe(5);
+		expect(state.quizQuestionTypes).toEqual(["katakana", "handwriting"]);
+		expect(state.quizQuestionCount).toBe(20);
+		expect(state.handwritingKanaType).toBe("both");
+	});
+});
+
 describe("importData validation", () => {
 	it("rejects non-JSON input", () => {
 		expect(useAppStore.getState().importData("not json")).toBe(false);

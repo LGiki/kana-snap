@@ -204,6 +204,9 @@ export default {
 		data: "データ",
 		export: "データをエクスポート",
 		import: "データをインポート",
+		resetQuizData: "クイズデータをリセット",
+		resetQuizDataConfirm:
+			"クイズデータのみをリセットしますか？クイズ履歴と苦手記録は削除されますが、その他の設定はそのまま保持されます。",
 		reset: "全データをリセット",
 		resetConfirm:
 			"すべてのデータをリセットしますか？この操作は元に戻せません。",
@@ -211,6 +214,7 @@ export default {
 		exportSuccess: "データのエクスポートが完了しました！",
 		importSuccess: "データのインポートが完了しました！",
 		importError: "データのインポートに失敗しました。ファイル形式が無効です。",
+		resetQuizDataSuccess: "クイズデータがリセットされました。",
 		resetSuccess: "すべてのデータがリセットされました。",
 		version: "バージョン",
 		commitHash: "コミット",

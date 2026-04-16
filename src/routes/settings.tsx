@@ -107,6 +107,7 @@ function SettingsPage() {
 	const setLearnPopQuizEnabled = useAppStore((s) => s.setLearnPopQuizEnabled);
 	const exportData = useAppStore((s) => s.exportData);
 	const importData = useAppStore((s) => s.importData);
+	const resetQuizData = useAppStore((s) => s.resetQuizData);
 	const resetData = useAppStore((s) => s.resetData);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const pendingFileRef = useRef<File | null>(null);
@@ -250,6 +251,27 @@ function SettingsPage() {
 					open: true,
 					title: t("settings.reset"),
 					message: t("settings.resetSuccess"),
+					confirmLabel: t("common.ok"),
+					onConfirm: closeDialog,
+				});
+			},
+		});
+	};
+
+	const handleQuizReset = () => {
+		setDialog({
+			open: true,
+			title: t("settings.resetQuizData"),
+			message: t("settings.resetQuizDataConfirm"),
+			confirmLabel: t("common.confirm"),
+			cancelLabel: t("common.cancel"),
+			destructive: true,
+			onConfirm: () => {
+				resetQuizData();
+				setDialog({
+					open: true,
+					title: t("settings.resetQuizData"),
+					message: t("settings.resetQuizDataSuccess"),
 					confirmLabel: t("common.ok"),
 					onConfirm: closeDialog,
 				});
@@ -504,6 +526,14 @@ function SettingsPage() {
 						className="hidden"
 						onChange={handleFileChange}
 					/>
+					<button
+						type="button"
+						onClick={handleQuizReset}
+						className="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left text-red-600 dark:text-red-400"
+					>
+						<Trash2 size={20} />
+						<span className="font-medium">{t("settings.resetQuizData")}</span>
+					</button>
 					<button
 						type="button"
 						onClick={handleReset}
