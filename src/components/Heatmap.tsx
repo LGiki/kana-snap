@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getColorScheme } from "#/data/colorSchemes";
 import type { QuizRecord } from "#/stores/useAppStore";
@@ -25,8 +25,13 @@ export function Heatmap({ records }: HeatmapProps) {
 	const [tooltip, setTooltip] = useState<{
 		text: string;
 		x: number;
-		y: number;
-		below: boolean;
+		top: number;
+		bottom: number;
+	} | null>(null);
+	const tooltipRef = useRef<HTMLDivElement | null>(null);
+	const [tooltipPosition, setTooltipPosition] = useState<{
+		left: number;
+		top: number;
 	} | null>(null);
 
 	const intensityColors = useMemo(() => {
@@ -104,17 +109,53 @@ export function Heatmap({ records }: HeatmapProps) {
 	const cellSize = 13;
 	const cellGap = 3;
 	const step = cellSize + cellGap;
-	const svgWidth = weeks * step + 30;
+	const svgWidth = weeks * step;
 	const svgHeight = 7 * step + 30;
+
+	useLayoutEffect(() => {
+		if (!tooltip || !tooltipRef.current) {
+			setTooltipPosition(null);
+			return;
+		}
+
+		const tooltipElement = tooltipRef.current;
+		const margin = 8;
+		const gap = 8;
+
+		const updatePosition = () => {
+			const { width, height } = tooltipElement.getBoundingClientRect();
+			const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+			const maxTop = Math.max(margin, window.innerHeight - height - margin);
+
+			const left = Math.min(Math.max(tooltip.x - width / 2, margin), maxLeft);
+			const shouldShowBelow =
+				tooltip.top < height + gap + margin &&
+				tooltip.bottom + gap + height <= window.innerHeight - margin;
+			const preferredTop = shouldShowBelow
+				? tooltip.bottom + gap
+				: tooltip.top - height - gap;
+			const top = Math.min(Math.max(preferredTop, margin), maxTop);
+
+			setTooltipPosition({ left, top });
+		};
+
+		updatePosition();
+		window.addEventListener("resize", updatePosition);
+		window.addEventListener("scroll", updatePosition, true);
+
+		return () => {
+			window.removeEventListener("resize", updatePosition);
+			window.removeEventListener("scroll", updatePosition, true);
+		};
+	}, [tooltip]);
 
 	const showTooltip = (target: SVGRectElement, text: string) => {
 		const rect = target.getBoundingClientRect();
-		const showBelow = rect.top < 40;
 		setTooltip({
 			text,
 			x: rect.left + rect.width / 2,
-			y: showBelow ? rect.bottom + 8 : rect.top - 8,
-			below: showBelow,
+			top: rect.top,
+			bottom: rect.bottom,
 		});
 	};
 
@@ -131,7 +172,7 @@ export function Heatmap({ records }: HeatmapProps) {
 					{months.map((m, i) => (
 						<text
 							key={i}
-							x={m.weekIndex * step + 30}
+							x={m.weekIndex * step}
 							y={10}
 							fontSize={10}
 							fill="var(--color-text-muted)"
@@ -146,7 +187,7 @@ export function Heatmap({ records }: HeatmapProps) {
 						return (
 							<rect
 								key={cell.date}
-								x={cell.weekIndex * step + 30}
+								x={cell.weekIndex * step}
 								y={cell.dayOfWeek * step + 16}
 								width={cellSize}
 								height={cellSize}
@@ -155,11 +196,9 @@ export function Heatmap({ records }: HeatmapProps) {
 								className="transition-colors"
 								tabIndex={cell.count > 0 ? 0 : undefined}
 								aria-label={label}
-								onMouseEnter={(e) =>
-									showTooltip(e.target as SVGRectElement, label)
-								}
+								onMouseEnter={(e) => showTooltip(e.currentTarget, label)}
 								onMouseLeave={() => setTooltip(null)}
-								onFocus={(e) => showTooltip(e.target as SVGRectElement, label)}
+								onFocus={(e) => showTooltip(e.currentTarget, label)}
 								onBlur={() => setTooltip(null)}
 							/>
 						);
@@ -183,8 +222,13 @@ export function Heatmap({ records }: HeatmapProps) {
 			{/* Tooltip */}
 			{tooltip && (
 				<div
-					className={`fixed z-50 px-2 py-1 text-xs bg-gray-900 text-white rounded shadow-lg pointer-events-none -translate-x-1/2 ${tooltip.below ? "" : "-translate-y-full"}`}
-					style={{ left: tooltip.x, top: tooltip.y }}
+					ref={tooltipRef}
+					className="fixed z-50 max-w-[calc(100vw-1rem)] overflow-hidden text-ellipsis whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white shadow-lg pointer-events-none"
+					style={{
+						left: tooltipPosition?.left ?? tooltip.x,
+						top: tooltipPosition?.top ?? tooltip.bottom + 8,
+						visibility: tooltipPosition ? "visible" : "hidden",
+					}}
 				>
 					{tooltip.text}
 				</div>
