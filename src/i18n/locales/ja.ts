@@ -168,6 +168,9 @@ export default {
 		identifyHiragana: "ひらがな",
 		identifyKatakana: "カタカナ",
 		identifyConfidence: "確信度",
+		identifyConfidenceHelpButton: "確信度とは",
+		identifyConfidenceHelp:
+			"確信度は、モデルが各候補をどれだけ有力だと判断したかを示します。数値が高いほど可能性は高いですが、正解を保証するものではありません。",
 	},
 	settings: {
 		title: "設定",

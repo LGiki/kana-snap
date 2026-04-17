@@ -1,12 +1,13 @@
 import {
 	Eraser,
+	HelpCircle,
 	Loader,
 	PenLine,
 	Search,
 	TriangleAlert,
 	Undo2,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
 	DrawingCanvas,
@@ -32,6 +33,10 @@ export function KanaIdentifier() {
 	const [strokeCount, setStrokeCount] = useState(0);
 	const [results, setResults] = useState<IdentifyCandidate[] | null>(null);
 	const [selectedKana, setSelectedKana] = useState<Kana | null>(null);
+	const [showConfidenceHelp, setShowConfidenceHelp] = useState(false);
+	const confidenceHelpButtonRef = useRef<HTMLButtonElement | null>(null);
+	const confidenceHelpRef = useRef<HTMLDivElement | null>(null);
+	const confidenceHelpId = useId();
 
 	useEffect(() => {
 		let cancelled = false;
@@ -44,6 +49,29 @@ export function KanaIdentifier() {
 			cancelled = true;
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!showConfidenceHelp) return;
+
+		const handlePointerDown = (event: PointerEvent) => {
+			const target = event.target;
+			if (!(target instanceof Node)) return;
+			if (confidenceHelpButtonRef.current?.contains(target)) return;
+			if (confidenceHelpRef.current?.contains(target)) return;
+			setShowConfidenceHelp(false);
+		};
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") setShowConfidenceHelp(false);
+		};
+
+		window.addEventListener("pointerdown", handlePointerDown);
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("pointerdown", handlePointerDown);
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [showConfidenceHelp]);
 
 	const handleIdentify = useCallback(async () => {
 		if (!canvasRef.current || phase !== "idle") return;
@@ -154,67 +182,95 @@ export function KanaIdentifier() {
 				</div>
 
 				{results && results.length > 0 && (
-					<div className="w-full space-y-2">
-						{results.map((candidate, i) => {
-							const isTop = i === 0;
-							const pct = Math.round(candidate.confidence * 100);
-							return (
-								<div
-									key={`${candidate.kana.romaji}-${candidate.script}-${i}`}
-									className={`flex items-center gap-3 px-4 py-3 rounded-xl border overflow-hidden transition-colors
+					<div className="w-full">
+						<div className="mb-2 flex justify-end">
+							<div className="relative">
+								<button
+									ref={confidenceHelpButtonRef}
+									type="button"
+									onClick={() => setShowConfidenceHelp((open) => !open)}
+									aria-label={t("tools.identifyConfidenceHelpButton")}
+									aria-expanded={showConfidenceHelp}
+									aria-controls={confidenceHelpId}
+									className="flex items-center  gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface-hover hover:text-text-secondary"
+								>
+									<HelpCircle size={12}/>
+									{t("tools.identifyConfidenceHelpButton")}
+								</button>
+								{showConfidenceHelp && (
+									<div
+										ref={confidenceHelpRef}
+										id={confidenceHelpId}
+										role="tooltip"
+										className="absolute right-0 top-full z-10 mt-2 w-64 max-w-[calc(100vw-2rem)] rounded-xl border border-border bg-surface px-3 py-2 text-xs leading-5 text-text-muted shadow-lg"
+									>
+										{t("tools.identifyConfidenceHelp")}
+									</div>
+								)}
+							</div>
+						</div>
+						<div className="space-y-2">
+							{results.map((candidate, i) => {
+								const isTop = i === 0;
+								const pct = Math.round(candidate.confidence * 100);
+								return (
+									<div
+										key={`${candidate.kana.romaji}-${candidate.script}-${i}`}
+										className={`flex items-center gap-3 px-4 py-3 rounded-xl border overflow-hidden transition-colors
 										${
 											isTop
 												? "border-primary-300 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50"
 												: "border-border bg-surface hover:bg-surface-hover"
 										}`}
-								>
-									<button
-										type="button"
-										onClick={() => setSelectedKana(candidate.kana)}
-										className="flex items-center gap-3 flex-1 min-w-0 text-left"
 									>
-										<span
-											className={`text-3xl font-bold shrink-0 w-12 text-center ${
-												isTop
-													? "text-primary-600 dark:text-primary-400"
-													: "text-text-primary"
-											}`}
+										<button
+											type="button"
+											onClick={() => setSelectedKana(candidate.kana)}
+											className="flex items-center gap-3 flex-1 min-w-0 text-left"
 										>
-											{candidate.kana[candidate.script]}
-										</span>
-										<div className="flex-1 min-w-0">
-											<div className="flex items-center gap-2">
-												<span className="font-medium text-text-primary">
-													{candidate.kana.romaji}
-												</span>
-												<span className="text-xs px-1.5 py-0.5 rounded bg-surface-alt text-text-muted border border-border">
-													{candidate.script === "hiragana"
-														? t("tools.identifyHiragana")
-														: t("tools.identifyKatakana")}
-												</span>
+											<span
+												className={`text-3xl font-bold shrink-0 w-12 text-center ${
+													isTop
+														? "text-primary-600 dark:text-primary-400"
+														: "text-text-primary"
+												}`}
+											>
+												{candidate.kana[candidate.script]}
+											</span>
+											<div className="flex-1 min-w-0">
+												<div className="flex items-center gap-2">
+													<span className="font-medium text-text-primary">
+														{candidate.kana.romaji}
+													</span>
+													<span className="text-xs px-1.5 py-0.5 rounded bg-surface-alt text-text-muted border border-border">
+														{candidate.script === "hiragana"
+															? t("tools.identifyHiragana")
+															: t("tools.identifyKatakana")}
+													</span>
+												</div>
+												<p className="text-xs text-text-muted mt-0.5">
+													{candidate.kana.hiragana} / {candidate.kana.katakana}
+												</p>
 											</div>
-											<p className="text-xs text-text-muted mt-0.5">
-												{candidate.kana.hiragana} / {candidate.kana.katakana}
-											</p>
+										</button>
+										<div className="shrink-0 flex flex-col items-end gap-0.5">
+											<span className="text-[10px] text-text-muted leading-none">
+												{t("tools.identifyConfidence")}
+											</span>
+											<span
+												className={`text-sm font-semibold tabular-nums ${
+													isTop
+														? "text-primary-600 dark:text-primary-400"
+														: "text-text-secondary"
+												}`}
+											>
+												{pct}%
+											</span>
 										</div>
-									</button>
-									<div className="shrink-0 flex flex-col items-end gap-0.5">
-										<span className="text-[10px] text-text-muted leading-none">
-											{t("tools.identifyConfidence")}
-										</span>
-										<span
-											className={`text-sm font-semibold tabular-nums ${
-												isTop
-													? "text-primary-600 dark:text-primary-400"
-													: "text-text-secondary"
-											}`}
-										>
-											{pct}%
-										</span>
 									</div>
-								</div>
-							);
-						})}
+								);
+							})}
+						</div>
 					</div>
 				)}
 			</div>

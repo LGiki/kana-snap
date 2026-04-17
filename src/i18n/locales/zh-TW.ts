@@ -165,6 +165,9 @@ export default {
 		identifyHiragana: "平假名",
 		identifyKatakana: "片假名",
 		identifyConfidence: "信心度",
+		identifyConfidenceHelpButton: "關於信心度",
+		identifyConfidenceHelp:
+			"信心度表示模型對每個結果有多確定。分數越高通常越可能正確，但不代表一定正確。",
 	},
 	settings: {
 		title: "設定",
