@@ -2,6 +2,7 @@ import { useRegisterSW } from "virtual:pwa-register/react";
 import { RefreshCw, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
@@ -64,21 +65,23 @@ export function UpdatePrompt() {
 						{t("update.message")}
 					</p>
 				</div>
-				<button
-					type="button"
+				<Button
 					onClick={() => updateServiceWorker(true)}
-					className="px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-semibold hover:bg-primary-700 transition-colors whitespace-nowrap"
+					size="sm"
+					className="whitespace-nowrap text-xs font-semibold"
 				>
 					{t("update.reload")}
-				</button>
-				<button
-					type="button"
+				</Button>
+				<Button
 					onClick={() => setNeedRefresh(false)}
 					aria-label={t("update.dismiss")}
-					className="p-1 rounded-md text-text-secondary hover:bg-surface-hover transition-colors shrink-0"
+					variant="ghost"
+					tone="neutral"
+					size="icon-sm"
+					className="shrink-0 rounded-md"
 				>
 					<X size={16} />
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

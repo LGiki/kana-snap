@@ -2,6 +2,7 @@ import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import type { AnswerRecord } from "#/components/Quiz";
 import { getColorScheme } from "#/data/colorSchemes";
 import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
@@ -186,22 +187,19 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 
 			{/* Actions */}
 			<div className="flex gap-3 justify-center animate-slide-up-fade stagger-3">
-				<button
-					type="button"
+				<Button
 					onClick={onBack}
-					className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-surface-alt hover:bg-surface active:scale-95 transition-all"
+					variant="outline"
+					tone="neutral"
+					className="active:scale-95"
 				>
 					<ArrowLeft size={18} />
 					{t("quiz.back")}
-				</button>
-				<button
-					type="button"
-					onClick={onRetry}
-					className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 active:scale-95 transition-all"
-				>
+				</Button>
+				<Button onClick={onRetry} className="active:scale-95">
 					<RotateCcw size={18} />
 					{t("quiz.tryAgain")}
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

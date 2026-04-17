@@ -1,5 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 import { useEffect, useId } from "react";
+import { Button } from "#/components/Button";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
 
 interface ConfirmDialogProps {
@@ -79,25 +80,25 @@ export function ConfirmDialog({
 				</div>
 				<div className="flex gap-3 mt-6">
 					{cancelLabel && (
-						<button
-							type="button"
+						<Button
 							onClick={onCancel}
-							className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-hover text-sm font-medium transition-colors"
+							variant="outline"
+							tone="neutral"
+							size="lg"
+							className="flex-1"
 						>
 							{cancelLabel}
-						</button>
+						</Button>
 					)}
-					<button
-						type="button"
+					<Button
 						onClick={onConfirm}
-						className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-							destructive
-								? "bg-red-600 text-white hover:bg-red-700"
-								: "bg-primary-600 text-white hover:bg-primary-700"
-						}`}
+						variant="solid"
+						tone={destructive ? "danger" : "primary"}
+						size="lg"
+						className="flex-1"
 					>
 						{confirmLabel}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

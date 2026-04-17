@@ -2,6 +2,7 @@ import autoAnimate from "@formkit/auto-animate";
 import { BookOpen } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { counters } from "#/data/counters";
 import { speakKana } from "#/lib/speakKana";
 import { Section } from "./Section";
@@ -22,12 +23,12 @@ function HighlightedExample({
 	const hl = "text-primary-600 dark:text-primary-400";
 
 	return (
-		<button
-			type="button"
+		<Button
 			onClick={() => speakKana(kanji)}
-			className="px-3 py-1.5 rounded-lg bg-surface border border-border text-sm font-medium text-text-primary
-				hover:bg-primary-50 hover:border-primary-400 dark:hover:bg-primary-900/60 dark:hover:border-primary-600
-				transition-all active:scale-95"
+			variant="outline"
+			tone="neutral"
+			size="sm"
+			className="text-text-primary hover:border-primary-400 hover:bg-primary-50 dark:hover:border-primary-600 dark:hover:bg-primary-900/60 active:scale-95"
 		>
 			{kanjiIdx >= 0 ? (
 				<>
@@ -39,7 +40,7 @@ function HighlightedExample({
 			)}{" "}
 			({reading.slice(0, -counterLen)}
 			<span className={hl}>{reading.slice(-counterLen)}</span>)
-		</button>
+		</Button>
 	);
 }
 

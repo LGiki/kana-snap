@@ -1,6 +1,7 @@
 import { Keyboard, Volume2 } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { speakKana } from "#/lib/speakKana";
 import type {
 	MultipleChoiceAnswer,
@@ -71,16 +72,15 @@ export function MultipleChoiceView({
 				</p>
 				<p className="text-7xl">{prompt}</p>
 				{question.promptType === "romaji-to-kana" && (
-					<button
-						type="button"
+					<Button
 						onClick={() => speakKana(question.kana.hiragana)}
 						aria-label={t("modal.playAudio")}
 						title={t("modal.playAudio")}
-						className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+						className="mt-4 rounded-full"
 					>
 						<Volume2 size={16} />
 						{t("modal.playAudio")}
-					</button>
+					</Button>
 				)}
 			</div>
 
@@ -135,11 +135,7 @@ export function MultipleChoiceView({
 					>
 						{isCorrect ? t("quiz.correct") : t("quiz.incorrect")}
 					</output>
-					<button
-						type="button"
-						onClick={onNext}
-						className="relative w-full overflow-hidden px-6 py-2 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700 transition-colors"
-					>
+					<Button onClick={onNext} className="relative w-full overflow-hidden">
 						{quizAdvanceMode === "auto" && (
 							<span
 								key={indexKey}
@@ -152,7 +148,7 @@ export function MultipleChoiceView({
 						<span className="relative">
 							{isLast ? t("quiz.result") : t("quiz.next")}
 						</span>
-					</button>
+					</Button>
 				</div>
 			)}
 		</>

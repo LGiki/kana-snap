@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import {
 	DrawingCanvas,
 	type DrawingCanvasApi,
@@ -127,14 +128,15 @@ export function HandwritingView({
 							<span className="text-4xl font-bold text-primary-600 dark:text-primary-400">
 								{question.kana.romaji}
 							</span>
-							<button
-								type="button"
+							<Button
 								onClick={() => setShowHint(!showHint)}
-								className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+								variant="ghost"
+								tone="neutral"
+								size="icon"
 								aria-label={t(showHint ? "quiz.hideHint" : "quiz.showHint")}
 							>
 								{showHint ? <EyeOff size={20} /> : <Eye size={20} />}
-							</button>
+							</Button>
 						</div>
 						<p
 							className={`text-3xl text-text-secondary transition-opacity ${
@@ -158,29 +160,27 @@ export function HandwritingView({
 					<div className="flex justify-center gap-3 flex-wrap">
 						{!committed ? (
 							<>
-								<button
-									type="button"
+								<Button
 									onClick={handleUndo}
 									disabled={strokeCount === 0 || phase === "checking"}
-									className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-hover text-text-secondary hover:text-text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+									variant="soft"
+									tone="neutral"
 								>
 									<Undo2 size={18} />
 									{t("quiz.undo")}
-								</button>
-								<button
-									type="button"
+								</Button>
+								<Button
 									onClick={clearCanvas}
 									disabled={strokeCount === 0 || phase === "checking"}
-									className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-hover text-text-secondary hover:text-text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+									variant="soft"
+									tone="neutral"
 								>
 									<Eraser size={18} />
 									{t("quiz.clear")}
-								</button>
-								<button
-									type="button"
+								</Button>
+								<Button
 									onClick={handleCheck}
 									disabled={strokeCount === 0 || phase === "checking"}
-									className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 								>
 									{phase === "checking" ? (
 										<Loader className="animate-spin" size={18} />
@@ -188,14 +188,10 @@ export function HandwritingView({
 										<Check size={18} />
 									)}
 									{t("quiz.check")}
-								</button>
+								</Button>
 							</>
 						) : (
-							<button
-								type="button"
-								onClick={onNext}
-								className="relative overflow-hidden flex items-center gap-2 px-6 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 transition-colors"
-							>
+							<Button onClick={onNext} className="relative overflow-hidden">
 								{quizAdvanceMode === "auto" && (
 									<span
 										key={indexKey}
@@ -209,7 +205,7 @@ export function HandwritingView({
 									<SkipForward size={18} />
 									{isLast ? t("quiz.result") : t("quiz.next")}
 								</span>
-							</button>
+							</Button>
 						)}
 					</div>
 

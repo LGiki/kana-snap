@@ -20,6 +20,7 @@ import {
 import { useCallback, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppIcon } from "#/components/AppIcon";
+import { Button } from "#/components/Button";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { type ColorSchemeId, colorSchemes } from "#/data/colorSchemes";
 import {
@@ -295,15 +296,13 @@ function SettingsPage() {
 						<h3 className="text-sm font-medium">{t("settings.theme")}</h3>
 						<div className="grid grid-cols-3 gap-2">
 							{themeOptions.map(({ mode, label, icon: Icon }) => (
-								<button
+								<Button
 									key={mode}
-									type="button"
 									onClick={() => setTheme(mode)}
-									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-										theme === mode
-											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-border hover:bg-surface-hover"
-									}`}
+									variant="toggle"
+									tone="primary"
+									pressed={theme === mode}
+									className="flex-col rounded-xl p-3"
 								>
 									<Icon
 										size={24}
@@ -314,7 +313,7 @@ function SettingsPage() {
 										}
 									/>
 									<span className="text-sm font-medium">{label}</span>
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -323,15 +322,13 @@ function SettingsPage() {
 						<h3 className="text-sm font-medium">{t("settings.colorScheme")}</h3>
 						<div className="grid grid-cols-4 gap-2">
 							{colorSchemes.map((scheme) => (
-								<button
+								<Button
 									key={scheme.id}
-									type="button"
 									onClick={() => setColorScheme(scheme.id as ColorSchemeId)}
-									className={`flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all ${
-										colorScheme === scheme.id
-											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-border hover:bg-surface-hover"
-									}`}
+									variant="toggle"
+									tone="primary"
+									pressed={colorScheme === scheme.id}
+									className="flex-col rounded-xl p-2.5"
 								>
 									<span
 										className="w-6 h-6 rounded-full ring-1 ring-black/10"
@@ -342,7 +339,7 @@ function SettingsPage() {
 									<span className="text-xs font-medium">
 										{t(`settings.colorScheme_${scheme.id}`)}
 									</span>
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -351,18 +348,16 @@ function SettingsPage() {
 						<h3 className="text-sm font-medium">{t("settings.language")}</h3>
 						<div className="grid grid-cols-2 gap-2">
 							{languages.map(({ code, label }) => (
-								<button
+								<Button
 									key={code}
-									type="button"
 									onClick={() => setLanguage(code)}
-									className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
-										language === code
-											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
-											: "border-border hover:bg-surface-hover text-text-primary"
-									}`}
+									variant="toggle"
+									tone="primary"
+									pressed={language === code}
+									className="rounded-xl p-3 text-text-primary"
 								>
 									{label}
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -380,15 +375,13 @@ function SettingsPage() {
 						<h3 className="text-sm font-medium">{t("settings.clickAction")}</h3>
 						<div className="grid grid-cols-2 gap-2">
 							{clickActionOptions.map(({ action, label, icon: Icon }) => (
-								<button
+								<Button
 									key={action}
-									type="button"
 									onClick={() => setKanaCardClickAction(action)}
-									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-										kanaCardClickAction === action
-											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-border hover:bg-surface-hover"
-									}`}
+									variant="toggle"
+									tone="primary"
+									pressed={kanaCardClickAction === action}
+									className="flex-col rounded-xl p-3"
 								>
 									<Icon
 										size={24}
@@ -399,7 +392,7 @@ function SettingsPage() {
 										}
 									/>
 									<span className="text-sm font-medium">{label}</span>
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -447,15 +440,13 @@ function SettingsPage() {
 						<h3 className="text-sm font-medium">{t("settings.quizAdvance")}</h3>
 						<div className="grid grid-cols-2 gap-2">
 							{quizAdvanceOptions.map(({ mode, label, icon: Icon }) => (
-								<button
+								<Button
 									key={mode}
-									type="button"
 									onClick={() => setQuizAdvanceMode(mode)}
-									className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-										quizAdvanceMode === mode
-											? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
-											: "border-border hover:bg-surface-hover"
-									}`}
+									variant="toggle"
+									tone="primary"
+									pressed={quizAdvanceMode === mode}
+									className="flex-col rounded-xl p-3"
 								>
 									<Icon
 										size={24}
@@ -466,7 +457,7 @@ function SettingsPage() {
 										}
 									/>
 									<span className="text-sm font-medium">{label}</span>
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -477,18 +468,16 @@ function SettingsPage() {
 							</h3>
 							<div className="grid grid-cols-5 gap-2">
 								{delayOptions.map((seconds) => (
-									<button
+									<Button
 										key={seconds}
-										type="button"
 										onClick={() => setQuizAutoAdvanceDelay(seconds)}
-										className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
-											quizAutoAdvanceDelay === seconds
-												? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400"
-												: "border-border hover:bg-surface-hover text-text-primary"
-										}`}
+										variant="toggle"
+										tone="primary"
+										pressed={quizAutoAdvanceDelay === seconds}
+										className="rounded-xl p-2 text-text-primary"
 									>
 										{t("settings.quizAdvanceDelaySeconds", { seconds })}
-									</button>
+									</Button>
 								))}
 							</div>
 						</div>
@@ -503,22 +492,24 @@ function SettingsPage() {
 					{t("settings.sectionData")}
 				</h2>
 				<div className="px-4 pb-4 space-y-2">
-					<button
-						type="button"
+					<Button
 						onClick={handleExport}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-surface-hover transition-colors text-left"
+						variant="outline"
+						tone="neutral"
+						className="w-full justify-start rounded-xl p-3 text-left"
 					>
 						<Download size={20} className="text-text-secondary" />
 						<span className="font-medium">{t("settings.export")}</span>
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
 						onClick={handleImport}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-surface-hover transition-colors text-left"
+						variant="outline"
+						tone="neutral"
+						className="w-full justify-start rounded-xl p-3 text-left"
 					>
 						<Upload size={20} className="text-text-secondary" />
 						<span className="font-medium">{t("settings.import")}</span>
-					</button>
+					</Button>
 					<input
 						ref={fileInputRef}
 						type="file"
@@ -526,22 +517,24 @@ function SettingsPage() {
 						className="hidden"
 						onChange={handleFileChange}
 					/>
-					<button
-						type="button"
+					<Button
 						onClick={handleQuizReset}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left text-red-600 dark:text-red-400"
+						variant="outline"
+						tone="danger"
+						className="w-full justify-start rounded-xl p-3 text-left"
 					>
 						<Trash2 size={20} />
 						<span className="font-medium">{t("settings.resetQuizData")}</span>
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
 						onClick={handleReset}
-						className="w-full flex items-center gap-3 p-3 rounded-xl border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-left text-red-600 dark:text-red-400"
+						variant="outline"
+						tone="danger"
+						className="w-full justify-start rounded-xl p-3 text-left"
 					>
 						<Trash2 size={20} />
 						<span className="font-medium">{t("settings.reset")}</span>
-					</button>
+					</Button>
 				</div>
 			</section>
 

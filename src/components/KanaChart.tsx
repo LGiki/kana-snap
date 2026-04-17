@@ -2,6 +2,7 @@ import autoAnimate from "@formkit/auto-animate";
 import { Shuffle } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { allGroups, type Kana, type KanaGroup } from "#/data/kana";
 import { speakKana } from "#/lib/speakKana";
 import { useAppStore } from "#/stores/useAppStore";
@@ -127,18 +128,15 @@ export function KanaChart() {
 					value={displayMode}
 					onChange={setDisplayMode}
 				/>
-				<button
-					type="button"
+				<Button
 					onClick={handleShuffle}
-					className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors ${
-						isShuffled
-							? "bg-primary-600 text-white border-primary-600"
-							: "border-border bg-surface text-text-secondary hover:bg-surface-hover"
-					}`}
+					size="sm"
+					variant={isShuffled ? "solid" : "outline"}
+					tone={isShuffled ? "primary" : "neutral"}
 				>
 					<Shuffle size={16} />
 					{t("chart.shuffle")}
-				</button>
+				</Button>
 			</div>
 
 			{/* Groups */}

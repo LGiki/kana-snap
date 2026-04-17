@@ -7,6 +7,7 @@ import {
 	TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { Heatmap } from "#/components/Heatmap";
 import { LineChart } from "#/components/LineChart";
 import { StreakCounter } from "#/components/StreakCounter";
@@ -87,15 +88,10 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 		<div className="space-y-8">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl font-bold">{t("quiz.title")}</h1>
-				<button
-					type="button"
-					onClick={onStart}
-					disabled={!canStart}
-					className="px-6 py-2.5 rounded-xl bg-primary-600 text-white text-base font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1.5"
-				>
+				<Button onClick={onStart} disabled={!canStart} size="lg">
 					<Play size={18} />
 					{t("quiz.start")}
-				</button>
+				</Button>
 			</div>
 
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
@@ -116,16 +112,14 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 									? null
 									: (opt.icon as React.ComponentType<{ size: number }>);
 								return (
-									<button
+									<Button
 										key={opt.value}
-										type="button"
 										onClick={() => toggleType(opt.value)}
 										aria-pressed={selected}
-										className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 text-sm font-medium transition-colors ${
-											selected
-												? "border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-200"
-												: "border-border bg-surface text-text-secondary hover:bg-surface-hover"
-										}`}
+										variant="toggle"
+										tone="primary"
+										size="sm"
+										pressed={selected}
 									>
 										{Icon ? (
 											<Icon size={16} />
@@ -135,7 +129,7 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 											</span>
 										)}
 										{opt.label}
-									</button>
+									</Button>
 								);
 							})}
 						</div>
@@ -172,19 +166,17 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 							{QUIZ_QUESTION_COUNT_OPTIONS.map((count) => {
 								const selected = quizQuestionCount === count;
 								return (
-									<button
+									<Button
 										key={count}
-										type="button"
 										onClick={() => setQuizQuestionCount(count)}
 										aria-pressed={selected}
-										className={`p-2 rounded-xl border-2 text-sm font-medium transition-colors ${
-											selected
-												? "border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-200"
-												: "border-border bg-surface text-text-secondary hover:bg-surface-hover"
-										}`}
+										variant="toggle"
+										tone="primary"
+										pressed={selected}
+										className="rounded-xl px-2 py-2"
 									>
 										{count}
-									</button>
+									</Button>
 								);
 							})}
 						</div>

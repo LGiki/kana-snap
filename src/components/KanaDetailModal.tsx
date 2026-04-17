@@ -1,6 +1,7 @@
 import { Check, Copy, RotateCcw, Volume2, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { StrokeSvg, type StrokeSvgHandle } from "#/components/StrokeSvg";
 import type { Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
@@ -95,14 +96,16 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={(e) => e.key === "Escape" && onClose()}
 			>
-				<button
-					type="button"
+				<Button
 					onClick={onClose}
 					aria-label={t("common.close")}
-					className="absolute top-4 right-4 sm:top-5 sm:right-5 p-1 rounded-lg hover:bg-surface-hover text-text-secondary transition-colors"
+					variant="ghost"
+					tone="neutral"
+					size="icon-sm"
+					className="absolute top-4 right-4 sm:top-5 sm:right-5"
 				>
 					<X size={20} />
-				</button>
+				</Button>
 
 				<div className="text-center flex flex-col items-center">
 					{/* Romaji + audio */}
@@ -110,15 +113,15 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 						<p className="text-3xl font-semibold text-primary-600 dark:text-primary-400 tracking-wide">
 							{kana.romaji}
 						</p>
-						<button
-							type="button"
+						<Button
 							onClick={playAudio}
-							className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-600 text-white hover:bg-primary-700 transition-colors"
+							size="icon-sm"
+							className="rounded-full"
 							aria-label={t("modal.playAudio")}
 							title={t("modal.playAudio")}
 						>
 							<Volume2 size={14} />
-						</button>
+						</Button>
 					</div>
 
 					{/* Kana characters — hero section */}
@@ -134,11 +137,13 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 								>
 									{chars}
 								</p>
-								<button
-									type="button"
+								<Button
 									onClick={() => copyToClipboard(chars, type)}
 									aria-label={t("modal.copy", { type: label })}
-									className="inline-flex items-center gap-1 p-1 mt-2 rounded-md text-xs text-text-muted hover:text-text-secondary hover:bg-surface-hover transition-colors"
+									variant="ghost"
+									tone="neutral"
+									size="sm"
+									className="mt-2 rounded-md px-1.5 py-1 text-xs text-text-muted"
 								>
 									{copiedType === type ? (
 										<>
@@ -151,7 +156,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 											{t("modal.copyButton")}
 										</>
 									)}
-								</button>
+								</Button>
 							</div>
 						))}
 					</div>
@@ -199,15 +204,17 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 								);
 							})}
 						</div>
-						<button
-							type="button"
+						<Button
 							onClick={() => setReplayTrigger((t) => t + 1)}
 							aria-label={t("modal.replayStroke")}
-							className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-3 rounded-lg text-xs text-text-muted hover:text-text-secondary hover:bg-surface-hover transition-colors"
+							variant="ghost"
+							tone="neutral"
+							size="sm"
+							className="mt-3 text-xs text-text-muted"
 						>
 							<RotateCcw size={12} />
 							{t("modal.replay")}
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>

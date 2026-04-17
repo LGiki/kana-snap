@@ -1,6 +1,7 @@
 import { Target, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { KanaDetailModal } from "#/components/KanaDetailModal";
 import type { Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
@@ -31,10 +32,11 @@ function MistakeLeaderboardContent({
 		<ol className="space-y-3">
 			{leaderboard.map((entry, index) => (
 				<li key={entry.romaji}>
-					<button
-						type="button"
+					<Button
 						onClick={() => onSelectKana(entry)}
-						className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl border border-border bg-background/60 px-3 py-3 text-left transition-colors hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+						variant="outline"
+						tone="neutral"
+						className="grid w-full grid-cols-[auto_1fr_auto] rounded-2xl bg-background/60 px-3 py-3 text-left"
 					>
 						<div className="flex size-9 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white shadow-sm">
 							{index + 1}
@@ -62,15 +64,15 @@ function MistakeLeaderboardContent({
 							</div>
 						</div>
 
-						<div className="text-right">
+						<div className="flex flex-col gap-1 items-center">
 							<p className="text-lg font-semibold leading-none">
 								{entry.mistakes}
 							</p>
-							<p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-muted">
+							<span className="text-[10px] text-text-muted leading-none">
 								{t("quiz.mistakesLabel")}
-							</p>
+							</span>
 						</div>
-					</button>
+					</Button>
 				</li>
 			))}
 		</ol>
@@ -138,14 +140,16 @@ export function MistakeLeaderboardModal({
 					e.key === "Escape" && !selectedKana ? onClose() : undefined
 				}
 			>
-				<button
-					type="button"
+				<Button
 					onClick={onClose}
 					aria-label={t("common.close")}
-					className="absolute right-4 top-4 rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-hover sm:right-5 sm:top-5"
+					variant="ghost"
+					tone="neutral"
+					size="icon-sm"
+					className="absolute right-4 top-4 sm:right-5 sm:top-5"
 				>
 					<X size={20} />
-				</button>
+				</Button>
 
 				<div className="flex min-h-0 flex-col gap-5">
 					<div className="pr-8">
@@ -186,14 +190,15 @@ export function MistakeLeaderboardButton({
 
 	return (
 		<>
-			<button
-				type="button"
+			<Button
 				onClick={() => setOpen(true)}
-				className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary"
+				variant="outline"
+				tone="neutral"
+				className="rounded-xl"
 			>
 				<Target size={16} />
 				{t("quiz.mistakeLeaderboardButton")}
-			</button>
+			</Button>
 
 			<MistakeLeaderboardModal
 				open={open}

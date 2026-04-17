@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import {
 	DrawingCanvas,
 	type DrawingCanvasApi,
@@ -139,38 +140,30 @@ export function KanaIdentifier() {
 					className="flex items-center gap-2 w-full"
 					style={{ maxWidth: 280 }}
 				>
-					<button
-						type="button"
+					<Button
 						onClick={handleUndo}
 						disabled={strokeCount === 0}
-						className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-border
-							text-sm font-medium text-text-secondary
-							hover:bg-surface-hover transition-colors
-							disabled:opacity-40 disabled:pointer-events-none"
+						variant="outline"
+						tone="neutral"
+						className="flex-1"
 					>
 						<Undo2 size={16} />
 						{t("tools.identifyUndo")}
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
 						onClick={handleClear}
 						disabled={strokeCount === 0}
-						className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-border
-							text-sm font-medium text-text-secondary
-							hover:bg-surface-hover transition-colors
-							disabled:opacity-40 disabled:pointer-events-none"
+						variant="outline"
+						tone="neutral"
+						className="flex-1"
 					>
 						<Eraser size={16} />
 						{t("tools.identifyClear")}
-					</button>
-					<button
-						type="button"
+					</Button>
+					<Button
 						onClick={handleIdentify}
 						disabled={strokeCount === 0 || phase === "identifying"}
-						className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg
-							bg-primary-600 text-white text-sm font-medium
-							hover:bg-primary-700 transition-colors
-							disabled:opacity-40 disabled:pointer-events-none"
+						className="flex-1"
 					>
 						{phase === "identifying" ? (
 							<Loader className="animate-spin" size={16} />
@@ -178,25 +171,27 @@ export function KanaIdentifier() {
 							<Search size={16} />
 						)}
 						{t("tools.identifyButton")}
-					</button>
+					</Button>
 				</div>
 
 				{results && results.length > 0 && (
 					<div className="w-full">
 						<div className="mb-2 flex justify-end">
 							<div className="relative">
-								<button
+								<Button
 									ref={confidenceHelpButtonRef}
-									type="button"
 									onClick={() => setShowConfidenceHelp((open) => !open)}
 									aria-label={t("tools.identifyConfidenceHelpButton")}
 									aria-expanded={showConfidenceHelp}
 									aria-controls={confidenceHelpId}
-									className="flex items-center  gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface-hover hover:text-text-secondary"
+									variant="ghost"
+									tone="neutral"
+									size="sm"
+									className="gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted"
 								>
-									<HelpCircle size={12}/>
+									<HelpCircle size={12} />
 									{t("tools.identifyConfidenceHelpButton")}
-								</button>
+								</Button>
 								{showConfidenceHelp && (
 									<div
 										ref={confidenceHelpRef}

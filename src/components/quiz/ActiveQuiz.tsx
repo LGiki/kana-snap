@@ -2,6 +2,7 @@ import { useBlocker } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "#/components/Button";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { QuizResult } from "#/components/QuizResult";
 import { loadModel } from "#/lib/kanaModel";
@@ -168,14 +169,16 @@ export function ActiveQuiz({ onExit }: { onExit: () => void }) {
 			<div className="max-w-lg mx-auto space-y-6">
 				<div className="space-y-2">
 					<div className="flex items-center gap-2">
-						<button
-							type="button"
+						<Button
 							onClick={() => setShowBackConfirm(true)}
-							className="p-1 -ml-1 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
+							variant="ghost"
+							tone="neutral"
+							size="icon-sm"
+							className="-ml-1"
 							aria-label={t("quiz.back")}
 						>
 							<ArrowLeft size={20} />
-						</button>
+						</Button>
 						<p className="text-sm text-text-secondary">
 							{t("quiz.questionOf", {
 								current: currentIndex + 1,
