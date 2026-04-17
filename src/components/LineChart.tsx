@@ -161,7 +161,7 @@ export function LineChart({ records }: LineChartProps) {
 					}) =>
 						item.dataset.yAxisID === "score"
 							? `${item.dataset.label}: ${(item.parsed.y ?? 0).toFixed(1)}/10`
-							: `${item.parsed.y ?? 0} ${t("analytics.quizzes")}`,
+							: `${item.parsed.y ?? 0} ${t("analytics.quizzesUnit")}`,
 				},
 			},
 		},

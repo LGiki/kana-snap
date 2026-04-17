@@ -90,7 +90,7 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			icon: Calendar,
 			label: t("analytics.quizzesCompleted"),
 			value: totalQuizzes,
-			unit: t("analytics.quizzes"),
+			unit: t("analytics.quizzesUnit"),
 			color: "text-primary-600 dark:text-primary-400",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},

@@ -142,7 +142,7 @@ export function Heatmap({ records }: HeatmapProps) {
 
 					{/* Day cells */}
 					{cells.map((cell) => {
-						const label = `${cell.date}: ${cell.count} ${t("analytics.quizzes")}`;
+						const label = `${cell.date}: ${cell.count} ${t("analytics.quizzesUnit")}`;
 						return (
 							<rect
 								key={cell.date}

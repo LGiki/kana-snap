@@ -93,7 +93,8 @@ export default {
 		days: "日",
 		noData:
 			"まだクイズデータがありません。クイズを完了して分析を確認しましょう！",
-		quizzes: "回",
+		quizzes: "クイズ回数",
+		quizzesUnit: "回",
 		less: "少ない",
 		more: "多い",
 		totalScore: "合計スコア",
