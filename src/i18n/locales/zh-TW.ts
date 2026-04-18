@@ -98,6 +98,7 @@ export default {
 		averageScore: "平均分",
 	},
 	learn: {
+		learnedCounterLabel: "已學習",
 		streakMilestone: "已學習 {{count}} 個假名！繼續加油！",
 		popQuizTitle: "隨堂測驗！",
 		popQuizSelectRomaji: "這個假名的羅馬字是什麼？",

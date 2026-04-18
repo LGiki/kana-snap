@@ -101,6 +101,7 @@ export default {
 		averageScore: "Average Score",
 	},
 	learn: {
+		learnedCounterLabel: "Learned",
 		streakMilestone: "{{count}} kana learned! Keep going!",
 		popQuizTitle: "Pop Quiz!",
 		popQuizSelectRomaji: "What is the romaji for this kana?",

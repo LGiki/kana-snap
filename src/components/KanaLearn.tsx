@@ -241,9 +241,7 @@ export function KanaLearn() {
 	const learnStreakEnabled = useAppStore((s) => s.learnStreakEnabled);
 	const learnPopQuizEnabled = useAppStore((s) => s.learnPopQuizEnabled);
 	const learnAutoPlayAudio = useAppStore((s) => s.learnAutoPlayAudio);
-	const learnedKanaCount = useAppStore((s) => s.learnedKana.length);
 	const setLearnAutoPlayAudio = useAppStore((s) => s.setLearnAutoPlayAudio);
-	const markKanaLearned = useAppStore((s) => s.markKanaLearned);
 
 	const { showToast } = useToast();
 
@@ -402,11 +400,6 @@ export function KanaLearn() {
 		speakKana(getKanaAt(currentIndex).hiragana);
 	}, [currentIndex, learnAutoPlayAudio, popQuiz, getKanaAt]);
 
-	// Persist unique kana seen on the learn route so progress survives sessions.
-	useEffect(() => {
-		markKanaLearned(getKanaAt(currentIndex).romaji);
-	}, [currentIndex, getKanaAt, markKanaLearned]);
-
 	const dismissPopQuiz = useCallback(() => {
 		setPopQuiz(null);
 	}, []);
@@ -429,18 +422,15 @@ export function KanaLearn() {
 			</div>
 
 			<div className="fixed left-[max(1rem,env(safe-area-inset-left))] top-[calc(1rem+env(safe-area-inset-top))] sm:top-auto sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] z-45">
-				<div className="rounded-2xl border border-border bg-surface/90 px-3 py-2 shadow-sm backdrop-blur-sm">
-					<p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-text-muted">
-						{t("learn.learnedCounterLabel")}
-					</p>
+				<div className="rounded-2xl border border-border bg-surface/90 px-3 py-2 shadow-sm backdrop-blur-sm text-center">
 					<p
 						aria-live="polite"
 						className="text-lg font-semibold tabular-nums text-text-primary"
 					>
-						{t("learn.learnedCounterValue", {
-							count: learnedKanaCount,
-							total: BASE_KANA.length,
-						})}
+						{currentIndex + 1}
+					</p>
+					<p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-text-muted">
+						{t("learn.learnedCounterLabel")}
 					</p>
 				</div>
 			</div>

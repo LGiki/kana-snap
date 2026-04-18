@@ -101,6 +101,7 @@ export default {
 		averageScore: "平均スコア",
 	},
 	learn: {
+		learnedCounterLabel: "学習済み",
 		streakMilestone: "{{count}}文字達成！その調子！",
 		popQuizTitle: "ポップクイズ！",
 		popQuizSelectRomaji: "この仮名のローマ字は？",
