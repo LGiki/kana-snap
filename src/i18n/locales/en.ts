@@ -181,7 +181,7 @@ export default {
 		identifyHiragana: "Hiragana",
 		identifyKatakana: "Katakana",
 		identifyConfidence: "Confidence",
-		identifyConfidenceHelpButton: "About score",
+		identifyConfidenceHelpButton: "About confidence",
 		identifyConfidenceHelp:
 			"Confidence shows how sure the model is about each guess. Higher scores are more likely, but they are not a guarantee.",
 	},
