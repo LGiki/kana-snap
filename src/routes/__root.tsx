@@ -66,9 +66,9 @@ function RootLayout() {
 	return (
 		<ErrorBoundary>
 			<ToastProvider>
-				<div className="min-h-screen bg-surface text-text-primary">
+				<div className="app-shell min-h-screen bg-surface text-text-primary">
 					<Navigation />
-					<main className="max-w-5xl mx-auto pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-6">
+					<main className="app-main max-w-5xl mx-auto pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-6">
 						<Outlet />
 					</main>
 					<UpdatePrompt />

@@ -117,62 +117,91 @@ export function KanaChart() {
 			),
 		},
 	];
-
 	return (
-		<div className="space-y-6">
-			<h1 className="text-2xl font-bold">{t("chart.title")}</h1>
-			{/* Controls */}
-			<div className="flex flex-wrap items-center gap-3">
-				<Tabs
-					tabs={displayModes}
-					value={displayMode}
-					onChange={setDisplayMode}
-				/>
-				<Button
-					onClick={handleShuffle}
-					size="sm"
-					variant={isShuffled ? "solid" : "outline"}
-					tone={isShuffled ? "primary" : "neutral"}
-				>
-					<Shuffle size={16} />
-					{t("chart.shuffle")}
-				</Button>
-			</div>
-
-			{/* Groups */}
-			{groups.map((group) => (
-				<section key={group.id} aria-label={t(group.nameKey)}>
-					<h2 className="text-lg font-semibold mb-3 text-text-primary">
-						{t(group.nameKey)}
-					</h2>
-					<div
-						ref={animateRef}
-						className="grid gap-2"
-						style={{
-							gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))`,
-						}}
+		<div className="kana-chart space-y-6">
+			<header className="kana-chart__header space-y-4">
+				<div className="space-y-1">
+					<h1 className="kana-chart__title text-2xl font-bold">
+						{t("chart.title")}
+					</h1>
+				</div>
+				<div className="kana-chart__controls flex flex-wrap items-center gap-3">
+					<Tabs
+						tabs={displayModes}
+						value={displayMode}
+						onChange={setDisplayMode}
+					/>
+					<Button
+						onClick={handleShuffle}
+						size="sm"
+						variant={isShuffled ? "solid" : "outline"}
+						tone={isShuffled ? "primary" : "neutral"}
 					>
-						{group.rows
-							.flat()
-							.map((kana, i) =>
-								kana ? (
-									<KanaCard
-										key={kana.romaji}
-										kana={kana}
-										displayMode={displayMode}
-										onClick={
-											kanaCardClickAction === "playAudio"
-												? (k) => speakKana(k.hiragana)
-												: setSelectedKana
-										}
-									/>
-								) : (
-									<div key={`empty-${group.id}-${i}`} />
-								),
-							)}
-					</div>
-				</section>
-			))}
+						<Shuffle size={16} />
+						{t("chart.shuffle")}
+					</Button>
+				</div>
+			</header>
+
+			<div className="kana-chart__groups space-y-6">
+				{groups.map((group) => (
+					<section
+						key={group.id}
+						aria-label={t(group.nameKey)}
+						className="kana-chart__group"
+					>
+						<h2 className="kana-chart__group-heading text-lg font-semibold mb-3 text-text-primary">
+							{t(group.nameKey)}
+						</h2>
+						<div
+							aria-hidden="true"
+							className="kana-chart__columns"
+							style={{
+								gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))`,
+							}}
+						>
+							{group.columns.map((column) => (
+								<span
+									key={`${group.id}-${column}`}
+									className="kana-chart__column-label"
+								>
+									{column}
+								</span>
+							))}
+						</div>
+						<div
+							ref={animateRef}
+							className="kana-chart__grid grid gap-2"
+							style={{
+								gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))`,
+							}}
+						>
+							{group.rows
+								.flat()
+								.map((kana, i) =>
+									kana ? (
+										<KanaCard
+											key={kana.romaji}
+											className="kana-chart__card"
+											kana={kana}
+											displayMode={displayMode}
+											onClick={
+												kanaCardClickAction === "playAudio"
+													? (k) => speakKana(k.hiragana)
+													: setSelectedKana
+											}
+										/>
+									) : (
+										<div
+											key={`empty-${group.id}-${i}`}
+											className="kana-chart__empty"
+										/>
+									),
+								)}
+						</div>
+					</section>
+				))}
+			</div>
 
 			<KanaDetailModal
 				kana={selectedKana}

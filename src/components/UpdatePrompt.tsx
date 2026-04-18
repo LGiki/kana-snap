@@ -48,7 +48,7 @@ export function UpdatePrompt() {
 		<div
 			role="status"
 			aria-live="polite"
-			className="fixed z-90 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] animate-slide-up-fade"
+			className="app-update-prompt fixed z-90 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm bottom-[calc(5.5rem+env(safe-area-inset-bottom))] sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] animate-slide-up-fade"
 		>
 			<div className="flex items-center gap-3 rounded-2xl bg-surface border border-border shadow-xl px-4 py-3">
 				<div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0">
