@@ -49,7 +49,7 @@ export function Navigation() {
 				</div>
 			</nav>
 			{/* Mobile bottom nav */}
-			<div className="sm:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-surface z-50 pb-[env(safe-area-inset-bottom)]">
+			<div className="sm:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-surface/85 backdrop-blur shadow-sm z-50 pb-[env(safe-area-inset-bottom)]">
 				<div className="flex justify-around py-1 items-center pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
 					{navItems.map((item) => (
 						<Link
