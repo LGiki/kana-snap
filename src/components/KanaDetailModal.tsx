@@ -21,7 +21,6 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 	const [replayTrigger, setReplayTrigger] = useState(0);
 	const [copiedType, setCopiedType] = useState<string | null>(null);
 	const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-	// Refs for second characters in compound kana (keyed by type)
 	const secondCharRefs = useRef<Record<string, StrokeSvgHandle | null>>({});
 
 	const copyToClipboard = useCallback((text: string, type: string) => {
@@ -60,6 +59,8 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 	useEffect(() => {
 		if (kana) {
 			dialogRef.current?.focus();
+			setReplayTrigger(0);
+			secondCharRefs.current = {};
 		}
 	}, [kana, dialogRef]);
 
@@ -188,7 +189,8 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 												}
 												character={char}
 												type={type}
-												replayTrigger={isCompound && i > 0 ? 0 : replayTrigger}
+												replayTrigger={replayTrigger}
+												replayMode={isCompound && i > 0 ? "reset" : "replay"}
 												autoPlay={!(isCompound && i > 0)}
 												onComplete={
 													isCompound && i === 0

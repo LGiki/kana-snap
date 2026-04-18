@@ -19,6 +19,7 @@ interface StrokeSvgProps {
 	character: string;
 	type: "hiragana" | "katakana";
 	replayTrigger: number;
+	replayMode?: "replay" | "reset";
 	autoPlay?: boolean;
 	staticDisplay?: boolean;
 	onComplete?: () => void;
@@ -32,6 +33,7 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 			character,
 			type,
 			replayTrigger,
+			replayMode = "replay",
 			autoPlay = true,
 			staticDisplay = false,
 			onComplete,
@@ -115,9 +117,13 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 
 		useEffect(() => {
 			if (replayTrigger > 0 && !staticDisplay) {
-				animatorRef.current?.play();
+				if (replayMode === "reset") {
+					animatorRef.current?.reset();
+				} else {
+					animatorRef.current?.replay();
+				}
 			}
-		}, [replayTrigger, staticDisplay]);
+		}, [replayTrigger, replayMode, staticDisplay]);
 
 		return (
 			<div className={cn("relative w-16 h-16", className)}>

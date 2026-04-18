@@ -12,6 +12,8 @@ export interface StrokeAnimatorOptions {
 export interface StrokeAnimatorControls {
 	play: () => void;
 	stop: () => void;
+	reset: () => void;
+	replay: () => void;
 	revealAll: () => void;
 }
 
@@ -77,6 +79,11 @@ export function createStrokeAnimator(
 		strokeIndex = 0;
 	}
 
+	function reset() {
+		stop();
+		clearStrokes();
+	}
+
 	let currOffset: number;
 	let currPrevTime: number | null;
 
@@ -134,6 +141,12 @@ export function createStrokeAnimator(
 		}
 	}
 
+	function replay() {
+		if (strokes.length === 0) return;
+		reset();
+		startNextStroke(0);
+	}
+
 	function revealAll() {
 		stop();
 		for (const stroke of strokes) {
@@ -142,5 +155,5 @@ export function createStrokeAnimator(
 		strokeIndex = strokes.length;
 	}
 
-	return { play, stop, revealAll };
+	return { play, stop, reset, replay, revealAll };
 }

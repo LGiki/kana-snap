@@ -146,8 +146,9 @@ export function LearnStrokePanel({
 															}
 															character={char}
 															type={type}
-															replayTrigger={
-																isCompound && index > 0 ? 0 : replayTrigger
+															replayTrigger={replayTrigger}
+															replayMode={
+																isCompound && index > 0 ? "reset" : "replay"
 															}
 															autoPlay={
 																!prefersReducedMotion &&
