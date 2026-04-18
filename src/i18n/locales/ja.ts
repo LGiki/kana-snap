@@ -61,7 +61,7 @@ export default {
 		typeBoth: "両方",
 		typeHandwriting: "手書き",
 		handwritingKana: "手書きの字体",
-		writePrompt: "この文字を書いてください",
+		writePrompt: "このローマ字に対応する{{kanaType}}を書いてください",
 		showHint: "ヒントを表示",
 		hideHint: "ヒントを隠す",
 		undo: "戻す",

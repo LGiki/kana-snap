@@ -46,6 +46,11 @@ export function HandwritingView({
 	const [strokeCount, setStrokeCount] = useState(0);
 
 	const expectedChar = question.kana[question.kanaType];
+	const kanaTypeLabel = t(
+		question.kanaType === "hiragana"
+			? "quiz.typeHiragana"
+			: "quiz.typeKatakana",
+	);
 	const committed = answer !== null;
 
 	useEffect(() => {
@@ -123,7 +128,9 @@ export function HandwritingView({
 			{(phase === "ready" || phase === "checking") && (
 				<>
 					<div className="text-center space-y-2">
-						<p className="text-text-secondary">{t("quiz.writePrompt")}</p>
+						<p className="text-text-secondary">
+							{t("quiz.writePrompt", { kanaType: kanaTypeLabel })}
+						</p>
 						<div className="flex items-center justify-center gap-3">
 							<span className="text-4xl font-bold text-primary-600 dark:text-primary-400">
 								{question.kana.romaji}

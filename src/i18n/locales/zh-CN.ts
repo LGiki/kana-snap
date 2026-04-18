@@ -60,7 +60,7 @@ export default {
 		typeBoth: "两者",
 		typeHandwriting: "手写",
 		handwritingKana: "手写字体",
-		writePrompt: "请写出这个字符",
+		writePrompt: "请写出这个罗马字对应的{{kanaType}}",
 		showHint: "显示提示",
 		hideHint: "隐藏提示",
 		undo: "撤销",

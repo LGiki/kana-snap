@@ -61,7 +61,7 @@ export default {
 		typeBoth: "Both",
 		typeHandwriting: "Handwriting",
 		handwritingKana: "Handwriting Script",
-		writePrompt: "Write this character",
+		writePrompt: "Write the {{kanaType}} for this romaji",
 		showHint: "Show hint",
 		hideHint: "Hide hint",
 		undo: "Undo",
