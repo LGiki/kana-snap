@@ -36,7 +36,7 @@ function MistakeLeaderboardContent({
 						onClick={() => onSelectKana(entry)}
 						variant="outline"
 						tone="neutral"
-						className="grid w-full grid-cols-[auto_1fr_auto] rounded-2xl bg-background/60 px-3 py-3 text-left"
+						className="grid w-full grid-cols-[auto_1fr_auto] rounded-2xl bg-background/60 px-3 py-3 text-left gap-4"
 					>
 						<div className="flex size-9 items-center justify-center rounded-full bg-primary-600 text-sm font-semibold text-white shadow-sm">
 							{index + 1}
@@ -44,7 +44,7 @@ function MistakeLeaderboardContent({
 
 						<div className="min-w-0 space-y-2">
 							<div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-								<span className="text-2xl font-semibold leading-none">
+								<span className="text-2xl font-semibold leading-none text-text-primary">
 									{entry.hiragana}
 								</span>
 								<span className="text-xl leading-none text-text-secondary">
