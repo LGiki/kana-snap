@@ -60,7 +60,7 @@ export function DateConverter() {
 					type="date"
 					value={dateStr}
 					onChange={(e) => setDateStr(e.target.value)}
-					className="w-full px-4 py-3 rounded-xl border border-border bg-surface text-text-primary text-lg
+					className="appearance-none w-full px-4 py-3 rounded-xl border border-border bg-surface text-text-primary text-lg
 						focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
 				/>
 
