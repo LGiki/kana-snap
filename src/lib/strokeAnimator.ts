@@ -12,6 +12,7 @@ export interface StrokeAnimatorOptions {
 export interface StrokeAnimatorControls {
 	play: () => void;
 	stop: () => void;
+	revealAll: () => void;
 }
 
 export function createStrokeAnimator(
@@ -133,5 +134,13 @@ export function createStrokeAnimator(
 		}
 	}
 
-	return { play, stop };
+	function revealAll() {
+		stop();
+		for (const stroke of strokes) {
+			stroke.style.strokeDashoffset = "0";
+		}
+		strokeIndex = strokes.length;
+	}
+
+	return { play, stop, revealAll };
 }

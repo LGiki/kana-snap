@@ -109,6 +109,10 @@ export default {
 		popQuizWrong: "正解は {{answer}} です",
 		popQuizContinue: "続ける",
 		autoPlayAudio: "自動音声再生",
+		openStrokeOrder: "{{kana}}の書き順を開く",
+		strokeOrderUnavailable: "この仮名の書き順はまだ利用できません。",
+		strokeOrderReducedMotion:
+			"視差効果を減らす設定が有効なため、アニメーションはオフです。",
 	},
 	common: {
 		confirm: "確認",

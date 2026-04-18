@@ -109,6 +109,10 @@ export default {
 		popQuizWrong: "The answer is {{answer}}",
 		popQuizContinue: "Continue",
 		autoPlayAudio: "Auto Play Audio",
+		openStrokeOrder: "Open stroke order for {{kana}}",
+		strokeOrderUnavailable: "Stroke order isn't available for this kana yet.",
+		strokeOrderReducedMotion:
+			"Animation is off because reduced motion is enabled.",
 	},
 	common: {
 		confirm: "Confirm",

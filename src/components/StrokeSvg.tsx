@@ -20,21 +20,34 @@ interface StrokeSvgProps {
 	type: "hiragana" | "katakana";
 	replayTrigger: number;
 	autoPlay?: boolean;
+	staticDisplay?: boolean;
 	onComplete?: () => void;
+	onStatusChange?: (status: "loading" | "ready" | "error") => void;
 	className?: string;
 }
 
 export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 	function StrokeSvg(
-		{ character, type, replayTrigger, autoPlay = true, onComplete, className },
+		{
+			character,
+			type,
+			replayTrigger,
+			autoPlay = true,
+			staticDisplay = false,
+			onComplete,
+			onStatusChange,
+			className,
+		},
 		ref,
 	) {
 		const containerRef = useRef<HTMLDivElement>(null);
 		const animatorRef = useRef<StrokeAnimatorControls | null>(null);
 		const onCompleteRef = useRef(onComplete);
+		const onStatusChangeRef = useRef(onStatusChange);
 		const [loading, setLoading] = useState(true);
 
 		onCompleteRef.current = onComplete;
+		onStatusChangeRef.current = onStatusChange;
 
 		useImperativeHandle(ref, () => ({
 			play: () => animatorRef.current?.play(),
@@ -45,6 +58,7 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 			if (!container) return;
 
 			setLoading(true);
+			onStatusChangeRef.current?.("loading");
 			const controller = new AbortController();
 
 			async function load() {
@@ -53,6 +67,7 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 					const resp = await fetch(url, { signal: controller.signal });
 					if (!resp.ok) {
 						setLoading(false);
+						onStatusChangeRef.current?.("error");
 						return;
 					}
 					const text = await resp.text();
@@ -62,6 +77,7 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 					const svgEl = container.querySelector("svg");
 					if (!svgEl) {
 						setLoading(false);
+						onStatusChangeRef.current?.("error");
 						return;
 					}
 
@@ -72,10 +88,18 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 						onComplete: () => onCompleteRef.current?.(),
 					});
 					animatorRef.current = animator;
-					if (autoPlay) animator.play();
+					if (staticDisplay) {
+						animator.revealAll();
+					} else if (autoPlay) {
+						animator.play();
+					}
 					setLoading(false);
+					onStatusChangeRef.current?.("ready");
 				} catch {
-					if (!controller.signal.aborted) setLoading(false);
+					if (!controller.signal.aborted) {
+						setLoading(false);
+						onStatusChangeRef.current?.("error");
+					}
 				}
 			}
 
@@ -87,13 +111,13 @@ export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
 				animatorRef.current = null;
 				container.innerHTML = "";
 			};
-		}, [character, type, autoPlay]);
+		}, [character, type, autoPlay, staticDisplay]);
 
 		useEffect(() => {
-			if (replayTrigger > 0) {
+			if (replayTrigger > 0 && !staticDisplay) {
 				animatorRef.current?.play();
 			}
-		}, [replayTrigger]);
+		}, [replayTrigger, staticDisplay]);
 
 		return (
 			<div className={cn("relative w-16 h-16", className)}>

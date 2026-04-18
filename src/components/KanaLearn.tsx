@@ -1,4 +1,4 @@
-import { ChevronDown, Volume2, VolumeOff, Zap } from "lucide-react";
+import { ChevronDown, Languages, Volume2, VolumeOff, Zap } from "lucide-react";
 import {
 	memo,
 	useCallback,
@@ -11,6 +11,7 @@ import {
 import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { Button } from "#/components/Button";
+import { LearnStrokePanel } from "#/components/LearnStrokePanel";
 import { useToast } from "#/components/Toast";
 import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana } from "#/data/kana";
@@ -63,29 +64,49 @@ function generatePopQuiz(allKana: Kana[], currentKana: Kana): PopQuizQuestion {
 
 const BUFFER = 4;
 
-const LearnSlide = memo(function LearnSlide({ kana }: { kana: Kana }) {
+const LearnSlide = memo(function LearnSlide({
+	kana,
+	onOpenStroke,
+}: {
+	kana: Kana;
+	onOpenStroke: (kana: Kana) => void;
+}) {
 	const { t } = useTranslation();
 
 	return (
 		<div className="h-[calc(100dvh-4rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] sm:h-[calc(100dvh-3.5rem-env(safe-area-inset-top))] w-full snap-start snap-always flex items-center justify-center relative select-none">
-			<button
-				type="button"
-				onClick={() => speakKana(kana.hiragana)}
-				className="relative flex flex-col items-center cursor-pointer transition-transform active:scale-95"
-				aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
-			>
-				<div className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary">
-					{kana.hiragana}
-				</div>
+			<div className="relative flex flex-col items-center">
+				<button
+					type="button"
+					onClick={() => speakKana(kana.hiragana)}
+					className="relative flex flex-col items-center cursor-pointer transition-transform active:scale-95"
+					aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
+				>
+					<div className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary">
+						{kana.hiragana}
+					</div>
 
-				<div className="text-4xl sm:text-5xl md:text-6xl text-text-secondary mt-4">
-					{kana.katakana}
-				</div>
+					<div className="text-4xl sm:text-5xl md:text-6xl text-text-secondary mt-4">
+						{kana.katakana}
+					</div>
 
-				<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest mt-6">
-					{kana.romaji}
-				</div>
-			</button>
+					<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest mt-6">
+						{kana.romaji}
+					</div>
+				</button>
+
+				<Button
+					onClick={() => onOpenStroke(kana)}
+					variant="soft"
+					tone="primary"
+					size="sm"
+					className="mt-6 rounded-full px-4"
+					aria-label={t("learn.openStrokeOrder", { kana: kana.hiragana })}
+				>
+					<Languages size={15} />
+					{t("modal.strokeOrder")}
+				</Button>
+			</div>
 		</div>
 	);
 });
@@ -265,6 +286,7 @@ export function KanaLearn() {
 	// Pop quiz state
 	const [popQuiz, setPopQuiz] = useState<PopQuizQuestion | null>(null);
 	const lastQuizIndexRef = useRef(0);
+	const [strokePanelKana, setStrokePanelKana] = useState<Kana | null>(null);
 
 	// Measure slide height — cached in a ref so handlers avoid layout reads.
 	useEffect(() => {
@@ -340,7 +362,7 @@ export function KanaLearn() {
 			if (e.key === "ArrowDown" || e.key === " " || e.key === "ArrowUp") {
 				e.preventDefault();
 			}
-			if (popQuiz) return;
+			if (popQuiz || strokePanelKana) return;
 			const container = containerRef.current;
 			const h = slideHeightRef.current;
 			if (!container || h === 0) return;
@@ -364,7 +386,7 @@ export function KanaLearn() {
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [popQuiz]);
+	}, [popQuiz, strokePanelKana]);
 
 	// Streak celebration — deferred to idle callback to avoid stealing scroll frames.
 	useEffect(() => {
@@ -403,8 +425,22 @@ export function KanaLearn() {
 		speakKana(getKanaAt(currentIndex).hiragana);
 	}, [currentIndex, learnAutoPlayAudio, popQuiz, getKanaAt]);
 
+	useEffect(() => {
+		if (popQuiz) {
+			setStrokePanelKana(null);
+		}
+	}, [popQuiz]);
+
 	const dismissPopQuiz = useCallback(() => {
 		setPopQuiz(null);
+	}, []);
+
+	const openStrokePanel = useCallback((kana: Kana) => {
+		setStrokePanelKana(kana);
+	}, []);
+
+	const closeStrokePanel = useCallback(() => {
+		setStrokePanelKana(null);
 	}, []);
 
 	// Build the visible slide list
@@ -420,7 +456,7 @@ export function KanaLearn() {
 				className="flex-1 overflow-y-auto snap-y snap-mandatory learn-scrollbar-none relative"
 			>
 				{visibleSlides.map(({ kana, index }) => (
-					<LearnSlide key={index} kana={kana} />
+					<LearnSlide key={index} kana={kana} onOpenStroke={openStrokePanel} />
 				))}
 			</div>
 
@@ -480,6 +516,13 @@ export function KanaLearn() {
 
 			{/* Pop quiz overlay */}
 			{popQuiz && <PopQuizOverlay question={popQuiz} onDone={dismissPopQuiz} />}
+
+			<LearnStrokePanel
+				kana={strokePanelKana}
+				open={strokePanelKana !== null}
+				prefersReducedMotion={prefersReducedMotion}
+				onClose={closeStrokePanel}
+			/>
 		</div>
 	);
 }

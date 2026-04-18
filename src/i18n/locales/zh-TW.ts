@@ -106,6 +106,9 @@ export default {
 		popQuizWrong: "正確答案是 {{answer}}",
 		popQuizContinue: "繼續",
 		autoPlayAudio: "自動播放發音",
+		openStrokeOrder: "打開 {{kana}} 的筆順",
+		strokeOrderUnavailable: "這個假名的筆順暫時無法使用。",
+		strokeOrderReducedMotion: "因已啟用減少動態效果，動畫已關閉。",
 	},
 	common: {
 		confirm: "確認",
