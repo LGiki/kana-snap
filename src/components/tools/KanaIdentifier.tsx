@@ -14,23 +14,25 @@ import {
 	DrawingCanvas,
 	type DrawingCanvasApi,
 } from "#/components/DrawingCanvas";
+import { HandwritingModelLoading } from "#/components/HandwritingModelLoading";
 import { KanaDetailModal } from "#/components/KanaDetailModal";
 import type { Kana } from "#/data/kana";
 import {
+	getModelLoadState,
 	type IdentifyCandidate,
 	identifyKana,
 	loadModel,
 	preprocessCanvas,
+	subscribeToModelLoadState,
 } from "#/lib/kanaModel";
 import { Section } from "./Section";
-
-type IdentifyPhase = "loading" | "error" | "idle" | "identifying";
 
 export function KanaIdentifier() {
 	const { t } = useTranslation();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const canvasApiRef = useRef<DrawingCanvasApi | null>(null);
-	const [phase, setPhase] = useState<IdentifyPhase>("loading");
+	const [isIdentifying, setIsIdentifying] = useState(false);
+	const [modelLoadState, setModelLoadState] = useState(getModelLoadState);
 	const [strokeCount, setStrokeCount] = useState(0);
 	const [results, setResults] = useState<IdentifyCandidate[] | null>(null);
 	const [selectedKana, setSelectedKana] = useState<Kana | null>(null);
@@ -40,16 +42,16 @@ export function KanaIdentifier() {
 	const confidenceHelpId = useId();
 
 	useEffect(() => {
-		let cancelled = false;
-		(async () => {
-			setPhase("loading");
-			const ok = await loadModel();
-			if (!cancelled) setPhase(ok ? "idle" : "error");
-		})();
-		return () => {
-			cancelled = true;
-		};
+		const unsubscribe = subscribeToModelLoadState(() => {
+			setModelLoadState(getModelLoadState());
+		});
+		void loadModel();
+		return unsubscribe;
 	}, []);
+
+	const modelReady = modelLoadState.stage === "ready";
+	const modelError = modelLoadState.stage === "error";
+	const modelLoading = !modelReady && !modelError;
 
 	useEffect(() => {
 		if (!showConfidenceHelp) return;
@@ -75,13 +77,13 @@ export function KanaIdentifier() {
 	}, [showConfidenceHelp]);
 
 	const handleIdentify = useCallback(async () => {
-		if (!canvasRef.current || phase !== "idle") return;
-		setPhase("identifying");
+		if (!canvasRef.current || !modelReady) return;
+		setIsIdentifying(true);
 		const processed = preprocessCanvas(canvasRef.current);
 		const predictions = await identifyKana(processed);
 		setResults(predictions);
-		setPhase("idle");
-	}, [phase]);
+		setIsIdentifying(false);
+	}, [modelReady]);
 
 	const handleClear = useCallback(() => {
 		canvasApiRef.current?.reset();
@@ -93,21 +95,17 @@ export function KanaIdentifier() {
 		setResults(null);
 	}, []);
 
-	if (phase === "loading") {
+	if (modelLoading) {
 		return (
 			<Section icon={<PenLine size={16} />} title={t("tools.identify")}>
-				<div className="flex flex-col items-center gap-4 py-12">
-					<Loader
-						className="animate-spin text-primary-600 dark:text-primary-400"
-						size={40}
-					/>
-					<p className="text-text-secondary">{t("tools.identifyLoading")}</p>
+				<div className="flex justify-center py-8">
+					<HandwritingModelLoading state={modelLoadState} />
 				</div>
 			</Section>
 		);
 	}
 
-	if (phase === "error") {
+	if (modelError) {
 		return (
 			<Section icon={<PenLine size={16} />} title={t("tools.identify")}>
 				<div className="flex flex-col items-center gap-4 py-12 text-center">
@@ -162,10 +160,10 @@ export function KanaIdentifier() {
 					</Button>
 					<Button
 						onClick={handleIdentify}
-						disabled={strokeCount === 0 || phase === "identifying"}
+						disabled={strokeCount === 0 || isIdentifying}
 						className="flex-1"
 					>
-						{phase === "identifying" ? (
+						{isIdentifying ? (
 							<Loader className="animate-spin" size={16} />
 						) : (
 							<Search size={16} />

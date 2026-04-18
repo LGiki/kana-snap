@@ -82,6 +82,13 @@ export default {
 		mistakeLeaderboardButton: "苦手かなランキング",
 		mistakesLabel: "ミス",
 	},
+	handwritingLoader: {
+		statusRuntime: "認識エンジンを読み込み中...",
+		statusModel: "手書きモデルを読み込み中...",
+		statusInitializing: "手書き認識を起動中...",
+		hint: "初回の読み込みは少し時間がかかることがあります。",
+		progressLabel: "{{progress}}%",
+	},
 	analytics: {
 		title: "学習分析",
 		heatmap: "ヒートマップ",

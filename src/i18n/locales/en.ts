@@ -83,6 +83,13 @@ export default {
 		mistakeLeaderboardButton: "Mistake Leaderboard",
 		mistakesLabel: "Mistakes",
 	},
+	handwritingLoader: {
+		statusRuntime: "Loading recognition engine...",
+		statusModel: "Loading handwriting model...",
+		statusInitializing: "Starting handwriting recognition...",
+		hint: "First load can take a little longer.",
+		progressLabel: "{{progress}}%",
+	},
 	analytics: {
 		title: "Learning Analytics",
 		heatmap: "Heatmap",

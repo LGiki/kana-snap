@@ -1,3 +1,4 @@
+import ortWasmUrl from "onnxruntime-web/ort-wasm-simd-threaded.wasm?url";
 import type { Kana } from "#/data/kana";
 import { dakuten, gojuon, handakuten } from "#/data/kana";
 
@@ -24,14 +25,108 @@ export const SINGLE_KANA = buildSingleKana();
 export const NUM_KANA = SINGLE_KANA.length; // 71 phonemes
 
 export type KanaType = "hiragana" | "katakana";
+export type ModelLoadStage =
+	| "idle"
+	| "loadingRuntime"
+	| "loadingModel"
+	| "initializingModel"
+	| "ready"
+	| "error";
+
+export interface ModelLoadState {
+	stage: ModelLoadStage;
+	progress: number;
+}
 
 const INPUT_SIZE = 64;
+const MODEL_URL = `${import.meta.env.BASE_URL}model/kana/model.onnx`;
+const RUNTIME_PROGRESS_MAX = 48;
+const MODEL_PROGRESS_START = 56;
+const MODEL_PROGRESS_END = 92;
+const MODEL_INITIALIZING_PROGRESS = 97;
 
 let session: import("onnxruntime-web/wasm").InferenceSession | null = null;
 let loadPromise: Promise<boolean> | null = null;
+let ortPromise: Promise<typeof import("onnxruntime-web/wasm")> | null = null;
+let runtimeBinaryPromise: Promise<Uint8Array> | null = null;
+let modelLoadState: ModelLoadState = {
+	stage: "idle",
+	progress: 0,
+};
+const modelLoadListeners = new Set<() => void>();
 
 async function getOrt() {
-	return await import("onnxruntime-web/wasm");
+	ortPromise ??= import("onnxruntime-web/wasm");
+	return await ortPromise;
+}
+
+function setModelLoadState(nextState: ModelLoadState) {
+	modelLoadState = nextState;
+	for (const listener of modelLoadListeners) listener();
+}
+
+export function getModelLoadState(): ModelLoadState {
+	return modelLoadState;
+}
+
+export function subscribeToModelLoadState(listener: () => void): () => void {
+	modelLoadListeners.add(listener);
+	return () => {
+		modelLoadListeners.delete(listener);
+	};
+}
+
+async function fetchBinary(
+	url: string,
+	onProgress: (progressRatio: number | null) => void,
+): Promise<Uint8Array> {
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error(`Failed to fetch binary: ${response.status} ${url}`);
+	}
+
+	const contentLength = Number(response.headers.get("content-length") ?? 0);
+	if (!response.body || Number.isNaN(contentLength) || contentLength <= 0) {
+		onProgress(null);
+		return new Uint8Array(await response.arrayBuffer());
+	}
+
+	const reader = response.body.getReader();
+	const chunks: Uint8Array[] = [];
+	let received = 0;
+
+	while (true) {
+		const { done, value } = await reader.read();
+		if (done) break;
+		if (!value) continue;
+
+		chunks.push(value);
+		received += value.length;
+		onProgress(received / contentLength);
+	}
+
+	const modelBytes = new Uint8Array(received);
+	let offset = 0;
+	for (const chunk of chunks) {
+		modelBytes.set(chunk, offset);
+		offset += chunk.length;
+	}
+
+	return modelBytes;
+}
+
+async function getRuntimeBinary(): Promise<Uint8Array> {
+	runtimeBinaryPromise ??= fetchBinary(ortWasmUrl, (progressRatio) => {
+		const progress =
+			progressRatio === null
+				? 8
+				: Math.max(1, Math.round(progressRatio * RUNTIME_PROGRESS_MAX));
+		setModelLoadState({
+			stage: "loadingRuntime",
+			progress,
+		});
+	});
+	return await runtimeBinaryPromise;
 }
 
 function toGrayscaleInverted(
@@ -49,17 +144,55 @@ function toGrayscaleInverted(
 
 /** Load the unified kana ONNX model from /model/kana/. Cached after first call. */
 export async function loadModel(): Promise<boolean> {
-	if (session) return true;
+	if (session) {
+		if (modelLoadState.stage !== "ready" || modelLoadState.progress !== 100) {
+			setModelLoadState({ stage: "ready", progress: 100 });
+		}
+		return true;
+	}
 	if (loadPromise) return loadPromise;
+	setModelLoadState({
+		stage: "loadingRuntime",
+		progress: 0,
+	});
 	loadPromise = (async () => {
-		const ort = await getOrt();
 		try {
-			session = await ort.InferenceSession.create("/model/kana/model.onnx", {
+			const runtimeBinary = await getRuntimeBinary();
+			const ort = await getOrt();
+			ort.env.wasm.wasmBinary = runtimeBinary;
+			setModelLoadState({
+				stage: "loadingModel",
+				progress: MODEL_PROGRESS_START,
+			});
+
+			const modelData = await fetchBinary(MODEL_URL, (progressRatio) => {
+				if (progressRatio === null) return;
+				const progress = Math.round(
+					MODEL_PROGRESS_START +
+						progressRatio * (MODEL_PROGRESS_END - MODEL_PROGRESS_START),
+				);
+				setModelLoadState({
+					stage: "loadingModel",
+					progress,
+				});
+			});
+			setModelLoadState({
+				stage: "loadingModel",
+				progress: MODEL_PROGRESS_END,
+			});
+
+			setModelLoadState({
+				stage: "initializingModel",
+				progress: MODEL_INITIALIZING_PROGRESS,
+			});
+			session = await ort.InferenceSession.create(modelData.buffer, {
 				executionProviders: ["wasm"],
 			});
+			setModelLoadState({ stage: "ready", progress: 100 });
 			return true;
 		} catch (e) {
-			console.log(e);
+			console.error(e);
+			setModelLoadState({ stage: "error", progress: 0 });
 			return false;
 		} finally {
 			loadPromise = null;

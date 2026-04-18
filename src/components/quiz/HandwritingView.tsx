@@ -15,14 +15,19 @@ import {
 	DrawingCanvas,
 	type DrawingCanvasApi,
 } from "#/components/DrawingCanvas";
-import { loadModel, predict, preprocessCanvas } from "#/lib/kanaModel";
+import { HandwritingModelLoading } from "#/components/HandwritingModelLoading";
+import {
+	getModelLoadState,
+	loadModel,
+	predict,
+	preprocessCanvas,
+	subscribeToModelLoadState,
+} from "#/lib/kanaModel";
 import type {
 	HandwritingAnswer,
 	HandwritingQuestion,
 	ViewCommonProps,
 } from "./types";
-
-type HandwritingPhase = "loading" | "error" | "ready" | "checking";
 
 export function HandwritingView({
 	question,
@@ -41,7 +46,8 @@ export function HandwritingView({
 	const { t } = useTranslation();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const canvasApiRef = useRef<DrawingCanvasApi | null>(null);
-	const [phase, setPhase] = useState<HandwritingPhase>("loading");
+	const [isChecking, setIsChecking] = useState(false);
+	const [modelLoadState, setModelLoadState] = useState(getModelLoadState);
 	const [showHint, setShowHint] = useState(false);
 	const [strokeCount, setStrokeCount] = useState(0);
 
@@ -54,16 +60,16 @@ export function HandwritingView({
 	const committed = answer !== null;
 
 	useEffect(() => {
-		let cancelled = false;
-		(async () => {
-			setPhase("loading");
-			const ok = await loadModel();
-			if (!cancelled) setPhase(ok ? "ready" : "error");
-		})();
-		return () => {
-			cancelled = true;
-		};
+		const unsubscribe = subscribeToModelLoadState(() => {
+			setModelLoadState(getModelLoadState());
+		});
+		void loadModel();
+		return unsubscribe;
 	}, []);
+
+	const modelReady = modelLoadState.stage === "ready";
+	const modelError = modelLoadState.stage === "error";
+	const modelLoading = !modelReady && !modelError;
 
 	const clearCanvas = useCallback(() => {
 		canvasApiRef.current?.reset();
@@ -74,11 +80,11 @@ export function HandwritingView({
 	}, []);
 
 	const handleCheck = useCallback(async () => {
-		if (!canvasRef.current || phase !== "ready" || committed) return;
-		setPhase("checking");
+		if (!canvasRef.current || !modelReady || committed) return;
+		setIsChecking(true);
 		const processed = preprocessCanvas(canvasRef.current);
 		const prediction = await predict(question.kanaType, processed);
-		setPhase("ready");
+		setIsChecking(false);
 		if (!prediction) return;
 
 		onCommit({
@@ -91,8 +97,8 @@ export function HandwritingView({
 			correct: prediction.label === expectedChar,
 		});
 	}, [
-		phase,
 		committed,
+		modelReady,
 		question.kanaType,
 		question.kana,
 		expectedChar,
@@ -103,17 +109,13 @@ export function HandwritingView({
 
 	return (
 		<>
-			{phase === "loading" && (
-				<div className="flex flex-col items-center gap-4 py-12">
-					<Loader
-						className="animate-spin text-primary-600 dark:text-primary-400"
-						size={40}
-					/>
-					<p className="text-text-secondary">{t("quiz.loadingModel")}</p>
+			{modelLoading && (
+				<div className="flex justify-center py-8">
+					<HandwritingModelLoading state={modelLoadState} />
 				</div>
 			)}
 
-			{phase === "error" && (
+			{modelError && (
 				<div className="flex flex-col items-center gap-4 py-12 text-center">
 					<TriangleAlert className="text-amber-500" size={40} />
 					<p className="text-text-primary font-medium">
@@ -125,7 +127,7 @@ export function HandwritingView({
 				</div>
 			)}
 
-			{(phase === "ready" || phase === "checking") && (
+			{modelReady && (
 				<>
 					<div className="text-center space-y-2">
 						<p className="text-text-secondary">
@@ -159,7 +161,7 @@ export function HandwritingView({
 						<DrawingCanvas
 							canvasRef={canvasRef}
 							apiRef={canvasApiRef}
-							disabled={phase === "checking" || committed}
+							disabled={isChecking || committed}
 							onStrokeCountChange={setStrokeCount}
 						/>
 					</div>
@@ -169,7 +171,7 @@ export function HandwritingView({
 							<>
 								<Button
 									onClick={handleUndo}
-									disabled={strokeCount === 0 || phase === "checking"}
+									disabled={strokeCount === 0 || isChecking}
 									variant="soft"
 									tone="neutral"
 								>
@@ -178,7 +180,7 @@ export function HandwritingView({
 								</Button>
 								<Button
 									onClick={clearCanvas}
-									disabled={strokeCount === 0 || phase === "checking"}
+									disabled={strokeCount === 0 || isChecking}
 									variant="soft"
 									tone="neutral"
 								>
@@ -187,9 +189,9 @@ export function HandwritingView({
 								</Button>
 								<Button
 									onClick={handleCheck}
-									disabled={strokeCount === 0 || phase === "checking"}
+									disabled={strokeCount === 0 || isChecking}
 								>
-									{phase === "checking" ? (
+									{isChecking ? (
 										<Loader className="animate-spin" size={18} />
 									) : (
 										<Check size={18} />

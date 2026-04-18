@@ -80,6 +80,13 @@ export default {
 		mistakeLeaderboardButton: "易錯假名排行",
 		mistakesLabel: "錯誤",
 	},
+	handwritingLoader: {
+		statusRuntime: "正在載入辨識引擎...",
+		statusModel: "正在載入手寫模型...",
+		statusInitializing: "正在啟動手寫辨識...",
+		hint: "首次載入可能會稍微久一點。",
+		progressLabel: "{{progress}}%",
+	},
 	analytics: {
 		title: "學習分析",
 		heatmap: "熱力圖",
