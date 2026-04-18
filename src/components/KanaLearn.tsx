@@ -16,7 +16,6 @@ import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
 import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
-import { useWindowSize } from "#/hooks/useWindowSize";
 import { speakKana } from "#/lib/speakKana";
 import { useAppStore } from "#/stores/useAppStore";
 import { buildQuizOptions } from "#/utils/quizOptions";
@@ -26,6 +25,17 @@ const POP_QUIZ_INTERVAL = 20;
 
 /** Pre-shuffled kana source used for modulo-based indexing (no infinite array growth). */
 const BASE_KANA = getAllKana();
+
+function getViewportSize() {
+	if (typeof window === "undefined") {
+		return { width: 0, height: 0 };
+	}
+
+	return {
+		width: window.innerWidth,
+		height: window.innerHeight,
+	};
+}
 
 function buildShuffledPool(): Kana[] {
 	const shuffled = [...BASE_KANA];
@@ -212,7 +222,6 @@ export function KanaLearn() {
 	}, [colorSchemeId]);
 
 	const prefersReducedMotion = usePrefersReducedMotion();
-	const { width: windowWidth, height: windowHeight } = useWindowSize();
 
 	// Fixed shuffled pool — items are looked up with modulo, never appended.
 	const [pool] = useState(buildShuffledPool);
@@ -250,18 +259,12 @@ export function KanaLearn() {
 
 	// Confetti state
 	const [showConfetti, setShowConfetti] = useState(false);
-	const confettiTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const [confettiBurstId, setConfettiBurstId] = useState(0);
+	const [confettiViewport, setConfettiViewport] = useState(getViewportSize);
 
 	// Pop quiz state
 	const [popQuiz, setPopQuiz] = useState<PopQuizQuestion | null>(null);
 	const lastQuizIndexRef = useRef(0);
-
-	// Clean up timers on unmount
-	useEffect(() => {
-		return () => {
-			if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
-		};
-	}, []);
 
 	// Measure slide height — cached in a ref so handlers avoid layout reads.
 	useEffect(() => {
@@ -371,9 +374,9 @@ export function KanaLearn() {
 			Math.floor(viewedCount / STREAK_INTERVAL) * STREAK_INTERVAL;
 		if (milestone >= STREAK_INTERVAL && milestone > lastMilestone) {
 			setLastMilestone(milestone);
+			setConfettiViewport(getViewportSize());
+			setConfettiBurstId((id) => id + 1);
 			setShowConfetti(true);
-			if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
-			confettiTimerRef.current = setTimeout(() => setShowConfetti(false), 4000);
 			showToast(t("learn.streakMilestone", { count: milestone }), 2500);
 		}
 	}, [currentIndex, learnStreakEnabled, lastMilestone, showToast, t]);
@@ -463,11 +466,14 @@ export function KanaLearn() {
 			{/* Streak confetti */}
 			{showConfetti && !prefersReducedMotion && (
 				<ReactConfetti
-					width={windowWidth}
-					height={windowHeight}
+					key={confettiBurstId}
+					width={confettiViewport.width}
+					height={confettiViewport.height}
 					recycle={false}
 					numberOfPieces={150}
+					tweenDuration={700}
 					colors={confettiColors}
+					onConfettiComplete={() => setShowConfetti(false)}
 					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
 				/>
 			)}
