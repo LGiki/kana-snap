@@ -1,4 +1,11 @@
-import { ChevronDown, Languages, Volume2, VolumeOff, Zap } from "lucide-react";
+import {
+	ChevronDown,
+	Keyboard,
+	Languages,
+	Volume2,
+	VolumeOff,
+	Zap,
+} from "lucide-react";
 import {
 	memo,
 	useCallback,
@@ -359,29 +366,42 @@ export function KanaLearn() {
 	// Keyboard navigation — uses refs so the listener is stable.
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === "ArrowDown" || e.key === " " || e.key === "ArrowUp") {
-				e.preventDefault();
-			}
+			const isNextKey = [
+				"ArrowDown",
+				" ",
+				"ArrowRight",
+				"s",
+				"S",
+				"d",
+				"D",
+			].includes(e.key);
+			const isPrevKey = ["ArrowUp", "ArrowLeft", "w", "W", "a", "A"].includes(
+				e.key,
+			);
+
+			if (!isNextKey && !isPrevKey) return;
+
+			e.preventDefault();
+
 			if (popQuiz || strokePanelKana) return;
+
 			const container = containerRef.current;
 			const h = slideHeightRef.current;
 			if (!container || h === 0) return;
 
-			if (e.key === "ArrowDown" || e.key === " ") {
-				const nextIndex = currentIndexRef.current + 1;
-				const pos = nextIndex - windowStartRef.current;
-				container.scrollTo({
-					top: pos * h,
-					behavior: "smooth",
-				});
-			} else if (e.key === "ArrowUp") {
-				const prevIndex = Math.max(currentIndexRef.current - 1, 0);
-				const pos = prevIndex - windowStartRef.current;
-				container.scrollTo({
-					top: pos * h,
-					behavior: "smooth",
-				});
+			const delta = isNextKey ? 1 : -1;
+			let targetIndex = currentIndexRef.current + delta;
+
+			if (delta === -1) {
+				targetIndex = Math.max(targetIndex, 0);
 			}
+
+			const pos = targetIndex - windowStartRef.current;
+
+			container.scrollTo({
+				top: pos * h,
+				behavior: "smooth",
+			});
 		};
 
 		window.addEventListener("keydown", handleKeyDown);
@@ -490,12 +510,29 @@ export function KanaLearn() {
 				</button>
 			</div>
 
-			{/* Scroll hint on first slide */}
+			{/* Navigation hint on first slide */}
 			{currentIndex === 0 && (
 				<div
-					className={`fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${prefersReducedMotion ? "" : "animate-bounce"}`}
+					className={`fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${prefersReducedMotion ? "" : "animate-bounce sm:animate-none"}`}
 				>
-					<ChevronDown size={24} />
+					<ChevronDown className="sm:hidden" size={24} aria-hidden="true" />
+					<div className="hidden sm:flex items-center gap-3 rounded-full border border-border bg-surface/90 px-4 py-2 shadow-sm backdrop-blur-sm">
+						<Keyboard size={17} aria-hidden="true" />
+						<p className="text-sm font-medium text-text-secondary">
+							{t("learn.keyboardHintPrefix")}
+						</p>
+						<div className="flex items-center gap-1.5">
+							<kbd className="min-w-7 rounded-md border border-border bg-surface-hover px-2 py-1 text-center text-xs font-semibold text-text-primary shadow-sm">
+								↓
+							</kbd>
+							<kbd className="rounded-md border border-border bg-surface-hover px-2 py-1 text-xs font-semibold text-text-primary shadow-sm">
+								{t("learn.keyboardHintSpaceKey")}
+							</kbd>
+						</div>
+						<p className="text-sm font-medium text-text-secondary">
+							{t("learn.keyboardHintSuffix")}
+						</p>
+					</div>
 				</div>
 			)}
 

@@ -116,6 +116,9 @@ export default {
 		popQuizWrong: "正解は {{answer}} です",
 		popQuizContinue: "続ける",
 		autoPlayAudio: "自動音声再生",
+		keyboardHintPrefix: "次へは",
+		keyboardHintSpaceKey: "Space",
+		keyboardHintSuffix: "を押す",
 		openStrokeOrder: "{{kana}}の書き順を開く",
 		strokeOrderUnavailable: "この仮名の書き順はまだ利用できません。",
 		strokeOrderReducedMotion:
