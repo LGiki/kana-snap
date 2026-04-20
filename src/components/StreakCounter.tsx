@@ -105,28 +105,38 @@ export function StreakCounter({ records }: StreakCounterProps) {
 	];
 
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+		<div className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
 			{stats.map((stat) => (
 				<div
 					key={stat.label}
-					className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface"
+					className="flex min-w-0 flex-col items-center gap-2 rounded-xl border border-border bg-surface p-2 text-center sm:flex-row sm:gap-4 sm:p-4 sm:text-left"
 				>
-					<div className={`p-3 rounded-full ${stat.bgColor}`}>
-						<stat.icon size={24} className={stat.color} />
+					<div className={`shrink-0 rounded-full p-2 sm:p-3 ${stat.bgColor}`}>
+						<stat.icon className={`size-5 sm:size-6 ${stat.color}`} />
 					</div>
-					<div>
-						<p className="text-2xl font-bold">
+					<div className="min-w-0">
+						<p className="text-base font-bold leading-tight sm:text-2xl">
 							{stat.value}
 							{stat.unit && (
 								<>
 									{" "}
-									<span className="text-sm font-normal text-text-muted">
+									<span className="block text-xs font-normal text-text-muted sm:inline sm:text-sm">
 										{stat.unit}
 									</span>
 								</>
 							)}
+							{!stat.unit && (
+								<span
+									aria-hidden="true"
+									className="block text-xs font-normal text-transparent sm:hidden"
+								>
+									&nbsp;
+								</span>
+							)}
 						</p>
-						<p className="text-sm text-text-secondary">{stat.label}</p>
+						<p className="mt-1 line-clamp-2 text-xs leading-tight text-text-secondary sm:text-sm">
+							{stat.label}
+						</p>
 					</div>
 				</div>
 			))}
