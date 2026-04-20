@@ -187,7 +187,7 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 			<section className="space-y-4">
 				<div className="flex items-center justify-between gap-3">
 					<h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
-						<BarChart3 size={16} />
+						<BarChart3 size={16} className="shrink-0" />
 						{t("analytics.title")}
 					</h2>
 					<MistakeLeaderboardButton mistakeWeights={mistakeWeights} />

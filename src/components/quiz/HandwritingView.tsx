@@ -46,6 +46,7 @@ export function HandwritingView({
 	const { t } = useTranslation();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const canvasApiRef = useRef<DrawingCanvasApi | null>(null);
+	const feedbackRef = useRef<HTMLDivElement>(null);
 	const [isChecking, setIsChecking] = useState(false);
 	const [modelLoadState, setModelLoadState] = useState(getModelLoadState);
 	const [showHint, setShowHint] = useState(false);
@@ -58,6 +59,16 @@ export function HandwritingView({
 			: "quiz.typeKatakana",
 	);
 	const committed = answer !== null;
+
+	useEffect(() => {
+		if (!answer) return;
+		const motionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+		const prefersReducedMotion = motionQuery?.matches ?? false;
+		feedbackRef.current?.scrollIntoView({
+			block: "nearest",
+			behavior: prefersReducedMotion ? "auto" : "smooth",
+		});
+	}, [answer]);
 
 	useEffect(() => {
 		const unsubscribe = subscribeToModelLoadState(() => {
@@ -106,6 +117,9 @@ export function HandwritingView({
 	]);
 
 	const isCorrect = answer?.correct ?? false;
+	const feedbackAnimation = isCorrect
+		? "animate-pulse-correct"
+		: "animate-shake";
 
 	return (
 		<>
@@ -128,13 +142,13 @@ export function HandwritingView({
 			)}
 
 			{modelReady && (
-				<>
+				<div className="space-y-3 sm:space-y-6">
 					<div className="text-center space-y-2">
 						<p className="text-text-secondary">
 							{t("quiz.writePrompt", { kanaType: kanaTypeLabel })}
 						</p>
 						<div className="flex items-center justify-center gap-3">
-							<span className="text-4xl font-bold text-primary-600 dark:text-primary-400">
+							<span className="text-3xl font-bold text-primary-600 dark:text-primary-400">
 								{question.kana.romaji}
 							</span>
 							<Button
@@ -146,15 +160,15 @@ export function HandwritingView({
 							>
 								{showHint ? <EyeOff size={20} /> : <Eye size={20} />}
 							</Button>
+							<span
+								className={`min-w-8 text-3xl text-text-secondary transition-opacity ${
+									showHint ? "opacity-100" : "opacity-0"
+								}`}
+								aria-hidden={!showHint}
+							>
+								{expectedChar}
+							</span>
 						</div>
-						<p
-							className={`text-3xl text-text-secondary transition-opacity ${
-								showHint ? "opacity-100" : "opacity-0"
-							}`}
-							aria-hidden={!showHint}
-						>
-							{expectedChar}
-						</p>
 					</div>
 
 					<div className="flex justify-center">
@@ -200,86 +214,96 @@ export function HandwritingView({
 								</Button>
 							</>
 						) : (
-							<Button onClick={onNext} className="relative overflow-hidden">
-								{quizAdvanceMode === "auto" && (
-									<span
-										key={indexKey}
-										className="absolute inset-0 pointer-events-none bg-black/20"
-										style={{
-											animation: `quiz-next-question-countdown ${quizAutoAdvanceDelay}s linear forwards`,
-										}}
-									/>
+							<div className="w-full space-y-2 sm:space-y-3">
+								{answer && (
+									<div
+										ref={feedbackRef}
+										role="status"
+										aria-live="polite"
+										className="animate-slide-up-fade"
+									>
+										<div
+											className={`px-3 py-2 sm:p-3 rounded-lg border-2 text-center ${feedbackAnimation} ${
+												isCorrect
+													? "border-green-500 bg-green-50 dark:bg-green-900/20"
+													: "border-red-500 bg-red-50 dark:bg-red-900/20"
+											}`}
+										>
+											<div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 leading-tight">
+												<p
+													className={`text-base sm:text-lg font-bold ${
+														isCorrect
+															? "text-green-700 dark:text-green-400"
+															: "text-red-700 dark:text-red-400"
+													}`}
+												>
+													{isCorrect ? t("quiz.correct") : t("quiz.incorrect")}
+												</p>
+												{isCorrect ? (
+													<p className="text-text-secondary text-sm">
+														{t("quiz.confidence")}:{" "}
+														{Math.round(answer.confidence * 100)}%
+													</p>
+												) : (
+													<div className="flex flex-wrap justify-center gap-x-2 gap-y-1 text-sm">
+														<p className="text-text-secondary">
+															{t("quiz.expected")}:{" "}
+															<span className="text-base font-bold text-text-primary">
+																{expectedChar}
+															</span>
+														</p>
+														<p className="text-text-secondary">
+															{t("quiz.predicted")}:{" "}
+															<span className="text-base font-bold text-text-primary">
+																{answer.predictedLabel}
+															</span>{" "}
+															({Math.round(answer.confidence * 100)}%)
+														</p>
+													</div>
+												)}
+											</div>
+											{answer.topK.length > 1 && (
+												<div className="mt-1 flex flex-wrap justify-center gap-x-2 gap-y-0.5 text-xs text-text-secondary">
+													<p className="sr-only">{t("quiz.topPredictions")}</p>
+													{answer.topK.slice(0, 3).map((pred) => (
+														<span
+															key={pred.index}
+															className={`${
+																pred.label === expectedChar
+																	? "text-green-600 dark:text-green-400 font-bold"
+																	: "text-text-secondary"
+															}`}
+														>
+															{pred.label} {Math.round(pred.confidence * 100)}%
+														</span>
+													))}
+												</div>
+											)}
+										</div>
+									</div>
 								)}
-								<span className="relative inline-flex items-center gap-2">
-									<SkipForward size={18} />
-									{isLast ? t("quiz.result") : t("quiz.next")}
-								</span>
-							</Button>
+								<Button
+									onClick={onNext}
+									className="relative overflow-hidden w-full"
+								>
+									{quizAdvanceMode === "auto" && (
+										<span
+											key={indexKey}
+											className="absolute inset-0 pointer-events-none bg-black/20"
+											style={{
+												animation: `quiz-next-question-countdown ${quizAutoAdvanceDelay}s linear forwards`,
+											}}
+										/>
+									)}
+									<span className="relative inline-flex items-center gap-2">
+										<SkipForward size={18} />
+										{isLast ? t("quiz.result") : t("quiz.next")}
+									</span>
+								</Button>
+							</div>
 						)}
 					</div>
-
-					{answer && (
-						<div
-							className={`p-4 rounded-xl border-2 text-center space-y-2 ${
-								isCorrect
-									? "border-green-500 bg-green-50 dark:bg-green-900/20"
-									: "border-red-500 bg-red-50 dark:bg-red-900/20"
-							}`}
-						>
-							<p
-								className={`text-lg font-bold ${
-									isCorrect
-										? "text-green-700 dark:text-green-400"
-										: "text-red-700 dark:text-red-400"
-								}`}
-							>
-								{isCorrect ? t("quiz.correct") : t("quiz.incorrect")}
-							</p>
-							{isCorrect ? (
-								<p className="text-text-secondary">
-									{t("quiz.confidence")}: {Math.round(answer.confidence * 100)}%
-								</p>
-							) : (
-								<div className="space-y-1">
-									<p className="text-text-secondary">
-										{t("quiz.expected")}:{" "}
-										<span className="text-xl font-bold">{expectedChar}</span>
-									</p>
-									<p className="text-text-secondary">
-										{t("quiz.predicted")}:{" "}
-										<span className="text-xl font-bold">
-											{answer.predictedLabel}
-										</span>{" "}
-										<span className="text-sm">
-											({Math.round(answer.confidence * 100)}%)
-										</span>
-									</p>
-								</div>
-							)}
-							{answer.topK.length > 1 && (
-								<div className="pt-2 border-t border-border/50">
-									<p className="text-xs text-text-secondary mb-1">
-										{t("quiz.topPredictions")}
-									</p>
-									<div className="flex justify-center gap-3 text-sm">
-										{answer.topK.slice(0, 3).map((pred) => (
-											<span
-												key={pred.index}
-												className={`${
-													pred.label === expectedChar
-														? "text-green-600 dark:text-green-400 font-bold"
-														: "text-text-secondary"
-												}`}
-											>
-												{pred.label} {Math.round(pred.confidence * 100)}%
-											</span>
-										))}
-									</div>
-								</div>
-							)}
-						</div>
-					)}
-				</>
+				</div>
 			)}
 		</>
 	);
