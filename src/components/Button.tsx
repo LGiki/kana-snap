@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes, forwardRef } from "react";
+import type { ComponentProps } from "react";
 import { cn } from "#/lib/utils";
 
 export type ButtonVariant = "solid" | "outline" | "ghost" | "soft" | "toggle";
@@ -90,29 +90,25 @@ export function buttonStyles({
 }
 
 export interface ButtonProps
-	extends ButtonHTMLAttributes<HTMLButtonElement>,
+	extends ComponentProps<"button">,
 		ButtonStyleOptions {}
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-	(
-		{
-			className,
-			variant = "solid",
-			tone = "primary",
-			size = "md",
-			pressed = false,
-			type = "button",
-			...props
-		},
-		ref,
-	) => (
-		<button
-			ref={ref}
-			type={type}
-			className={cn(buttonStyles({ variant, tone, size, pressed }), className)}
-			{...props}
-		/>
-	),
+export const Button = ({
+	className,
+	ref,
+	variant = "solid",
+	tone = "primary",
+	size = "md",
+	pressed = false,
+	type = "button",
+	...props
+}: ButtonProps) => (
+	<button
+		ref={ref}
+		type={type}
+		className={cn(buttonStyles({ variant, tone, size, pressed }), className)}
+		{...props}
+	/>
 );
 
 Button.displayName = "Button";

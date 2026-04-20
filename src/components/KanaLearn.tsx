@@ -27,6 +27,7 @@ import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { speakKana } from "#/lib/speakKana";
 import { useAppStore } from "#/stores/useAppStore";
 import { buildQuizOptions } from "#/utils/quizOptions";
+import Kbd from "./Kbd";
 
 const STREAK_INTERVAL = 10;
 const POP_QUIZ_INTERVAL = 20;
@@ -522,12 +523,8 @@ export function KanaLearn() {
 							{t("learn.keyboardHintPrefix")}
 						</p>
 						<div className="flex items-center gap-1.5">
-							<kbd className="min-w-7 rounded-md border border-border bg-surface-hover px-2 py-1 text-center text-xs font-semibold text-text-primary shadow-sm">
-								↓
-							</kbd>
-							<kbd className="rounded-md border border-border bg-surface-hover px-2 py-1 text-xs font-semibold text-text-primary shadow-sm">
-								{t("learn.keyboardHintSpaceKey")}
-							</kbd>
+							<Kbd className="min-w-7">↓</Kbd>
+							<Kbd>{t("learn.keyboardHintSpaceKey")}</Kbd>
 						</div>
 						<p className="text-sm font-medium text-text-secondary">
 							{t("learn.keyboardHintSuffix")}

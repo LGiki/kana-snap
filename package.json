@@ -25,7 +25,6 @@
     "onnxruntime-web": "^1.21.0",
     "chart.js": "^4.5.1",
     "i18next": "^25.10.10",
-
     "lucide-react": "^1.7.0",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",

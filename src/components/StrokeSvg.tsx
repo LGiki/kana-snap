@@ -1,10 +1,4 @@
-import {
-	forwardRef,
-	useEffect,
-	useImperativeHandle,
-	useRef,
-	useState,
-} from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
 	createStrokeAnimator,
 	type StrokeAnimatorControls,
@@ -25,124 +19,121 @@ interface StrokeSvgProps {
 	onComplete?: () => void;
 	onStatusChange?: (status: "loading" | "ready" | "error") => void;
 	className?: string;
+	ref?: React.Ref<StrokeSvgHandle>;
 }
 
-export const StrokeSvg = forwardRef<StrokeSvgHandle, StrokeSvgProps>(
-	function StrokeSvg(
-		{
-			character,
-			type,
-			replayTrigger,
-			replayMode = "replay",
-			autoPlay = true,
-			staticDisplay = false,
-			onComplete,
-			onStatusChange,
-			className,
-		},
-		ref,
-	) {
-		const containerRef = useRef<HTMLDivElement>(null);
-		const animatorRef = useRef<StrokeAnimatorControls | null>(null);
-		const onCompleteRef = useRef(onComplete);
-		const onStatusChangeRef = useRef(onStatusChange);
-		const [loading, setLoading] = useState(true);
+export function StrokeSvg({
+	character,
+	type,
+	replayTrigger,
+	replayMode = "replay",
+	autoPlay = true,
+	staticDisplay = false,
+	onComplete,
+	onStatusChange,
+	className,
+	ref,
+}: StrokeSvgProps) {
+	const containerRef = useRef<HTMLDivElement>(null);
+	const animatorRef = useRef<StrokeAnimatorControls | null>(null);
+	const onCompleteRef = useRef(onComplete);
+	const onStatusChangeRef = useRef(onStatusChange);
+	const [loading, setLoading] = useState(true);
 
-		onCompleteRef.current = onComplete;
-		onStatusChangeRef.current = onStatusChange;
+	onCompleteRef.current = onComplete;
+	onStatusChangeRef.current = onStatusChange;
 
-		useImperativeHandle(ref, () => ({
-			play: () => animatorRef.current?.play(),
-		}));
+	useImperativeHandle(ref, () => ({
+		play: () => animatorRef.current?.play(),
+	}));
 
-		useEffect(() => {
-			const container = containerRef.current;
-			if (!container) return;
+	useEffect(() => {
+		const container = containerRef.current;
+		if (!container) return;
 
-			setLoading(true);
-			onStatusChangeRef.current?.("loading");
-			const controller = new AbortController();
+		setLoading(true);
+		onStatusChangeRef.current?.("loading");
+		const controller = new AbortController();
 
-			async function load() {
-				const url = `${import.meta.env.BASE_URL}strokesvg/${type}/${encodeURIComponent(character)}.svg`;
-				try {
-					const resp = await fetch(url, { signal: controller.signal });
-					if (!resp.ok) {
-						setLoading(false);
-						onStatusChangeRef.current?.("error");
-						return;
-					}
-					const text = await resp.text();
-					if (controller.signal.aborted) return;
-
-					container.innerHTML = text;
-					const svgEl = container.querySelector("svg");
-					if (!svgEl) {
-						setLoading(false);
-						onStatusChangeRef.current?.("error");
-						return;
-					}
-
-					svgEl.setAttribute("width", "100%");
-					svgEl.setAttribute("height", "100%");
-
-					const animator = createStrokeAnimator(svgEl, {
-						onComplete: () => onCompleteRef.current?.(),
-					});
-					animatorRef.current = animator;
-					if (staticDisplay) {
-						animator.revealAll();
-					} else if (autoPlay) {
-						animator.play();
-					}
+		async function load() {
+			const url = `${import.meta.env.BASE_URL}strokesvg/${type}/${encodeURIComponent(character)}.svg`;
+			try {
+				const resp = await fetch(url, { signal: controller.signal });
+				if (!resp.ok) {
 					setLoading(false);
-					onStatusChangeRef.current?.("ready");
-				} catch {
-					if (!controller.signal.aborted) {
-						setLoading(false);
-						onStatusChangeRef.current?.("error");
-					}
+					onStatusChangeRef.current?.("error");
+					return;
+				}
+				const text = await resp.text();
+				if (controller.signal.aborted || !container) return;
+
+				container.innerHTML = text;
+				const svgEl = container.querySelector("svg");
+				if (!svgEl) {
+					setLoading(false);
+					onStatusChangeRef.current?.("error");
+					return;
+				}
+
+				svgEl.setAttribute("width", "100%");
+				svgEl.setAttribute("height", "100%");
+
+				const animator = createStrokeAnimator(svgEl, {
+					onComplete: () => onCompleteRef.current?.(),
+				});
+				animatorRef.current = animator;
+				if (staticDisplay) {
+					animator.revealAll();
+				} else if (autoPlay) {
+					animator.play();
+				}
+				setLoading(false);
+				onStatusChangeRef.current?.("ready");
+			} catch {
+				if (!controller.signal.aborted) {
+					setLoading(false);
+					onStatusChangeRef.current?.("error");
 				}
 			}
+		}
 
-			load();
+		load();
 
-			return () => {
-				controller.abort();
-				animatorRef.current?.stop();
-				animatorRef.current = null;
-				container.innerHTML = "";
-			};
-		}, [character, type, autoPlay, staticDisplay]);
+		return () => {
+			controller.abort();
+			animatorRef.current?.stop();
+			animatorRef.current = null;
+			container.innerHTML = "";
+		};
+	}, [character, type, autoPlay, staticDisplay]);
 
-		useEffect(() => {
-			if (replayTrigger > 0 && !staticDisplay) {
-				if (replayMode === "reset") {
-					animatorRef.current?.reset();
-				} else {
-					animatorRef.current?.replay();
-				}
+	useEffect(() => {
+		if (replayTrigger > 0 && !staticDisplay) {
+			if (replayMode === "reset") {
+				animatorRef.current?.reset();
+			} else {
+				animatorRef.current?.replay();
 			}
-		}, [replayTrigger, replayMode, staticDisplay]);
+		}
+	}, [replayTrigger, replayMode, staticDisplay]);
 
-		return (
-			<div className={cn("relative w-16 h-16", className)}>
-				{loading && (
-					<div className="absolute inset-0 flex items-center justify-center">
-						<div className="w-6 h-6 rounded-full border-2 border-border border-t-primary-600 animate-spin" />
-					</div>
-				)}
-				<div
-					ref={containerRef}
-					className={cn("w-full h-full", loading && "invisible")}
-					style={
-						{
-							"--shadow": "var(--color-border)",
-							"--stroke": "var(--color-text-primary)",
-						} as React.CSSProperties
-					}
-				/>
-			</div>
-		);
-	},
-);
+	return (
+		<div className={cn("relative w-16 h-16", className)}>
+			{loading && (
+				<div className="absolute inset-0 flex items-center justify-center">
+					<div className="w-6 h-6 rounded-full border-2 border-border border-t-primary-600 animate-spin" />
+				</div>
+			)}
+			<div
+				ref={containerRef}
+				className={cn("w-full h-full", loading && "invisible")}
+				style={
+					{
+						"--shadow": "var(--color-border)",
+						"--stroke": "var(--color-text-primary)",
+					} as React.CSSProperties
+				}
+			/>
+		</div>
+	);
+}
