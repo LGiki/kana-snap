@@ -15,7 +15,13 @@ Use Bun for day-to-day work:
 - `bun run lint` or `bun run format` runs each step separately.
 
 ## Coding Style & Naming Conventions
-This repo uses TypeScript, React, and Biome. Follow Biome defaults plus the checked-in config: tabs for indentation, double quotes, and organized imports. Prefer PascalCase for React components (`KanaChart.tsx`), `useX` for hooks (`useAppStore.ts`), and descriptive camelCase for utilities. Keep tests and small helpers next to the code they cover. Do not hand-edit generated files such as `src/routeTree.gen.ts`.
+This repo uses TypeScript, React 19, and Biome. Follow Biome defaults plus the checked-in config: tabs for indentation, double quotes, and organized imports. Prefer PascalCase for React components (`KanaChart.tsx`), `useX` for hooks (`useAppStore.ts`), and descriptive camelCase for utilities. Keep tests and small helpers next to the code they cover. Do not hand-edit generated files such as `src/routeTree.gen.ts`. For components that need refs, use React 19's `ref` prop pattern with `ComponentProps<"button">` or explicit `ref?: React.Ref<T>` props instead of adding new `forwardRef` wrappers.
+
+## UI, State & Localization Patterns
+User-facing text should go through `react-i18next`; when adding or renaming keys, update all locale files in `src/i18n/locales` (`en`, `ja`, `zh-CN`, and `zh-TW`) in the same change. Persisted app preferences live in `src/stores/useAppStore.ts`; add new preference fields to `initialState`, export/import handling, persist `merge` validation, and nearby store tests. Kana glyphs should opt into the user-selected font with the `.font-kana` utility, and mixed strings should use `hasKana` from `src/lib/kanaFonts.ts` when the font should apply only if kana are present.
+
+## Responsive & Print Behavior
+Treat mobile and narrow layouts as first-class. Prefer responsive Tailwind classes, `min-w-0`, `shrink-0`, wrapping, and safe-area `env()` spacing for fixed or bottom navigation UI so labels and controls do not overflow. The kana chart has dedicated print selectors in `src/styles.css` using `app-*` and `kana-chart__*` classes; preserve those hooks when changing chart, navigation, or update-prompt markup, and verify printing behavior for chart changes.
 
 ## Testing Guidelines
 Vitest and Testing Library are the active test stack. Place tests beside implementation files with `*.test.ts` or `*.test.tsx` names, as in `src/utils/quiz.test.ts`. Cover new store logic, utility behavior, and interaction-heavy UI changes. Run `bun run test` before opening a PR; run `bun run check` for style and lint validation.
