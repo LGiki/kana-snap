@@ -70,7 +70,13 @@ function generatePopQuiz(allKana: Kana[], currentKana: Kana): PopQuizQuestion {
 	return { kana: currentKana, options, correctIndex };
 }
 
-const BUFFER = 4;
+const BUFFER_BEFORE = 4;
+const BUFFER_AFTER = 12;
+const MAX_VIRTUAL_SCROLL_HEIGHT = 12_000_000;
+
+function clampIndex(index: number, maxIndex: number) {
+	return Math.min(Math.max(index, 0), maxIndex);
+}
 
 const LearnSlide = memo(function LearnSlide({
 	kana,
@@ -263,17 +269,29 @@ export function KanaLearn() {
 	);
 
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const [renderIndex, setRenderIndex] = useState(0);
+	const [slideHeight, setSlideHeight] = useState(0);
 	const currentIndexRef = useRef(0);
+	const renderIndexRef = useRef(0);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const slideHeightRef = useRef(0);
-	// Refs for stable closures in scroll handlers
-	const windowStartRef = useRef(0);
 	const isAdjustingRef = useRef(false);
 
-	// Rolling window of slides — no spacers needed
-	const windowStart = Math.max(0, currentIndex - BUFFER);
-	const windowEnd = currentIndex + BUFFER;
-	windowStartRef.current = windowStart;
+	const virtualItemCount =
+		slideHeight > 0
+			? Math.max(
+					BASE_KANA.length,
+					Math.floor(MAX_VIRTUAL_SCROLL_HEIGHT / slideHeight),
+				)
+			: BASE_KANA.length;
+	const maxVirtualIndex = virtualItemCount - 1;
+	const windowStart = Math.max(0, renderIndex - BUFFER_BEFORE);
+	const windowEnd = Math.min(maxVirtualIndex, renderIndex + BUFFER_AFTER);
+	const topSpacerHeight = windowStart * slideHeight;
+	const bottomSpacerHeight = Math.max(
+		0,
+		(virtualItemCount - windowEnd - 1) * slideHeight,
+	);
 
 	// Game mechanics settings
 	const learnStreakEnabled = useAppStore((s) => s.learnStreakEnabled);
@@ -301,7 +319,10 @@ export function KanaLearn() {
 		const container = containerRef.current;
 		if (!container) return;
 		const update = () => {
-			slideHeightRef.current = container.clientHeight;
+			const nextHeight = container.clientHeight;
+			if (nextHeight === slideHeightRef.current) return;
+			slideHeightRef.current = nextHeight;
+			setSlideHeight(nextHeight);
 		};
 		update();
 		const observer = new ResizeObserver(update);
@@ -309,58 +330,94 @@ export function KanaLearn() {
 		return () => observer.disconnect();
 	}, []);
 
-	// Reset scroll position to keep the current slide in view after the
-	// window shifts.  Runs before paint so the user sees no flicker.
+	// Keep the current slide aligned when the viewport height changes.
 	useLayoutEffect(() => {
 		const el = containerRef.current;
 		if (!el) return;
-		let h = slideHeightRef.current;
-		if (h === 0) h = el.clientHeight;
+		const h = slideHeight;
 		if (h === 0) return;
 		slideHeightRef.current = h;
 
-		const posInWindow = currentIndex - windowStartRef.current;
 		isAdjustingRef.current = true;
-		el.scrollTop = posInWindow * h;
+		el.scrollTop = currentIndexRef.current * h;
 
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				isAdjustingRef.current = false;
 			});
 		});
-	}, [currentIndex]);
+	}, [slideHeight]);
 
-	// Detect which slide the user scrolled to once the gesture settles.
+	// Keep virtualization in sync during scrolling, while committing the active
+	// slide only when the gesture settles.
 	useEffect(() => {
 		const el = containerRef.current;
 		if (!el) return;
 
+		let frame = 0;
+		let timer: ReturnType<typeof setTimeout>;
+
+		const readScrollIndex = () => {
+			const h = slideHeightRef.current;
+			if (h === 0) return null;
+			return clampIndex(
+				Math.round(el.scrollTop / h),
+				Math.max(0, Math.floor(MAX_VIRTUAL_SCROLL_HEIGHT / h) - 1),
+			);
+		};
+
+		const syncRenderIndex = (nextIndex: number) => {
+			if (nextIndex === renderIndexRef.current) return;
+			renderIndexRef.current = nextIndex;
+			setRenderIndex(nextIndex);
+		};
+
+		const syncCurrentIndex = (nextIndex: number) => {
+			if (nextIndex === currentIndexRef.current) return;
+			currentIndexRef.current = nextIndex;
+			setCurrentIndex(nextIndex);
+		};
+
+		const handleScroll = () => {
+			if (frame !== 0) return;
+			frame = requestAnimationFrame(() => {
+				frame = 0;
+				const nextIndex = readScrollIndex();
+				if (nextIndex === null) return;
+				syncRenderIndex(nextIndex);
+			});
+		};
+
 		const handleSettled = () => {
 			if (isAdjustingRef.current) return;
-			const h = slideHeightRef.current;
-			if (h === 0) return;
-			const snapPos = Math.round(el.scrollTop / h);
-			const newIndex = windowStartRef.current + snapPos;
-			if (newIndex !== currentIndexRef.current && newIndex >= 0) {
-				currentIndexRef.current = newIndex;
-				setCurrentIndex(newIndex);
-			}
+			const newIndex = readScrollIndex();
+			if (newIndex === null) return;
+			syncRenderIndex(newIndex);
+			syncCurrentIndex(newIndex);
 		};
+
+		el.addEventListener("scroll", handleScroll, { passive: true });
 
 		if ("onscrollend" in window) {
 			el.addEventListener("scrollend", handleSettled);
-			return () => el.removeEventListener("scrollend", handleSettled);
+			return () => {
+				el.removeEventListener("scroll", handleScroll);
+				el.removeEventListener("scrollend", handleSettled);
+				if (frame !== 0) cancelAnimationFrame(frame);
+			};
 		}
 		// Fallback: debounced scroll for browsers without scrollend.
-		let timer: ReturnType<typeof setTimeout>;
 		const onScroll = () => {
+			handleScroll();
 			clearTimeout(timer);
 			timer = setTimeout(handleSettled, 100);
 		};
+		el.removeEventListener("scroll", handleScroll);
 		el.addEventListener("scroll", onScroll, { passive: true });
 		return () => {
 			el.removeEventListener("scroll", onScroll);
 			clearTimeout(timer);
+			if (frame !== 0) cancelAnimationFrame(frame);
 		};
 	}, []);
 
@@ -391,16 +448,16 @@ export function KanaLearn() {
 			if (!container || h === 0) return;
 
 			const delta = isNextKey ? 1 : -1;
-			let targetIndex = currentIndexRef.current + delta;
+			const maxIndex = Math.max(
+				0,
+				Math.floor(MAX_VIRTUAL_SCROLL_HEIGHT / h) - 1,
+			);
+			const targetIndex = clampIndex(renderIndexRef.current + delta, maxIndex);
 
-			if (delta === -1) {
-				targetIndex = Math.max(targetIndex, 0);
-			}
-
-			const pos = targetIndex - windowStartRef.current;
-
+			renderIndexRef.current = targetIndex;
+			setRenderIndex(targetIndex);
 			container.scrollTo({
-				top: pos * h,
+				top: targetIndex * h,
 				behavior: "smooth",
 			});
 		};
@@ -427,17 +484,19 @@ export function KanaLearn() {
 	// Pop quiz trigger
 	useEffect(() => {
 		if (!learnPopQuizEnabled) return;
+		if (popQuiz) return;
 		const viewedCount = currentIndex + 1;
+		const quizMilestone =
+			Math.floor(viewedCount / POP_QUIZ_INTERVAL) * POP_QUIZ_INTERVAL;
 		if (
-			viewedCount > 0 &&
-			viewedCount % POP_QUIZ_INTERVAL === 0 &&
-			viewedCount > lastQuizIndexRef.current
+			quizMilestone >= POP_QUIZ_INTERVAL &&
+			quizMilestone > lastQuizIndexRef.current
 		) {
-			lastQuizIndexRef.current = viewedCount;
+			lastQuizIndexRef.current = quizMilestone;
 			const question = generatePopQuiz(BASE_KANA, getKanaAt(currentIndex));
 			setPopQuiz(question);
 		}
-	}, [currentIndex, learnPopQuizEnabled, getKanaAt]);
+	}, [currentIndex, learnPopQuizEnabled, popQuiz, getKanaAt]);
 
 	// Auto-play audio when switching kana
 	useEffect(() => {
@@ -476,9 +535,15 @@ export function KanaLearn() {
 				ref={containerRef}
 				className="flex-1 overflow-y-auto snap-y snap-mandatory learn-scrollbar-none relative"
 			>
+				{topSpacerHeight > 0 && (
+					<div aria-hidden="true" style={{ height: topSpacerHeight }} />
+				)}
 				{visibleSlides.map(({ kana, index }) => (
 					<LearnSlide key={index} kana={kana} onOpenStroke={openStrokePanel} />
 				))}
+				{bottomSpacerHeight > 0 && (
+					<div aria-hidden="true" style={{ height: bottomSpacerHeight }} />
+				)}
 			</div>
 
 			<div className="fixed left-[max(1rem,env(safe-area-inset-left))] top-[calc(1rem+env(safe-area-inset-top))] sm:top-auto sm:bottom-[calc(1rem+env(safe-area-inset-bottom))] z-45">
