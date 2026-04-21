@@ -97,7 +97,7 @@ export function AudioCard({
 				className="flex-1 flex flex-col items-center justify-center gap-1 px-3 pt-3 pb-2 cursor-pointer"
 			>
 				<span className="text-xl font-bold text-text-primary">{primary}</span>
-				<span className="text-xs text-primary-600 dark:text-primary-400 font-medium">
+				<span className="text-xs text-primary-700 dark:text-primary-300 font-medium">
 					{secondary}
 				</span>
 				{tertiary && (

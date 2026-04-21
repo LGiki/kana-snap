@@ -320,7 +320,7 @@ function SettingsPage() {
 										size={24}
 										className={
 											theme === mode
-												? "text-primary-600 dark:text-primary-400"
+												? "text-primary-700 dark:text-primary-300"
 												: "text-text-secondary"
 										}
 									/>
@@ -425,7 +425,7 @@ function SettingsPage() {
 										size={24}
 										className={
 											kanaCardClickAction === action
-												? "text-primary-600 dark:text-primary-400"
+												? "text-primary-700 dark:text-primary-300"
 												: "text-text-secondary"
 										}
 									/>
@@ -490,7 +490,7 @@ function SettingsPage() {
 										size={24}
 										className={
 											quizAdvanceMode === mode
-												? "text-primary-600 dark:text-primary-400"
+												? "text-primary-700 dark:text-primary-300"
 												: "text-text-secondary"
 										}
 									/>
@@ -580,7 +580,7 @@ function SettingsPage() {
 			<section className="rounded-2xl border border-border bg-surface overflow-hidden">
 				<div className="px-4 pt-4 pb-3 flex flex-col items-center gap-1">
 					<AppIcon size={56} />
-					<span className="text-lg font-bold text-primary-600 dark:text-primary-400">
+					<span className="text-lg font-bold text-primary-700 dark:text-primary-300">
 						KanaSnap
 					</span>
 				</div>
@@ -591,7 +591,7 @@ function SettingsPage() {
 							href="https://github.com/LGiki/kana-snap"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="inline-flex items-center gap-1.5 font-mono text-primary-600 dark:text-primary-400 hover:underline"
+							className="inline-flex items-center gap-1.5 font-mono text-primary-700 dark:text-primary-300 hover:underline"
 						>
 							<SiGithub size={14} />
 							{__APP_VERSION__}
@@ -605,7 +605,7 @@ function SettingsPage() {
 							href={`https://github.com/LGiki/kana-snap/commit/${__COMMIT_HASH__}`}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="font-mono text-primary-600 dark:text-primary-400 hover:underline"
+							className="font-mono text-primary-700 dark:text-primary-300 hover:underline"
 						>
 							{__COMMIT_HASH__}
 						</a>
@@ -631,7 +631,7 @@ function SettingsPage() {
 									href="https://github.com/zhengkyl/strokesvg"
 									target="_blank"
 									rel="noopener noreferrer"
-									className="inline-flex items-center gap-1.5 font-mono text-primary-600 dark:text-primary-400 hover:underline"
+									className="inline-flex items-center gap-1.5 font-mono text-primary-700 dark:text-primary-300 hover:underline"
 								>
 									<SiGithub size={14} />
 									strokesvg

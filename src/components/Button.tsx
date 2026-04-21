@@ -29,7 +29,7 @@ const variantStyles: Record<
 > = {
 	solid: {
 		primary:
-			"bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600",
+			"bg-primary-700 text-white hover:bg-primary-800 dark:bg-primary-700 dark:hover:bg-primary-800",
 		neutral: "bg-text-primary text-surface hover:opacity-90",
 		danger: "bg-red-600 text-white hover:bg-red-700",
 	},
@@ -45,7 +45,7 @@ const variantStyles: Record<
 		neutral:
 			"text-text-secondary hover:bg-surface-hover hover:text-text-primary",
 		primary:
-			"text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/30",
+			"text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/30",
 		danger:
 			"text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20",
 	},

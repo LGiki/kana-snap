@@ -148,7 +148,7 @@ export function HandwritingView({
 							{t("quiz.writePrompt", { kanaType: kanaTypeLabel })}
 						</p>
 						<div className="flex items-center justify-center gap-3">
-							<span className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+							<span className="text-3xl font-bold text-primary-700 dark:text-primary-300">
 								{question.kana.romaji}
 							</span>
 							<Button

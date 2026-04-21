@@ -186,14 +186,14 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 						isPerfect ? "animate-trophy-bounce" : ""
 					}`}
 				>
-					<Trophy size={40} className="text-primary-500" />
+					<Trophy size={40} className="text-primary-700" />
 				</div>
 				<h1 className="text-2xl font-bold">{t("quiz.result")}</h1>
-				<p className="text-4xl font-bold text-primary-600 dark:text-primary-400 animate-score-pop">
+				<p className="text-4xl font-bold text-primary-700 dark:text-primary-300 animate-score-pop">
 					{t("quiz.score", { score: displayScore, total })}
 				</p>
 				{isPerfect && (
-					<p className="text-primary-600 dark:text-primary-400 font-medium animate-fade-in stagger-2">
+					<p className="text-primary-700 dark:text-primary-300 font-medium animate-fade-in stagger-2">
 						{t("quiz.perfect")}
 					</p>
 				)}

@@ -58,7 +58,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 			{toast && (
 				<output
 					key={toast.id}
-					className={`fixed top-20 left-1/2 z-55 px-4 py-2.5 rounded-full bg-primary-600 text-white text-sm font-semibold shadow-lg whitespace-nowrap pointer-events-none ${
+					className={`fixed top-20 left-1/2 z-55 px-4 py-2.5 rounded-full bg-primary-700 text-white text-sm font-semibold shadow-lg whitespace-nowrap pointer-events-none ${
 						visible ? "animate-toast-in" : "animate-toast-out"
 					}`}
 				>

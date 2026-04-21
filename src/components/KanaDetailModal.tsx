@@ -111,7 +111,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 				<div className="text-center flex flex-col items-center">
 					{/* Romaji + audio */}
 					<div className="flex items-center gap-2 mb-2">
-						<p className="text-3xl font-semibold text-primary-600 dark:text-primary-400 tracking-wide">
+						<p className="text-3xl font-semibold text-primary-700 dark:text-primary-300 tracking-wide">
 							{kana.romaji}
 						</p>
 						<Button

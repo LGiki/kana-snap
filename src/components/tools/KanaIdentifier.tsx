@@ -224,7 +224,7 @@ export function KanaIdentifier() {
 											<span
 												className={`font-kana text-3xl font-bold shrink-0 w-12 text-center ${
 													isTop
-														? "text-primary-600 dark:text-primary-400"
+														? "text-primary-700 dark:text-primary-300"
 														: "text-text-primary"
 												}`}
 											>
@@ -253,7 +253,7 @@ export function KanaIdentifier() {
 											<span
 												className={`text-sm font-semibold tabular-nums ${
 													isTop
-														? "text-primary-600 dark:text-primary-400"
+														? "text-primary-700 dark:text-primary-300"
 														: "text-text-secondary"
 												}`}
 											>

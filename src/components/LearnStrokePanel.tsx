@@ -95,7 +95,7 @@ export function LearnStrokePanel({
 							<span className="mx-2 text-text-muted">/</span>
 							<span className="font-kana">{kana.katakana}</span>
 						</h3>
-						<p className="text-sm font-medium uppercase tracking-[0.14em] text-primary-600 dark:text-primary-300">
+						<p className="text-sm font-medium uppercase tracking-[0.14em] text-primary-700 dark:text-primary-300">
 							{kana.romaji}
 						</p>
 					</div>

@@ -229,6 +229,7 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 							value={visualizationMode}
 							onChange={setVisualizationMode}
 							id="quiz-viz"
+							variant="tabs"
 						/>
 
 						{visualizationMode === "heatmap" && (

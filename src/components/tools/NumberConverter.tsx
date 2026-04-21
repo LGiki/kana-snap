@@ -1,5 +1,5 @@
 import { Hash } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { numberToJapanese } from "#/data/japaneseNumbers";
 import { speakKana } from "#/lib/speakKana";
@@ -7,6 +7,7 @@ import { CopyButton, Section } from "./Section";
 
 export function NumberConverter() {
 	const { t } = useTranslation();
+	const numberInputId = useId();
 	const [input, setInput] = useState("");
 
 	const result = useMemo(() => {
@@ -25,6 +26,7 @@ export function NumberConverter() {
 		>
 			<div className="space-y-4">
 				<input
+					id={numberInputId}
 					type="number"
 					inputMode="numeric"
 					min={0}
@@ -36,6 +38,9 @@ export function NumberConverter() {
 						placeholder:text-text-muted
 						focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
 				/>
+				<label htmlFor={numberInputId} className="sr-only">
+					{t("tools.numberConverter")}
+				</label>
 
 				{result && result !== "invalid" && (
 					<div className="flex flex-col rounded-xl border border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20 overflow-hidden transition-all hover:shadow-md active:scale-[0.99]">
@@ -48,7 +53,7 @@ export function NumberConverter() {
 								<p className="text-2xl font-bold text-text-primary break-all">
 									{result.kanji}
 								</p>
-								<p className="text-sm text-primary-600 dark:text-primary-400 font-medium break-all">
+								<p className="text-sm text-primary-700 dark:text-primary-300 font-medium break-all">
 									{result.reading}
 								</p>
 							</div>

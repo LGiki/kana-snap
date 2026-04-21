@@ -11,6 +11,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "release:check": "bun run check && bun run typecheck && bun run test && bun run build",
     "format": "biome format",
     "lint": "biome lint",
     "check": "biome check"

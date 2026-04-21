@@ -12,6 +12,7 @@ interface TabsProps<T extends string> {
 	value: T;
 	onChange: (value: T) => void;
 	id?: string;
+	variant?: "segmented" | "tabs";
 }
 
 export function Tabs<T extends string>({
@@ -19,6 +20,7 @@ export function Tabs<T extends string>({
 	value,
 	onChange,
 	id,
+	variant = "segmented",
 }: TabsProps<T>) {
 	const autoId = useId();
 	const baseId = id ?? autoId;
@@ -46,11 +48,23 @@ export function Tabs<T extends string>({
 
 	return (
 		<div
-			role="tablist"
+			role={variant === "tabs" ? "tablist" : "group"}
 			className="flex rounded-lg border border-border overflow-hidden w-fit"
 		>
 			{tabs.map((tab, i) => {
 				const selected = value === tab.value;
+				const buttonA11yProps =
+					variant === "tabs"
+						? {
+								role: "tab" as const,
+								id: `${baseId}-tab-${tab.value}`,
+								"aria-selected": selected,
+								"aria-controls": `${baseId}-panel-${tab.value}`,
+								tabIndex: selected ? 0 : -1,
+							}
+						: {
+								"aria-pressed": selected,
+							};
 				return (
 					<button
 						key={tab.value}
@@ -58,18 +72,14 @@ export function Tabs<T extends string>({
 							tabRefs.current[i] = el;
 						}}
 						type="button"
-						role="tab"
-						id={`${baseId}-tab-${tab.value}`}
-						aria-selected={selected}
-						aria-controls={`${baseId}-panel-${tab.value}`}
-						tabIndex={selected ? 0 : -1}
 						onClick={() => onChange(tab.value)}
 						onKeyDown={(e) => handleKeyDown(e, i)}
 						className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium transition-colors ${
 							selected
-								? "bg-primary-600 text-white"
+								? "bg-primary-700 text-white"
 								: "bg-surface text-text-secondary hover:bg-surface-hover"
 						}`}
+						{...buttonA11yProps}
 					>
 						{tab.icon &&
 							(typeof tab.icon === "function" ||

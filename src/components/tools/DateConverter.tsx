@@ -1,5 +1,5 @@
 import { CalendarDays } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
 	dayReadings,
@@ -13,6 +13,7 @@ import { CopyButton, Section } from "./Section";
 
 export function DateConverter() {
 	const { t } = useTranslation();
+	const dateInputId = useId();
 	const today = new Date();
 	const [dateStr, setDateStr] = useState(
 		`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
@@ -57,12 +58,16 @@ export function DateConverter() {
 		>
 			<div className="space-y-4">
 				<input
+					id={dateInputId}
 					type="date"
 					value={dateStr}
 					onChange={(e) => setDateStr(e.target.value)}
 					className="appearance-none w-full px-4 py-3 rounded-xl border border-border bg-surface text-text-primary text-lg
 						focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
 				/>
+				<label htmlFor={dateInputId} className="sr-only">
+					{t("tools.dateConverter")}
+				</label>
 
 				{dateInfo && (
 					<>
@@ -86,7 +91,7 @@ export function DateConverter() {
 										<span className="text-xl font-bold text-text-primary">
 											{part.kanji}
 										</span>
-										<span className="text-xs text-primary-600 dark:text-primary-400 font-medium">
+										<span className="text-xs text-primary-700 dark:text-primary-300 font-medium">
 											{part.reading}
 										</span>
 									</button>
@@ -108,7 +113,7 @@ export function DateConverter() {
 									<p className="text-base font-bold text-text-primary break-all leading-snug">
 										{dateInfo.fullKanji}
 									</p>
-									<p className="text-xs text-primary-600 dark:text-primary-400 font-medium break-all leading-snug">
+									<p className="text-xs text-primary-700 dark:text-primary-300 font-medium break-all leading-snug">
 										{dateInfo.fullReading}
 									</p>
 								</div>

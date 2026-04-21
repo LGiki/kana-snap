@@ -36,7 +36,7 @@ The dev server starts on [http://localhost:3000](http://localhost:3000).
 ## Tech Stack
 
 - **Runtime**: Bun
-- **Framework**: React 19 + Vite 7
+- **Framework**: React 19 + Vite 8
 - **Routing**: TanStack Router (file-based)
 - **Styling**: TailwindCSS v4
 - **State**: Zustand with localStorage persistence

@@ -29,7 +29,7 @@ export function HandwritingModelLoading({
 			className="flex w-full max-w-sm flex-col items-center gap-3 py-10 text-center"
 		>
 			<Loader
-				className="animate-spin text-primary-600 dark:text-primary-400"
+				className="animate-spin text-primary-700 dark:text-primary-300"
 				size={28}
 			/>
 			<div className="w-full space-y-2">

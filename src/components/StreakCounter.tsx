@@ -75,7 +75,7 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.currentStreak"),
 			value: currentStreak,
 			unit: t("analytics.days"),
-			color: "text-primary-600 dark:text-primary-400",
+			color: "text-primary-700 dark:text-primary-300",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 		{
@@ -83,7 +83,7 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.longestStreak"),
 			value: longestStreak,
 			unit: t("analytics.days"),
-			color: "text-primary-600 dark:text-primary-400",
+			color: "text-primary-700 dark:text-primary-300",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 		{
@@ -91,7 +91,7 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.quizzesCompleted"),
 			value: totalQuizzes,
 			unit: t("analytics.quizzesUnit"),
-			color: "text-primary-600 dark:text-primary-400",
+			color: "text-primary-700 dark:text-primary-300",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 		{
@@ -99,7 +99,7 @@ export function StreakCounter({ records }: StreakCounterProps) {
 			label: t("analytics.averageScore"),
 			value: `${avgScore.toFixed(1)}/10`,
 			unit: "",
-			color: "text-primary-600 dark:text-primary-400",
+			color: "text-primary-700 dark:text-primary-300",
 			bgColor: "bg-primary-100 dark:bg-primary-900/30",
 		},
 	];

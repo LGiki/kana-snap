@@ -54,7 +54,7 @@ export function UpdatePrompt() {
 				<div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0">
 					<RefreshCw
 						size={18}
-						className="text-primary-600 dark:text-primary-400"
+						className="text-primary-700 dark:text-primary-300"
 					/>
 				</div>
 				<div className="flex-1 min-w-0">

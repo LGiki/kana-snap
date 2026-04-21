@@ -106,7 +106,7 @@ const LearnSlide = memo(function LearnSlide({
 						{kana.katakana}
 					</div>
 
-					<div className="text-xl sm:text-2xl md:text-3xl text-primary-500 font-semibold tracking-widest mt-6">
+					<div className="text-xl sm:text-2xl md:text-3xl text-primary-700 font-semibold tracking-widest mt-6">
 						{kana.romaji}
 					</div>
 				</button>
@@ -168,7 +168,7 @@ function PopQuizOverlay({
 				className="max-w-sm w-full mx-4 space-y-6 outline-none"
 			>
 				<div className="text-center space-y-2">
-					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-sm font-semibold">
+					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-semibold">
 						<Zap size={16} />
 						{t("learn.popQuizTitle")}
 					</div>
@@ -569,7 +569,7 @@ export function KanaLearn() {
 					onClick={() => setLearnAutoPlayAudio(!learnAutoPlayAudio)}
 					className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
 						learnAutoPlayAudio
-							? "bg-primary-600 text-white hover:bg-primary-700"
+							? "bg-primary-700 text-white hover:bg-primary-800"
 							: "bg-black/15 dark:bg-white/15 text-text-primary hover:bg-black/25 dark:hover:bg-white/25"
 					}`}
 					aria-label={t("learn.autoPlayAudio")}

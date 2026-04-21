@@ -20,7 +20,7 @@ function HighlightedExample({
 	const reading = rest?.replace(")", "") ?? "";
 	const counterLen = counterReading.length;
 	const kanjiIdx = kanji.lastIndexOf(counter);
-	const hl = "text-primary-600 dark:text-primary-400";
+	const hl = "text-primary-700 dark:text-primary-300";
 
 	return (
 		<Button
@@ -91,7 +91,7 @@ export function CountersReference() {
 								onClick={() => setExpanded(isOpen ? null : c.counter)}
 								className="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-hover transition-colors text-left"
 							>
-								<span className="text-2xl font-bold text-primary-600 dark:text-primary-400 w-10 text-center">
+								<span className="text-2xl font-bold text-primary-700 dark:text-primary-300 w-10 text-center">
 									{c.counter}
 								</span>
 								<div className="flex-1 min-w-0">
