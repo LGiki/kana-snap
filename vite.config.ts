@@ -3,7 +3,6 @@ import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 import { minify } from "html-minifier-terser";
 import { optimize } from "svgo";
@@ -48,6 +47,7 @@ export default defineConfig({
 		tanstackRouter({
 			routesDirectory: "./src/routes",
 			generatedRouteTree: "./src/routeTree.gen.ts",
+			autoCodeSplitting: true,
 		}),
 		react(),
 		tailwindcss(),
@@ -106,9 +106,6 @@ export default defineConfig({
 					},
 				],
 			},
-		}),
-		legacy({
-			targets: ["defaults", "not IE 11"],
 		}),
 		{
 			name: "htmlMinify",

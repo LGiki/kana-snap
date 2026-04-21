@@ -6,11 +6,10 @@ import {
 	SlidersHorizontal,
 	TrendingUp,
 } from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
+import { type ComponentType, lazy, type ReactNode, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "#/components/Button";
 import { Heatmap } from "#/components/Heatmap";
-import { LineChart } from "#/components/LineChart";
 import { StreakCounter } from "#/components/StreakCounter";
 import { Tabs } from "#/components/Tabs";
 import { useToast } from "#/components/Toast";
@@ -21,6 +20,12 @@ import type {
 import { useAppStore } from "#/stores/useAppStore";
 import { MistakeLeaderboardButton } from "./MistakeLeaderboard";
 import { QUIZ_QUESTION_COUNT_OPTIONS } from "./types";
+
+const LineChart = lazy(() =>
+	import("#/components/LineChart").then((module) => ({
+		default: module.LineChart,
+	})),
+);
 
 function renderQuestionTypeIcon(icon: ReactNode | typeof PenLine) {
 	if (
@@ -241,7 +246,16 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 								id="quiz-viz-panel-line"
 								aria-labelledby="quiz-viz-tab-line"
 							>
-								<LineChart records={quizHistory} />
+								<Suspense
+									fallback={
+										<div
+											aria-hidden="true"
+											className="h-64 sm:h-72 rounded-2xl bg-surface-alt animate-pulse"
+										/>
+									}
+								>
+									<LineChart records={quizHistory} />
+								</Suspense>
 							</div>
 						)}
 					</div>

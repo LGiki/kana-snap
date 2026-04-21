@@ -1,6 +1,5 @@
 import { ArrowLeft, RotateCcw, Trophy } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import ReactConfetti from "react-confetti";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "#/components/Button";
 import type { AnswerRecord } from "#/components/Quiz";
@@ -9,6 +8,8 @@ import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { useWindowSize } from "#/hooks/useWindowSize";
 import { hasKana } from "#/lib/kanaFonts";
 import { useAppStore } from "#/stores/useAppStore";
+
+const ReactConfetti = lazy(() => import("react-confetti"));
 
 interface QuizResultProps {
 	answers: AnswerRecord[];
@@ -166,14 +167,16 @@ export function QuizResult({ answers, onRetry, onBack }: QuizResultProps) {
 	return (
 		<div className="max-w-lg mx-auto space-y-8">
 			{isPerfect && !prefersReducedMotion && (
-				<ReactConfetti
-					width={windowWidth}
-					height={windowHeight}
-					recycle={false}
-					numberOfPieces={200}
-					colors={confettiColors}
-					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
-				/>
+				<Suspense fallback={null}>
+					<ReactConfetti
+						width={windowWidth}
+						height={windowHeight}
+						recycle={false}
+						numberOfPieces={200}
+						colors={confettiColors}
+						style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
+					/>
+				</Suspense>
 			)}
 
 			{/* Score */}

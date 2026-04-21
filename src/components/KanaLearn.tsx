@@ -7,7 +7,9 @@ import {
 	Zap,
 } from "lucide-react";
 import {
+	lazy,
 	memo,
+	Suspense,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -15,7 +17,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import ReactConfetti from "react-confetti";
 import { useTranslation } from "react-i18next";
 import { Button } from "#/components/Button";
 import { LearnStrokePanel } from "#/components/LearnStrokePanel";
@@ -31,6 +32,7 @@ import Kbd from "./Kbd";
 
 const STREAK_INTERVAL = 10;
 const POP_QUIZ_INTERVAL = 20;
+const ReactConfetti = lazy(() => import("react-confetti"));
 
 /** Pre-shuffled kana source used for modulo-based indexing (no infinite array growth). */
 const BASE_KANA = getAllKana();
@@ -600,17 +602,19 @@ export function KanaLearn() {
 
 			{/* Streak confetti */}
 			{showConfetti && !prefersReducedMotion && (
-				<ReactConfetti
-					key={confettiBurstId}
-					width={confettiViewport.width}
-					height={confettiViewport.height}
-					recycle={false}
-					numberOfPieces={150}
-					tweenDuration={700}
-					colors={confettiColors}
-					onConfettiComplete={() => setShowConfetti(false)}
-					style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
-				/>
+				<Suspense fallback={null}>
+					<ReactConfetti
+						key={confettiBurstId}
+						width={confettiViewport.width}
+						height={confettiViewport.height}
+						recycle={false}
+						numberOfPieces={150}
+						tweenDuration={700}
+						colors={confettiColors}
+						onConfettiComplete={() => setShowConfetti(false)}
+						style={{ position: "fixed", top: 0, left: 0, zIndex: 200 }}
+					/>
+				</Suspense>
 			)}
 
 			{/* Pop quiz overlay */}
