@@ -6,6 +6,7 @@ import {
 	SlidersHorizontal,
 	TrendingUp,
 } from "lucide-react";
+import type { ComponentType, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "#/components/Button";
 import { Heatmap } from "#/components/Heatmap";
@@ -20,6 +21,22 @@ import type {
 import { useAppStore } from "#/stores/useAppStore";
 import { MistakeLeaderboardButton } from "./MistakeLeaderboard";
 import { QUIZ_QUESTION_COUNT_OPTIONS } from "./types";
+
+function renderQuestionTypeIcon(icon: ReactNode | typeof PenLine) {
+	if (
+		typeof icon === "function" ||
+		(typeof icon === "object" && icon !== null && "render" in icon)
+	) {
+		const Icon = icon as ComponentType<{ size: number }>;
+		return <Icon size={16} />;
+	}
+
+	return (
+		<span className="inline-flex items-center justify-center size-4 text-sm leading-none">
+			{icon}
+		</span>
+	);
+}
 
 export function QuizStart({ onStart }: { onStart: () => void }) {
 	const { t } = useTranslation();
@@ -37,10 +54,18 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 	const typeOptions: {
 		value: QuizQuestionType;
 		label: string;
-		icon: string | typeof PenLine;
+		icon: ReactNode | typeof PenLine;
 	}[] = [
-		{ value: "hiragana", label: t("quiz.typeHiragana"), icon: "あ" },
-		{ value: "katakana", label: t("quiz.typeKatakana"), icon: "ア" },
+		{
+			value: "hiragana",
+			label: t("quiz.typeHiragana"),
+			icon: <span className="font-kana">あ</span>,
+		},
+		{
+			value: "katakana",
+			label: t("quiz.typeKatakana"),
+			icon: <span className="font-kana">ア</span>,
+		},
 		{ value: "handwriting", label: t("quiz.typeHandwriting"), icon: PenLine },
 	];
 
@@ -77,10 +102,18 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 	const handwritingKanaTabs: {
 		value: HandwritingKanaType;
 		label: string;
-		icon: string | typeof Shuffle;
+		icon: ReactNode | typeof Shuffle;
 	}[] = [
-		{ value: "hiragana", label: t("quiz.typeHiragana"), icon: "あ" },
-		{ value: "katakana", label: t("quiz.typeKatakana"), icon: "ア" },
+		{
+			value: "hiragana",
+			label: t("quiz.typeHiragana"),
+			icon: <span className="font-kana">あ</span>,
+		},
+		{
+			value: "katakana",
+			label: t("quiz.typeKatakana"),
+			icon: <span className="font-kana">ア</span>,
+		},
 		{ value: "both", label: t("quiz.typeBoth"), icon: Shuffle },
 	];
 
@@ -107,10 +140,6 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 						<div className="flex flex-wrap gap-2">
 							{typeOptions.map((opt) => {
 								const selected = quizQuestionTypes.includes(opt.value);
-								const iconIsString = typeof opt.icon === "string";
-								const Icon = iconIsString
-									? null
-									: (opt.icon as React.ComponentType<{ size: number }>);
 								return (
 									<Button
 										key={opt.value}
@@ -121,13 +150,7 @@ export function QuizStart({ onStart }: { onStart: () => void }) {
 										size="sm"
 										pressed={selected}
 									>
-										{Icon ? (
-											<Icon size={16} />
-										) : (
-											<span className="inline-flex items-center justify-center size-4 text-sm leading-none">
-												{opt.icon as string}
-											</span>
-										)}
+										{renderQuestionTypeIcon(opt.icon)}
 										{opt.label}
 									</Button>
 								);

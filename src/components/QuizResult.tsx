@@ -7,6 +7,7 @@ import type { AnswerRecord } from "#/components/Quiz";
 import { getColorScheme } from "#/data/colorSchemes";
 import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { useWindowSize } from "#/hooks/useWindowSize";
+import { hasKana } from "#/lib/kanaFonts";
 import { useAppStore } from "#/stores/useAppStore";
 
 interface QuizResultProps {
@@ -33,14 +34,18 @@ function IncorrectAnswerRow({
 			>
 				<div className="flex items-center gap-4">
 					<span className="text-2xl min-w-14">{answer.kana.romaji}</span>
-					<span className="text-text-muted text-xl">{expectedChar}</span>
+					<span className="font-kana text-text-muted text-xl">
+						{expectedChar}
+					</span>
 				</div>
 				<div className="text-right text-sm">
 					<p className="text-red-500 line-through">
-						{t("quiz.predicted")}: {answer.predictedLabel}
+						{t("quiz.predicted")}:{" "}
+						<span className="font-kana">{answer.predictedLabel}</span>
 					</p>
 					<p className="text-green-600 dark:text-green-400">
-						{t("quiz.correctAnswer")}: {expectedChar}
+						{t("quiz.correctAnswer")}:{" "}
+						<span className="font-kana">{expectedChar}</span>
 					</p>
 				</div>
 			</div>
@@ -55,12 +60,20 @@ function IncorrectAnswerRow({
 			style={{ animationDelay: `${animationDelay}s` }}
 		>
 			<div className="flex items-center gap-4">
-				<span className="text-2xl min-w-14">
+				<span
+					className={`text-2xl min-w-14 ${
+						question.promptType === "kana-to-romaji" ? "font-kana" : ""
+					}`}
+				>
 					{question.promptType === "kana-to-romaji"
 						? displayKana
 						: question.kana.romaji}
 				</span>
-				<span className="text-text-muted text-xl">
+				<span
+					className={`text-text-muted text-xl ${
+						question.promptType === "romaji-to-kana" ? "font-kana" : ""
+					}`}
+				>
 					{question.promptType === "kana-to-romaji"
 						? question.kana.romaji
 						: displayKana}
@@ -68,10 +81,26 @@ function IncorrectAnswerRow({
 			</div>
 			<div className="text-right text-sm">
 				<p className="text-red-500 line-through">
-					{t("quiz.yourAnswer")}: {question.options[selectedIndex]}
+					{t("quiz.yourAnswer")}:{" "}
+					<span
+						className={
+							hasKana(question.options[selectedIndex]) ? "font-kana" : undefined
+						}
+					>
+						{question.options[selectedIndex]}
+					</span>
 				</p>
 				<p className="text-green-600 dark:text-green-400">
-					{t("quiz.correctAnswer")}: {question.options[question.correctIndex]}
+					{t("quiz.correctAnswer")}:{" "}
+					<span
+						className={
+							hasKana(question.options[question.correctIndex])
+								? "font-kana"
+								: undefined
+						}
+					>
+						{question.options[question.correctIndex]}
+					</span>
 				</p>
 			</div>
 		</div>

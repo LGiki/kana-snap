@@ -2,6 +2,7 @@ import { Keyboard, Volume2 } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "#/components/Button";
+import { hasKana } from "#/lib/kanaFonts";
 import { speakKana } from "#/lib/speakKana";
 import type {
 	MultipleChoiceAnswer,
@@ -70,7 +71,9 @@ export function MultipleChoiceView({
 						? t("quiz.selectRomaji")
 						: t("quiz.selectKana")}
 				</p>
-				<p className="text-7xl">{prompt}</p>
+				<p className={`text-7xl ${hasKana(prompt) ? "font-kana" : ""}`}>
+					{prompt}
+				</p>
 				{question.promptType === "romaji-to-kana" && (
 					<Button
 						onClick={() => speakKana(question.kana.hiragana)}
@@ -117,7 +120,9 @@ export function MultipleChoiceView({
 								<Keyboard size={12} />
 								{i + 1}
 							</span>
-							{option}
+							<span className={hasKana(option) ? "font-kana" : undefined}>
+								{option}
+							</span>
 						</button>
 					);
 				})}

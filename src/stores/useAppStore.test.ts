@@ -21,6 +21,7 @@ describe("resetQuizData", () => {
 			quizQuestionTypes: ["katakana", "handwriting"],
 			quizQuestionCount: 20,
 			handwritingKanaType: "both",
+			kanaFont: "notoSansJp",
 		});
 
 		useAppStore.getState().resetQuizData();
@@ -33,6 +34,7 @@ describe("resetQuizData", () => {
 		expect(state.quizQuestionTypes).toEqual(["katakana", "handwriting"]);
 		expect(state.quizQuestionCount).toBe(20);
 		expect(state.handwritingKanaType).toBe("both");
+		expect(state.kanaFont).toBe("notoSansJp");
 	});
 });
 
@@ -54,6 +56,7 @@ describe("importData validation", () => {
 		const state = useAppStore.getState();
 		expect(state.theme).toBe("auto");
 		expect(state.colorScheme).toBe("coral");
+		expect(state.kanaFont).toBe("system");
 		expect(state.quizHistory).toEqual([]);
 		expect(state.mistakeWeights).toEqual({});
 	});
@@ -62,6 +65,7 @@ describe("importData validation", () => {
 		const json = JSON.stringify({
 			theme: "foobar",
 			colorScheme: "neon",
+			kanaFont: "marker",
 			displayMode: 42,
 			kanaCardClickAction: null,
 			quizAdvanceMode: "turbo",
@@ -70,6 +74,7 @@ describe("importData validation", () => {
 		const state = useAppStore.getState();
 		expect(state.theme).toBe("auto");
 		expect(state.colorScheme).toBe("coral");
+		expect(state.kanaFont).toBe("system");
 		expect(state.displayMode).toBe("hiragana");
 		expect(state.kanaCardClickAction).toBe("showDetail");
 		expect(state.quizAdvanceMode).toBe("auto");
@@ -79,6 +84,7 @@ describe("importData validation", () => {
 		const json = JSON.stringify({
 			theme: "dark",
 			colorScheme: "rose",
+			kanaFont: "bizUdMincho",
 			visualizationMode: "line",
 			displayMode: "katakana",
 			kanaCardClickAction: "playAudio",
@@ -88,6 +94,7 @@ describe("importData validation", () => {
 		const state = useAppStore.getState();
 		expect(state.theme).toBe("dark");
 		expect(state.colorScheme).toBe("rose");
+		expect(state.kanaFont).toBe("bizUdMincho");
 		expect(state.visualizationMode).toBe("line");
 		expect(state.displayMode).toBe("katakana");
 		expect(state.kanaCardClickAction).toBe("playAudio");

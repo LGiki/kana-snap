@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { STORAGE_KEY } from "#/constants";
 import { type ColorSchemeId, colorSchemes } from "#/data/colorSchemes";
+import { KANA_FONT_VALUES, type KanaFont } from "#/lib/kanaFonts";
 
 export interface QuizRecord {
 	date: string;
@@ -37,6 +38,7 @@ interface AppState {
 	theme: ThemeMode;
 	colorScheme: ColorSchemeId;
 	language: Language;
+	kanaFont: KanaFont;
 	visualizationMode: VisualizationMode;
 	displayMode: DisplayMode;
 	kanaCardClickAction: KanaCardClickAction;
@@ -55,6 +57,7 @@ interface AppState {
 	setTheme: (theme: ThemeMode) => void;
 	setColorScheme: (scheme: ColorSchemeId) => void;
 	setLanguage: (language: Language) => void;
+	setKanaFont: (font: KanaFont) => void;
 	setVisualizationMode: (mode: VisualizationMode) => void;
 	setDisplayMode: (mode: DisplayMode) => void;
 	setKanaCardClickAction: (action: KanaCardClickAction) => void;
@@ -79,6 +82,7 @@ const initialState = {
 	theme: "auto" as ThemeMode,
 	colorScheme: "coral" as ColorSchemeId,
 	language: detectLanguage(),
+	kanaFont: "system" as KanaFont,
 	visualizationMode: "heatmap" as VisualizationMode,
 	displayMode: "hiragana" as DisplayMode,
 	kanaCardClickAction: "showDetail" as KanaCardClickAction,
@@ -103,6 +107,7 @@ export const useAppStore = create<AppState>()(
 			setTheme: (theme) => set({ theme }),
 			setColorScheme: (scheme) => set({ colorScheme: scheme }),
 			setLanguage: (language) => set({ language }),
+			setKanaFont: (font) => set({ kanaFont: font }),
 			setVisualizationMode: (mode) => set({ visualizationMode: mode }),
 			setDisplayMode: (mode) => set({ displayMode: mode }),
 			setKanaCardClickAction: (action) => set({ kanaCardClickAction: action }),
@@ -149,6 +154,7 @@ export const useAppStore = create<AppState>()(
 					theme,
 					colorScheme,
 					language,
+					kanaFont,
 					visualizationMode,
 					displayMode,
 					kanaCardClickAction,
@@ -169,6 +175,7 @@ export const useAppStore = create<AppState>()(
 						theme,
 						colorScheme,
 						language,
+						kanaFont,
 						visualizationMode,
 						displayMode,
 						kanaCardClickAction,
@@ -205,6 +212,7 @@ export const useAppStore = create<AppState>()(
 					const validThemes = ["light", "dark", "auto"] as const;
 					const validSchemes = colorSchemes.map((s) => s.id) as ColorSchemeId[];
 					const validLangs = ["en", "ja", "zh-CN", "zh-TW"] as const;
+					const validKanaFonts = KANA_FONT_VALUES;
 					const validVizModes = ["heatmap", "line"] as const;
 					const validDisplayModes = [
 						"hiragana",
@@ -282,6 +290,7 @@ export const useAppStore = create<AppState>()(
 						theme: oneOf(data.theme, validThemes, "auto"),
 						colorScheme: oneOf(data.colorScheme, validSchemes, "coral"),
 						language: oneOf(data.language, validLangs, detectLanguage()),
+						kanaFont: oneOf(data.kanaFont, validKanaFonts, "system"),
 						visualizationMode: oneOf(
 							data.visualizationMode,
 							validVizModes,
@@ -350,6 +359,7 @@ export const useAppStore = create<AppState>()(
 					["en", "ja", "zh-CN", "zh-TW"],
 					current.language,
 				);
+				state.kanaFont = oneOf(state.kanaFont, KANA_FONT_VALUES, "system");
 				state.visualizationMode = oneOf(
 					state.visualizationMode,
 					["heatmap", "line"],

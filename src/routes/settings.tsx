@@ -24,6 +24,11 @@ import { Button } from "#/components/Button";
 import { ConfirmDialog } from "#/components/ConfirmDialog";
 import { type ColorSchemeId, colorSchemes } from "#/data/colorSchemes";
 import {
+	KANA_FONT_FAMILIES,
+	KANA_FONT_VALUES,
+	type KanaFont,
+} from "#/lib/kanaFonts";
+import {
 	type KanaCardClickAction,
 	type Language,
 	type QuizAdvanceMode,
@@ -91,9 +96,11 @@ function SettingsPage() {
 	const theme = useAppStore((s) => s.theme);
 	const colorScheme = useAppStore((s) => s.colorScheme);
 	const language = useAppStore((s) => s.language);
+	const kanaFont = useAppStore((s) => s.kanaFont);
 	const setTheme = useAppStore((s) => s.setTheme);
 	const setColorScheme = useAppStore((s) => s.setColorScheme);
 	const setLanguage = useAppStore((s) => s.setLanguage);
+	const setKanaFont = useAppStore((s) => s.setKanaFont);
 	const chartAutoPlayAudio = useAppStore((s) => s.chartAutoPlayAudio);
 	const setChartAutoPlayAudio = useAppStore((s) => s.setChartAutoPlayAudio);
 	const kanaCardClickAction = useAppStore((s) => s.kanaCardClickAction);
@@ -175,6 +182,11 @@ function SettingsPage() {
 		{ mode: "dark", label: t("settings.themeDark"), icon: Moon },
 		{ mode: "auto", label: t("settings.themeAuto"), icon: SunMoon },
 	];
+
+	const kanaFontOptions = KANA_FONT_VALUES.map((font) => ({
+		font,
+		label: t(`settings.kanaFont_${font}`),
+	}));
 
 	const handleExport = () => {
 		const json = exportData();
@@ -357,6 +369,32 @@ function SettingsPage() {
 									className="rounded-xl p-3 text-text-primary"
 								>
 									{label}
+								</Button>
+							))}
+						</div>
+					</div>
+					{/* Kana Font */}
+					<div className="space-y-2">
+						<h3 className="text-sm font-medium">{t("settings.kanaFont")}</h3>
+						<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+							{kanaFontOptions.map(({ font, label }) => (
+								<Button
+									key={font}
+									onClick={() => setKanaFont(font as KanaFont)}
+									variant="toggle"
+									tone="primary"
+									pressed={kanaFont === font}
+									className="flex-col rounded-xl p-2 min-h-16 gap-1.5 text-text-primary sm:min-h-24 sm:p-3 sm:gap-2"
+								>
+									<span
+										className="text-xl leading-none sm:text-2xl"
+										style={{ fontFamily: KANA_FONT_FAMILIES[font] }}
+									>
+										あいうえお
+									</span>
+									<span className="text-xs font-medium leading-tight">
+										{label}
+									</span>
 								</Button>
 							))}
 						</div>

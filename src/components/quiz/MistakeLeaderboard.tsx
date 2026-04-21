@@ -44,10 +44,10 @@ function MistakeLeaderboardContent({
 
 						<div className="min-w-0 space-y-2">
 							<div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-								<span className="text-2xl font-semibold leading-none text-text-primary">
+								<span className="font-kana text-2xl font-semibold leading-none text-text-primary">
 									{entry.hiragana}
 								</span>
-								<span className="text-xl leading-none text-text-secondary">
+								<span className="font-kana text-xl leading-none text-text-secondary">
 									{entry.katakana}
 								</span>
 								<span className="text-sm font-medium text-text-muted">

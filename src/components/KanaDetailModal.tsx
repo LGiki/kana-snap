@@ -134,7 +134,7 @@ export function KanaDetailModal({ kana, onClose }: KanaDetailModalProps) {
 							<div key={type} className="flex flex-col items-center">
 								<p className="text-xs text-text-muted mb-1.5">{label}</p>
 								<p
-									className={`leading-tight whitespace-nowrap ${isCompound ? "text-5xl sm:text-7xl" : "text-7xl"}`}
+									className={`font-kana leading-tight whitespace-nowrap ${isCompound ? "text-5xl sm:text-7xl" : "text-7xl"}`}
 								>
 									{chars}
 								</p>

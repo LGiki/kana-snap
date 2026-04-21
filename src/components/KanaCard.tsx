@@ -27,15 +27,15 @@ export function KanaCard({
 		>
 			{displayMode === "comparison" ? (
 				<>
-					<span className="kana-chart__glyph text-xl sm:text-2xl leading-tight">
+					<span className="kana-chart__glyph font-kana text-xl sm:text-2xl leading-tight">
 						{kana.hiragana}
 					</span>
-					<span className="kana-chart__glyph kana-chart__glyph--secondary text-xl sm:text-2xl leading-tight text-text-secondary">
+					<span className="kana-chart__glyph kana-chart__glyph--secondary font-kana text-xl sm:text-2xl leading-tight text-text-secondary">
 						{kana.katakana}
 					</span>
 				</>
 			) : (
-				<span className="kana-chart__glyph text-2xl sm:text-3xl leading-tight">
+				<span className="kana-chart__glyph font-kana text-2xl sm:text-3xl leading-tight">
 					{displayMode === "hiragana" ? kana.hiragana : kana.katakana}
 				</span>
 			)}

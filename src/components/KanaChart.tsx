@@ -82,8 +82,16 @@ export function KanaChart() {
 	}, []);
 
 	const displayModes = [
-		{ value: "hiragana" as const, label: t("chart.hiraganaOnly"), icon: "あ" },
-		{ value: "katakana" as const, label: t("chart.katakanaOnly"), icon: "ア" },
+		{
+			value: "hiragana" as const,
+			label: t("chart.hiraganaOnly"),
+			icon: <span className="font-kana">あ</span>,
+		},
+		{
+			value: "katakana" as const,
+			label: t("chart.katakanaOnly"),
+			icon: <span className="font-kana">ア</span>,
+		},
 		{
 			value: "comparison" as const,
 			label: t("chart.comparison"),
@@ -96,6 +104,7 @@ export function KanaChart() {
 					aria-hidden="true"
 				>
 					<text
+						className="font-kana"
 						x="8"
 						y="5"
 						textAnchor="middle"
@@ -105,6 +114,7 @@ export function KanaChart() {
 						あ
 					</text>
 					<text
+						className="font-kana"
 						x="8"
 						y="14"
 						textAnchor="middle"

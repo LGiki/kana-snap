@@ -222,7 +222,7 @@ export function KanaIdentifier() {
 											className="flex items-center gap-3 flex-1 min-w-0 text-left"
 										>
 											<span
-												className={`text-3xl font-bold shrink-0 w-12 text-center ${
+												className={`font-kana text-3xl font-bold shrink-0 w-12 text-center ${
 													isTop
 														? "text-primary-600 dark:text-primary-400"
 														: "text-text-primary"
@@ -241,7 +241,7 @@ export function KanaIdentifier() {
 															: t("tools.identifyKatakana")}
 													</span>
 												</div>
-												<p className="text-xs text-text-muted mt-0.5">
+												<p className="font-kana text-xs text-text-muted mt-0.5">
 													{candidate.kana.hiragana} / {candidate.kana.katakana}
 												</p>
 											</div>

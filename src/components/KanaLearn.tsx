@@ -90,11 +90,11 @@ const LearnSlide = memo(function LearnSlide({
 					className="relative flex flex-col items-center cursor-pointer transition-transform active:scale-95"
 					aria-label={`${kana.hiragana} - ${t("modal.playAudio")}`}
 				>
-					<div className="text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary">
+					<div className="font-kana text-[7rem] sm:text-[9rem] md:text-[11rem] leading-none text-text-primary">
 						{kana.hiragana}
 					</div>
 
-					<div className="text-4xl sm:text-5xl md:text-6xl text-text-secondary mt-4">
+					<div className="font-kana text-4xl sm:text-5xl md:text-6xl text-text-secondary mt-4">
 						{kana.katakana}
 					</div>
 
@@ -170,8 +170,8 @@ function PopQuizOverlay({
 				</div>
 
 				<div className="text-center py-4">
-					<p className="text-8xl">{question.kana.hiragana}</p>
-					<p className="text-3xl text-text-secondary mt-3">
+					<p className="font-kana text-8xl">{question.kana.hiragana}</p>
+					<p className="font-kana text-3xl text-text-secondary mt-3">
 						{question.kana.katakana}
 					</p>
 				</div>

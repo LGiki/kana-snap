@@ -161,7 +161,7 @@ export function HandwritingView({
 								{showHint ? <EyeOff size={20} /> : <Eye size={20} />}
 							</Button>
 							<span
-								className={`min-w-8 text-3xl text-text-secondary transition-opacity ${
+								className={`font-kana min-w-8 text-3xl text-text-secondary transition-opacity ${
 									showHint ? "opacity-100" : "opacity-0"
 								}`}
 								aria-hidden={!showHint}
@@ -248,13 +248,13 @@ export function HandwritingView({
 													<div className="flex flex-wrap justify-center gap-x-2 gap-y-1 text-sm">
 														<p className="text-text-secondary">
 															{t("quiz.expected")}:{" "}
-															<span className="text-base font-bold text-text-primary">
+															<span className="font-kana text-base font-bold text-text-primary">
 																{expectedChar}
 															</span>
 														</p>
 														<p className="text-text-secondary">
 															{t("quiz.predicted")}:{" "}
-															<span className="text-base font-bold text-text-primary">
+															<span className="font-kana text-base font-bold text-text-primary">
 																{answer.predictedLabel}
 															</span>{" "}
 															({Math.round(answer.confidence * 100)}%)
@@ -268,7 +268,7 @@ export function HandwritingView({
 													{answer.topK.slice(0, 3).map((pred) => (
 														<span
 															key={pred.index}
-															className={`${
+															className={`font-kana ${
 																pred.label === expectedChar
 																	? "text-green-600 dark:text-green-400 font-bold"
 																	: "text-text-secondary"

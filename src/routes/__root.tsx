@@ -6,6 +6,7 @@ import { Navigation } from "#/components/Navigation";
 import { ToastProvider } from "#/components/Toast";
 import { UpdatePrompt } from "#/components/UpdatePrompt";
 import { getColorScheme } from "#/data/colorSchemes";
+import { KANA_FONT_FAMILIES } from "#/lib/kanaFonts";
 import { useAppStore } from "#/stores/useAppStore";
 
 export const Route = createRootRoute({
@@ -16,6 +17,7 @@ function RootLayout() {
 	const theme = useAppStore((s) => s.theme);
 	const colorScheme = useAppStore((s) => s.colorScheme);
 	const language = useAppStore((s) => s.language);
+	const kanaFont = useAppStore((s) => s.kanaFont);
 	const { i18n } = useTranslation();
 
 	// Apply theme + sync iOS/Android title bar color via <meta name="theme-color">
@@ -62,6 +64,14 @@ function RootLayout() {
 	useEffect(() => {
 		i18n.changeLanguage(language);
 	}, [language, i18n]);
+
+	// Expose the selected kana font only to elements that opt in with .font-kana.
+	useEffect(() => {
+		document.documentElement.style.setProperty(
+			"--kana-font-family",
+			KANA_FONT_FAMILIES[kanaFont],
+		);
+	}, [kanaFont]);
 
 	return (
 		<ErrorBoundary>
