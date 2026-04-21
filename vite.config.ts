@@ -53,7 +53,7 @@ export default defineConfig({
 		tailwindcss(),
 		VitePWA({
 			registerType: "prompt",
-			includeAssets: ["icon.svg", "apple-touch-icon-180x180.png"],
+			includeManifestIcons: false,
 			manifest: {
 				id: "/",
 				name: "KanaSnap — Learn Japanese Kana",
