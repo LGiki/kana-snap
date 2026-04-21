@@ -5,6 +5,7 @@ export default {
 		quiz: "クイズ",
 		tools: "ツール",
 		settings: "設定",
+		loading: "ページを読み込み中",
 	},
 	chart: {
 		title: "五十音図",

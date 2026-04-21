@@ -5,6 +5,7 @@ export default {
 		quiz: "测验",
 		tools: "工具",
 		settings: "设置",
+		loading: "正在加载页面",
 	},
 	chart: {
 		title: "五十音图",

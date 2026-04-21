@@ -5,6 +5,7 @@ export default {
 		quiz: "測驗",
 		tools: "工具",
 		settings: "設定",
+		loading: "正在載入頁面",
 	},
 	chart: {
 		title: "五十音圖",

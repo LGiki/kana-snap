@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorBoundary } from "#/components/ErrorBoundary";
 import { Navigation } from "#/components/Navigation";
+import { RouteLoadingIndicator } from "#/components/RouteLoadingIndicator";
 import { ToastProvider } from "#/components/Toast";
 import { UpdatePrompt } from "#/components/UpdatePrompt";
 import { getColorScheme } from "#/data/colorSchemes";
@@ -77,6 +78,7 @@ function RootLayout() {
 		<ErrorBoundary>
 			<ToastProvider>
 				<div className="app-shell min-h-screen bg-surface text-text-primary">
+					<RouteLoadingIndicator />
 					<Navigation />
 					<main className="app-main max-w-5xl mx-auto pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[calc(1.5rem+env(safe-area-inset-top))] sm:pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:pb-6">
 						<Outlet />

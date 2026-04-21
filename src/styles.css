@@ -200,6 +200,44 @@ button,
 	}
 }
 
+@keyframes route-loading-sweep {
+	0% {
+		transform: translate3d(-120%, 0, 0);
+	}
+	100% {
+		transform: translate3d(360%, 0, 0);
+	}
+}
+
+@keyframes route-loading-fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.app-route-loading {
+	animation: route-loading-fade-in 0.16s ease-out both;
+	contain: paint;
+}
+
+.route-loading-indicator__bar {
+	width: 38%;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		var(--color-primary-500),
+		var(--color-primary-300),
+		transparent
+	);
+	animation: route-loading-sweep 1.15s linear infinite;
+	transform: translate3d(-120%, 0, 0);
+	will-change: transform;
+}
+
 .animate-shake {
 	animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
@@ -292,10 +330,17 @@ button,
 	.animate-score-pop,
 	.animate-trophy-bounce,
 	.animate-toast-in,
-	.animate-toast-out {
+	.animate-toast-out,
+	.app-route-loading,
+	.route-loading-indicator__bar {
 		animation: none !important;
 		opacity: 1 !important;
 		transform: none !important;
+	}
+
+	.route-loading-indicator__bar {
+		width: 100%;
+		background: var(--color-primary-500);
 	}
 }
 
@@ -328,6 +373,7 @@ button,
 	}
 
 	.app-navigation,
+	.app-route-loading,
 	.app-update-prompt,
 	output,
 	[role="dialog"],

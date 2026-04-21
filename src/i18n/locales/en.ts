@@ -5,6 +5,7 @@ export default {
 		quiz: "Quiz",
 		tools: "Tools",
 		settings: "Settings",
+		loading: "Loading page",
 	},
 	chart: {
 		title: "Kana Chart",
