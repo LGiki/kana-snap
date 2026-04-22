@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorBoundary } from "#/components/ErrorBoundary";
 import { Navigation } from "#/components/Navigation";
+import { NotFoundPage } from "#/components/NotFoundPage";
 import { RouteLoadingIndicator } from "#/components/RouteLoadingIndicator";
 import { ToastProvider } from "#/components/Toast";
 import { UpdatePrompt } from "#/components/UpdatePrompt";
@@ -12,6 +13,7 @@ import { useAppStore } from "#/stores/useAppStore";
 
 export const Route = createRootRoute({
 	component: RootLayout,
+	notFoundComponent: NotFoundPage,
 });
 
 function RootLayout() {

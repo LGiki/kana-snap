@@ -7,6 +7,12 @@ export default {
 		settings: "Settings",
 		loading: "Loading page",
 	},
+	notFound: {
+		title: "Page not found",
+		description: "Page not found. Please go back to the Kana Chart page.",
+		currentPath: "Requested page",
+		homeAction: "Go back to Kana Chart",
+	},
 	chart: {
 		title: "Kana Chart",
 		gojuon: "Gojūon",

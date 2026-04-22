@@ -7,6 +7,12 @@ export default {
 		settings: "設定",
 		loading: "ページを読み込み中",
 	},
+	notFound: {
+		title: "ページが見つかりません",
+		description: "ページが見つかりません。五十音図ページに戻ってください。",
+		currentPath: "リクエストされたページ",
+		homeAction: "五十音図に戻る",
+	},
 	chart: {
 		title: "五十音図",
 		gojuon: "五十音",

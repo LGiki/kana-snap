@@ -7,6 +7,12 @@ export default {
 		settings: "设置",
 		loading: "正在加载页面",
 	},
+	notFound: {
+		title: "页面未找到",
+		description: "页面未找到。请返回五十音图页面。",
+		currentPath: "请求的页面",
+		homeAction: "返回五十音图",
+	},
 	chart: {
 		title: "五十音图",
 		gojuon: "五十音",
