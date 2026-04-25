@@ -1,6 +1,6 @@
 export default {
 	nav: {
-		chart: "Kana Chart",
+		chart: "Chart",
 		learn: "Learn",
 		quiz: "Quiz",
 		tools: "Tools",
