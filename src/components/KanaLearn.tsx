@@ -24,6 +24,7 @@ import { useToast } from "#/components/Toast";
 import { getColorScheme } from "#/data/colorSchemes";
 import { getAllKana, type Kana } from "#/data/kana";
 import { useFocusTrap } from "#/hooks/useFocusTrap";
+import { useKeyboardNavigationHint } from "#/hooks/useKeyboardNavigationHint";
 import { usePrefersReducedMotion } from "#/hooks/usePrefersReducedMotion";
 import { speakKana } from "#/lib/speakKana";
 import { useAppStore } from "#/stores/useAppStore";
@@ -259,6 +260,7 @@ export function KanaLearn() {
 	}, [colorSchemeId]);
 
 	const prefersReducedMotion = usePrefersReducedMotion();
+	const showsKeyboardNavigationHint = useKeyboardNavigationHint();
 
 	// Fixed shuffled pool — items are looked up with modulo, never appended.
 	const [pool] = useState(buildShuffledPool);
@@ -581,22 +583,29 @@ export function KanaLearn() {
 			{/* Navigation hint on first slide */}
 			{currentIndex === 0 && (
 				<div
-					className={`fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] sm:bottom-8 left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${prefersReducedMotion ? "" : "animate-bounce sm:animate-none"}`}
+					className={`fixed left-1/2 -translate-x-1/2 z-45 flex flex-col items-center text-text-muted ${
+						showsKeyboardNavigationHint
+							? "bottom-8"
+							: "bottom-[calc(5rem+env(safe-area-inset-bottom))]"
+					} ${prefersReducedMotion || showsKeyboardNavigationHint ? "" : "animate-bounce"}`}
 				>
-					<ChevronDown className="sm:hidden" size={24} aria-hidden="true" />
-					<div className="hidden sm:flex items-center gap-3 rounded-full border border-border bg-surface/90 px-4 py-2 shadow-sm backdrop-blur-sm">
-						<Keyboard size={17} aria-hidden="true" />
-						<p className="text-sm font-medium text-text-secondary">
-							{t("learn.keyboardHintPrefix")}
-						</p>
-						<div className="flex items-center gap-1.5">
-							<Kbd className="min-w-7">↓</Kbd>
-							<Kbd>{t("learn.keyboardHintSpaceKey")}</Kbd>
+					{showsKeyboardNavigationHint ? (
+						<div className="flex items-center gap-3 rounded-full border border-border bg-surface/90 px-4 py-2 shadow-sm backdrop-blur-sm">
+							<Keyboard size={17} aria-hidden="true" />
+							<p className="text-sm font-medium text-text-secondary">
+								{t("learn.keyboardHintPrefix")}
+							</p>
+							<div className="flex items-center gap-1.5">
+								<Kbd className="min-w-7">↓</Kbd>
+								<Kbd>{t("learn.keyboardHintSpaceKey")}</Kbd>
+							</div>
+							<p className="text-sm font-medium text-text-secondary">
+								{t("learn.keyboardHintSuffix")}
+							</p>
 						</div>
-						<p className="text-sm font-medium text-text-secondary">
-							{t("learn.keyboardHintSuffix")}
-						</p>
-					</div>
+					) : (
+						<ChevronDown size={24} aria-hidden="true" />
+					)}
 				</div>
 			)}
 
