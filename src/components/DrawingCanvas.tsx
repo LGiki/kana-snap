@@ -119,7 +119,7 @@ export function DrawingCanvas({
 				ref={canvasRef}
 				width={width}
 				height={height}
-				className="block w-full h-full border-2 border-border rounded-xl touch-none cursor-crosshair bg-white"
+				className="block w-full h-full border-2 border-border rounded-xl touch-none cursor-crosshair bg-white select-none"
 				onPointerDown={handlePointerDown}
 				onPointerMove={handlePointerMove}
 				onPointerUp={handlePointerUp}
